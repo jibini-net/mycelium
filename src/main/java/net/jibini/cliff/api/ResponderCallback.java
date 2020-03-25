@@ -15,17 +15,20 @@ public class ResponderCallback implements RequestCallback
 	{
 		ResponderCallback result = new ResponderCallback();
 		result.defaultResponse = defaultResponse;
+		result.responder = responder;
 		return result;
 	}
 
 	@Override
 	public void onRequest(StitchLink source, Request request)
 	{
-		//TODO: Currently creates infinite routing loop.  Link into session,
-		//		or create an endpoint called SessionConnector
-		String target = request.getHeader().getString("target");
-		Request response = Request.create(defaultResponse, target, new JSONObject());
-		responder.respond(request, response);
-		source.sendRequest(response);
+		if (request.getHeader().has("origin"))
+		{
+			String target = request.getHeader().getString("origin");
+			Request response = Request.create(target, defaultResponse, new JSONObject());
+			responder.respond(request, response);
+			source.sendRequest(response);
+		} else
+			throw new RuntimeException("Cannot respond to request, no 'origin' present");
 	}
 }

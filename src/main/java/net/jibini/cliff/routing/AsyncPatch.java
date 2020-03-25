@@ -28,13 +28,19 @@ public class AsyncPatch implements Patch
 			@Override
 			public void readRequest(RequestCallback callback)
 			{
-				upstream.readRequest(callback);
+				upstream.readRequest((s, r) ->
+				{
+					callback.onRequest(this, r);
+				});
 			}
 
 			@Override
 			public void addPersistentCallback(RequestCallback callback)
 			{
-				upstream.addPersistentCallback(callback);
+				upstream.addPersistentCallback((s, r) ->
+				{
+					callback.onRequest(this, r);
+				});
 			}
 
 			@Override
@@ -61,13 +67,19 @@ public class AsyncPatch implements Patch
 			@Override
 			public void readRequest(RequestCallback callback)
 			{
-				downstream.readRequest(callback);
+				downstream.readRequest((s, r) ->
+				{
+					callback.onRequest(this, r);
+				});
 			}
 
 			@Override
 			public void addPersistentCallback(RequestCallback callback)
 			{
-				downstream.addPersistentCallback(callback);
+				downstream.addPersistentCallback((s, r) ->
+				{
+					callback.onRequest(this, r);
+				});
 			}
 
 			@Override

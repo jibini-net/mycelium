@@ -36,6 +36,15 @@ public class PluginRouter
 			{
 				String target = request.getHeader().getString("target");
 				
+				// Alternate router-side response implementation
+//				if (target.equals("Response"))
+//				{
+//					if (request.getHeader().has("origin"))
+//						target = request.getHeader().getString("origin");
+//				} else
+					request.getHeader().put("origin", name);
+					
+					
 				if (endpoints.containsKey(target))
 				{
 					StitchLink endpoint = endpoints.get(target);

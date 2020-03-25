@@ -50,6 +50,7 @@ public class PluginManager
 	{}
 	
 	private PluginRouter pluginRouter = PluginRouter.create();
+	private Object pluginStartLock = new Object();
 	
 	public static PluginManager create()
 	{
@@ -64,7 +65,7 @@ public class PluginManager
 			log.info("Loading plugin '" + manifest.getString("name") + "' (" + manifest.getString("version")
 					+ ") . . .");
 			
-			Thread pluginThread = new Thread(() -> plugin.create(patch.getDownstream()));
+			Thread pluginThread = new Thread(() -> plugin.create(this, manifest, patch.getDownstream()));
 			pluginThread.setName(manifest.getString("name"));
 			pluginThread.start();
 			
@@ -77,4 +78,34 @@ public class PluginManager
 	}
 	
 	public PluginRouter getPluginRouter()  { return pluginRouter; }
+	
+	public void waitPluginStart()
+	{
+		if (pluginStartLock != null)
+			synchronized (pluginStartLock)
+			{
+				try
+				{
+					log.debug("Waiting for plugin start lock");
+					pluginStartLock.wait();
+				} catch (InterruptedException ex)
+				{
+					log.error("Plugin start lock interrupted", ex);
+				}
+			}
+		else
+			log.debug("Plugin start lock already notified");
+	}
+	
+	public void notifyPluginStart()
+	{
+		if (pluginStartLock != null)
+			synchronized (pluginStartLock)
+			{
+				log.info("Notifying plugin start lock");
+				pluginStartLock.notifyAll();
+			}
+		
+		pluginStartLock = null;
+	}
 }

@@ -27,7 +27,7 @@ public class TestPlugin
 		CliffPlugin testPlugin = new CliffPlugin()
 		{
 			@Override
-			public void create(StitchLink uplink)
+			public void create(PluginManager master, JSONObject manifest, StitchLink uplink)
 			{
 				
 			}
@@ -47,7 +47,7 @@ public class TestPlugin
 		CliffPlugin testPlugin = new CliffPlugin()
 		{
 			@Override
-			public void create(StitchLink uplink)
+			public void create(PluginManager master, JSONObject manifest, StitchLink uplink)
 			{
 				log.debug("Test plugin create . . .");
 				
@@ -107,12 +107,12 @@ public class TestPlugin
 		manifest.put("name", "TestPlugin");
 		manifest.put("version", "2.0");
 		manager.registerPlugin(testPlugin, manifest);
+		manager.notifyPluginStart();
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		StitchLink downstream = patch.getDownstream();
 		downstream.sendRequest(Request.create("TestPlugin", "HelloWorld", new JSONObject()));
-		Thread.sleep(20);
 		downstream.sendRequest(Request.create("TestPlugin", "NotHelloWorld", new JSONObject()));
 
 		Thread.sleep(20);

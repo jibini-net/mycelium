@@ -12,7 +12,7 @@ import net.jibini.cliff.util.StreamUtil;
 
 public class Cliff
 {
-	private static Cliff INSTANCE;
+	private static Cliff INSTANCE = null;
 	private static Object KILL_SWITCH = new Object();
 	
 	private Cliff()
@@ -27,6 +27,8 @@ public class Cliff
 	
 	public static Cliff getInstance()
 	{
+		if (INSTANCE == null)
+			Cliff.create();
 		return INSTANCE;
 	}
 	
