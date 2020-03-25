@@ -40,31 +40,27 @@ public class AsyncTube implements StitchLink
 								
 								for (int i = 0; i < overlap; i ++)
 								{
-									try
+									RequestCallback w = waiting.get(0);
+									Request b = buffer.get(0);
+									
+									Thread asyncCallback = new Thread(() ->
 									{
-										waiting.get(0).onRequest(this, buffer.get(0));
-									} catch (Throwable t)
-									{
-										log.error("Error occurred in request callback", t);
-									}
+										try
+										{
+											w.onRequest(this, b);
+										} catch (Throwable t)
+										{
+											log.error("Error occurred in request callback", t);
+										}
+									});
+									
+									asyncCallback.setName("AsyncCallback");
+									asyncCallback.start();
 										
 									waiting.remove(0);
 									buffer.remove(0);
 								}
 							}
-						}
-						
-						synchronized (persistent)
-						{
-							for (Request r : buffer)
-								for (RequestCallback c : persistent)
-									try
-									{
-										c.onRequest(this, r);
-									} catch (Throwable t)
-									{
-										log.error("Error occurred in request callback", t);
-									}
 						}
 					}
 				}
@@ -93,11 +89,31 @@ public class AsyncTube implements StitchLink
 		synchronized (buffer)
 		{
 			buffer.add(Request.create(request));
-		}
-		
-		synchronized(lock)
-		{
-			lock.notify();
+			
+			synchronized(lock)
+			{
+				lock.notify();
+			}
+			
+			synchronized (persistent)
+			{
+				for (RequestCallback c : persistent)
+				{
+					Thread asyncCallback = new Thread(() ->
+					{
+						try
+						{
+							c.onRequest(this, request);
+						} catch (Throwable t)
+						{
+							log.error("Error occurred in request callback", t);
+						}
+					});
+					
+					asyncCallback.setName("AsyncCallback");
+					asyncCallback.start();
+				}
+			}
 		}
 	}
 
@@ -106,11 +122,11 @@ public class AsyncTube implements StitchLink
 		synchronized (waiting)
 		{
 			waiting.add(callback);
-		}
-		
-		synchronized(lock)
-		{
-			lock.notify();
+			
+			synchronized(lock)
+			{
+				lock.notify();
+			}
 		}
 	}
 

@@ -37,11 +37,8 @@ public class TestStitchLink
 			}
 		};
 		
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
+		for (int i = 0; i < 5; i ++)
+			link.readRequest(callback);
 
 		Thread.sleep(20);
 		if (thrown != null)
@@ -67,11 +64,8 @@ public class TestStitchLink
 			}
 		};
 		
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
-		link.readRequest(callback);
+		for (int i = 0; i < 5; i ++)
+			link.readRequest(callback);
 
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 2 }")));
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 3 }")));
@@ -80,6 +74,7 @@ public class TestStitchLink
 		Thread.sleep(20);
 		if (thrown != null)
 			throw new RuntimeException(thrown);
+		assertEquals("Callback was not triggered 5 times", 5, read);
 		link.close();
 	}
 	
@@ -105,7 +100,7 @@ public class TestStitchLink
 		});
 		
 		Thread.sleep(20);
-		assertEquals("Request callback did not trigger", read, 1);
+		assertEquals("Request callback did not trigger", 1, read);
 
 		log.debug("Should log a RuntimeException:");
 		worldDownstream.sendRequest(Request.create("NotHello", "World", new JSONObject()));

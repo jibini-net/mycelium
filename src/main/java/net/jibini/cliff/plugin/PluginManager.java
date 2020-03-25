@@ -58,13 +58,16 @@ public class PluginManager
 	
 	public void registerPlugin(CliffPlugin plugin, JSONObject manifest)
 	{
-		Patch patch = AsyncPatch.create();
 		try
 		{
+			Patch patch = AsyncPatch.create();
 			log.info("Loading plugin '" + manifest.getString("name") + "' (" + manifest.getString("version")
 					+ ") . . .");
 			
-			plugin.create(patch.getDownstream());
+			Thread pluginThread = new Thread(() -> plugin.create(patch.getDownstream()));
+			pluginThread.setName(manifest.getString("name"));
+			pluginThread.start();
+			
 			getPluginRouter().registerEndpoint(manifest.getString("name"), patch.getUpstream());
 			log.debug("Registered patch '" + manifest.getString("name") + "'");
 		} catch (Throwable t)
