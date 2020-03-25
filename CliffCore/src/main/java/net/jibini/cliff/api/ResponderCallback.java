@@ -26,8 +26,8 @@ public class ResponderCallback implements RequestCallback
 		{
 			String target = request.getHeader().getString("origin");
 			Request response = Request.create(target, defaultResponse, new JSONObject());
-			responder.respond(request, response);
-			source.sendRequest(response);
+			if (responder.respond(request, response))
+				source.sendRequest(response);
 		} else
 			throw new RuntimeException("Cannot respond to request, no 'origin' present");
 	}

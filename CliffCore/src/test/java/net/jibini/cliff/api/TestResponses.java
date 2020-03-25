@@ -38,6 +38,8 @@ public class TestResponses
 					log.debug(req.toString());
 					res.getBody().put("Hello", "World");
 					read++;
+					
+					return true;
 				}));
 			}
 		};
@@ -46,6 +48,7 @@ public class TestResponses
 		manifest0.put("name", "TestPlugin0");
 		manifest0.put("version", "1.0");
 		manager.registerPlugin(testPlugin0, manifest0);
+		Thread.sleep(30);
 		
 		CliffPlugin testPlugin1 = new CliffPlugin()
 		{
@@ -53,6 +56,7 @@ public class TestResponses
 			public void create(PluginManager master, JSONObject manifest, StitchLink uplink)
 			{
 				log.debug("Test plugin 1 create . . .");
+				
 				uplink.sendRequest(Request.create("TestPlugin0", "TestRequest", new JSONObject()));
 				
 				uplink.readRequest((source, req) ->
@@ -68,7 +72,7 @@ public class TestResponses
 		manifest1.put("version", "2.0");
 		manager.registerPlugin(testPlugin1, manifest1);
 		
-		Thread.sleep(20);
+		Thread.sleep(30);
 		assertEquals("Request callback did not trigger", 2, read);
 	}
 	
@@ -85,6 +89,8 @@ public class TestResponses
 				requestHandler.attachRequestCallback("Request", ResponderCallback.create("Response", (req, res) ->
 				{
 					res.getBody().put("value", 1337);
+					
+					return true;
 				}));
 			}
 

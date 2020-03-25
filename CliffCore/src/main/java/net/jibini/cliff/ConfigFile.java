@@ -30,12 +30,12 @@ public class ConfigFile extends JSONObject
 	public static ConfigFile create(String path) throws IOException
 	{
 		ConfigFile result = new ConfigFile();
-		result.file = new File(path);
+		File file = new File(path);
 
-		if (result.file.exists())
+		if (file.exists())
 		{
 			log.debug("Found existing config file '" + path + "', loading . . .");
-			FileInputStream input = new FileInputStream(result.file);
+			FileInputStream input = new FileInputStream(file);
 			String configContents = StreamUtil.readTextFile(input);
 			result = new ConfigFile(configContents);
 		} else
@@ -44,18 +44,24 @@ public class ConfigFile extends JSONObject
 			log.debug("No existing config file '" + path + "', created empty");
 		}
 
+		result.file = file;
 		return result;
+	}
+
+	public boolean setDefault(JSONObject node, String key, Object value)
+	{
+		if (node.has(key))
+			return true;
+		else
+		{
+			node.put(key, value);
+			return false;
+		}
 	}
 
 	public boolean setDefault(String key, Object value)
 	{
-		if (has(key))
-			return true;
-		else
-		{
-			put(key, value);
-			return false;
-		}
+		return setDefault(this, key, value);
 	}
 
 	public void writeConfig() throws IOException
@@ -72,8 +78,6 @@ public class ConfigFile extends JSONObject
 
 		FileOutputStream stream = new FileOutputStream(file);
 		StreamUtil.writeTextFile(stream, toString(2));
-
-		log.debug("Done");
 	}
 
 	public void delete()

@@ -44,7 +44,7 @@ public class Cliff
 	{
 		Thread cliffThread = new Thread(() ->
 		{
-			Cliff cliff = Cliff.create();
+			Cliff cliff = Cliff.getInstance();
 			cliff.start();
 		});
 		
@@ -87,7 +87,8 @@ public class Cliff
 		JSONObject cliffManifest = getCliffManifest();
 		log.info("Starting " + cliffManifest.getString("app-name") + " " + cliffManifest.getString("version"));
 		
-		kill();
+		//TODO: Load plugins from file
+		pluginManager.notifyPluginStart();
 	}
 	
 	public PluginManager getPluginManager()  { return pluginManager; }

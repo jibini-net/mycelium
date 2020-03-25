@@ -28,7 +28,7 @@ public class PluginManager
 		return instance;
 	}
 	
-	public static JSONObject getPluginManifest(URLClassLoader plugin) throws IOException
+	public static JSONObject getPluginManifest(ClassLoader plugin) throws IOException
 	{
 		InputStream pluginStream = plugin.getResourceAsStream("plugin.json");
 		
@@ -81,20 +81,22 @@ public class PluginManager
 	
 	public void waitPluginStart()
 	{
-		if (pluginStartLock != null)
+		if (pluginStartLock == null)
+			log.debug("Plugin start lock already notified");
+		else
 			synchronized (pluginStartLock)
 			{
-				try
-				{
-					log.debug("Waiting for plugin start lock");
-					pluginStartLock.wait();
-				} catch (InterruptedException ex)
-				{
-					log.error("Plugin start lock interrupted", ex);
-				}
+				if (pluginStartLock != null)
+					try
+					{
+						log.debug("Waiting for plugin start lock");
+						pluginStartLock.wait();
+					} catch (InterruptedException ex)
+					{
+						log.error("Plugin start lock interrupted", ex);
+					}
 			}
-		else
-			log.debug("Plugin start lock already notified");
+				
 	}
 	
 	public void notifyPluginStart()

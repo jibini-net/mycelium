@@ -14,6 +14,7 @@ public abstract class AbstractCliffPlugin implements CliffPlugin
 	private PluginManager master;
 	private StitchLink uplink;
 	private JSONObject manifest;
+	private Thread pluginThread;
 	
 	private RequestHandler requestHandler = RequestHandler.create();
 	
@@ -29,9 +30,15 @@ public abstract class AbstractCliffPlugin implements CliffPlugin
 		log.debug("Registering requests for plugin . . .");
 		registerRequests(requestHandler);
 
-		log.info("Ready");
-		master.waitPluginStart();
-		start();
+		pluginThread = new Thread(() ->
+		{
+			log.info("Ready");
+			master.waitPluginStart();
+			start();
+		});
+		
+		pluginThread.setName(manifest.getString("name"));
+		pluginThread.start();
 	}
 	
 	public abstract void registerRequests(RequestHandler requestHandler);
