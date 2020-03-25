@@ -108,6 +108,7 @@ public class TestPlugin
 		manifest.put("version", "2.0");
 		manager.registerPlugin(testPlugin, manifest);
 		manager.notifyPluginStart();
+		Thread.sleep(4);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
