@@ -7,8 +7,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.cliff.plugin.PluginRouter;
-
 public class TestStitchLink
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -107,38 +105,6 @@ public class TestStitchLink
 			throw new RuntimeException(thrown);
 		assertEquals("Callback was not triggered 5 times", 5, read);
 		link.close();
-	}
-	
-	@Test
-	public void testRouting() throws InterruptedException
-	{
-		PluginRouter router = PluginRouter.create();
-		
-		Patch hello = AsyncPatch.create();
-		router.registerEndpoint("Hello", hello.getUpstream());
-		Patch world = AsyncPatch.create();
-		router.registerEndpoint("World", world.getUpstream());
-		
-		StitchLink helloDownstream = hello.getDownstream();
-		StitchLink worldDownstream = hello.getDownstream();
-		
-		worldDownstream.sendRequest(Request.create("Hello", "World", new JSONObject()));
-		helloDownstream.readRequest((s, r) ->
-		{
-			assertEquals("World", r.getHeader().getString("request"));
-			log.debug(r.toString());
-			read = 1;
-		});
-		
-		Thread.sleep(20);
-		assertEquals("Request callback did not trigger", 1, read);
-
-		log.debug("Should log a RuntimeException:");
-		worldDownstream.sendRequest(Request.create("NotHello", "World", new JSONObject()));
-		Thread.sleep(20);
-		
-		hello.close();
-		world.close();
 	}
 	
 	@Test

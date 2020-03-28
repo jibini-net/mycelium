@@ -5,5 +5,5 @@ import net.jibini.cliff.routing.Request;
 @FunctionalInterface
 public interface Responder
 {
-	boolean respond(Request request, Request response);
+	boolean respond(Request request);
 }

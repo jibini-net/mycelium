@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import net.jibini.cliff.routing.AsyncPatch;
 import net.jibini.cliff.routing.Patch;
+import net.jibini.cliff.routing.RequestRouter;
 import net.jibini.cliff.util.StreamUtil;
 
 public class PluginManager
@@ -49,7 +50,7 @@ public class PluginManager
 	private PluginManager()
 	{}
 	
-	private PluginRouter pluginRouter = PluginRouter.create();
+	private RequestRouter pluginRouter = RequestRouter.create("target");
 	private Object pluginStartLock = new Object();
 	
 	public static PluginManager create()
@@ -77,7 +78,7 @@ public class PluginManager
 		}
 	}
 	
-	public PluginRouter getPluginRouter()  { return pluginRouter; }
+	public RequestRouter getPluginRouter()  { return pluginRouter; }
 	
 	public void waitPluginStart()
 	{
