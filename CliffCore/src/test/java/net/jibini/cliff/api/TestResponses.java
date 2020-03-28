@@ -33,7 +33,7 @@ public class TestResponses
 			{
 				log.debug("Test plugin 0 create . . .");
 				
-				uplink.addPersistentCallback(ResponderCallback.create((req) ->
+				uplink.addPersistentCallback(ResponderCallback.create((s, req) ->
 				{
 					log.debug(req.toString());
 					req.getResponse().put("Hello", "World");
@@ -86,7 +86,7 @@ public class TestResponses
 			@Override
 			public void registerRequests(RequestHandler requestHandler)
 			{
-				requestHandler.attachRequestCallback("Request", ResponderCallback.create((req) ->
+				requestHandler.attachRequestCallback("Request", ResponderCallback.create((s, req) ->
 				{
 					req.getResponse().put("value", 1337);
 					

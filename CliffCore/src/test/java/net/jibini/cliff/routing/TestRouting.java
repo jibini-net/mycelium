@@ -67,7 +67,7 @@ public class TestRouting
 		Patch plugD = AsyncPatch.create();
 		routeD.registerEndpoint("PlugD", plugD.getUpstream());
 		
-		plugD.getDownstream().addPersistentCallback(ResponderCallback.create((r) ->
+		plugD.getDownstream().addPersistentCallback(ResponderCallback.create((s, r) ->
 		{
 			log.debug(r.toString());
 			r.getResponse().put("value", 1337);
@@ -118,7 +118,7 @@ public class TestRouting
 		Patch plugD = AsyncPatch.create();
 		routeD.registerEndpoint("PlugD", plugD.getUpstream());
 		
-		plugD.getDownstream().addPersistentCallback(ResponderCallback.create((r) ->
+		plugD.getDownstream().addPersistentCallback(ResponderCallback.create((s, r) ->
 		{
 			log.debug(r.toString());
 			r.getResponse().put("value", 1337);

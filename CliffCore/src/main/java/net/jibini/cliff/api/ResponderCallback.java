@@ -20,7 +20,7 @@ public class ResponderCallback implements RequestCallback
 	public void onRequest(StitchLink source, Request request)
 	{
 		request.getHeader().put("target", RequestRouter.RESPONSE_TARGET);
-		if (responder.respond(request))
+		if (responder.respond(source, request))
 			source.sendRequest(request);
 	}
 }

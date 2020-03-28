@@ -10,9 +10,9 @@ import net.jibini.cliff.ConfigFile;
 import net.jibini.cliff.api.RequestHandler;
 import net.jibini.cliff.plugin.AbstractCliffPlugin;
 import net.jibini.cliff.plugin.PluginManager;
-import net.jibini.cliff.plugin.PluginRouter;
 import net.jibini.cliff.routing.AsyncPatch;
 import net.jibini.cliff.routing.Patch;
+import net.jibini.cliff.routing.RequestRouter;
 import net.jibini.cliff.routing.StitchLink;
 
 public class CliffNetworking extends AbstractCliffPlugin
@@ -20,7 +20,7 @@ public class CliffNetworking extends AbstractCliffPlugin
 	private Logger log;
 	
 	private ConfigFile networkConfig;
-	private PluginRouter router;
+	private RequestRouter router;
 	
 	private void createConfigs() throws IOException
 	{
@@ -77,7 +77,8 @@ public class CliffNetworking extends AbstractCliffPlugin
 	{
 		Patch redirect = AsyncPatch.create();
 		router.registerEndpoint(target, redirect.getDownstream());
-		//TODO: Throw patch upstream to network handling 
+		//TODO: Throw patch upstream to network handling
+		//TODO: Register cliff nodes
 		log.info("Registered network redirect from target '" + target + "' to node '" + cliffNode + "'");
 	}
 	

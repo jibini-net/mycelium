@@ -39,7 +39,7 @@ public class RequestRouter
 		synchronized (endpoints)
 		{
 			endpoints.put(name, link);
-			log.info("Registered new endpoint '" + name + "'");
+			log.debug("Registered new endpoint '" + name + "'");
 		}
 		
 		link.addPersistentCallback((source, request) ->
@@ -50,12 +50,10 @@ public class RequestRouter
 				String element = request.getHeader().getString(headerElement);
 				JSONArray route = request.getHeader().getJSONArray("route");
 				
-
 				if (target.equals(RESPONSE_TARGET))
 				{
 					int index = route.toList().size() - 1;
 					element = route.getString(index);
-					request.getHeader().put("origin", name);
 					route.remove(index);
 				} else
 					route.put(name);
