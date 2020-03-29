@@ -18,9 +18,33 @@ import net.jibini.cliff.routing.StitchLink;
 
 public class TestSessionPlugin
 {
-	private Logger log = LoggerFactory.getLogger(getClass());
+	private static Logger log = LoggerFactory.getLogger(TestSessionPlugin.class);
 	
-	private int read = 0;
+	private static int read = 0;
+	
+	public static class TestEventAnnotationsKernel extends SessionKernel
+	{
+		public TestEventAnnotationsKernel(Session parent)
+		{
+			super(parent);
+		}
+
+		@Handler("Request")
+		public void onRequest(Request request)
+		{
+			read++;
+			log.debug(request.toString());
+		}
+		
+		@Handler("Responder")
+		public boolean onResponder(Request request)
+		{
+			read++;
+			log.debug(request.toString());
+			
+			return false;
+		}
+	}
 	
 	@Test
 	public void testEventAnnotations() throws InterruptedException
@@ -34,21 +58,11 @@ public class TestSessionPlugin
 			{
 				
 			}
-			
-			@Handler("Request")
-			public void onRequest(Request request)
+
+			@Override
+			public Class<? extends SessionKernel> getKernelClass()
 			{
-				read++;
-				log.debug(request.toString());
-			}
-			
-			@Handler("Responder")
-			public boolean onResponder(Request request)
-			{
-				read++;
-				log.debug(request.toString());
-				
-				return false;
+				return TestEventAnnotationsKernel.class;
 			}
 		};
 		
@@ -62,12 +76,45 @@ public class TestSessionPlugin
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		StitchLink downstream = patch.getDownstream();
-		downstream.sendRequest(Request.create("TestSessionPlugin", "Request", new JSONObject()));
-		downstream.sendRequest(Request.create("TestSessionPlugin", "Responder", new JSONObject()));
+		
+		Request createSession = Request.create("TestSessionPlugin", "CreateSession");
+		createSession.getHeader().put("session", UUID.randomUUID().toString());
+		downstream.sendRequest(createSession);
+		
+		downstream.readRequest((s, r) ->
+		{
+			Session session = Session.create(r.getHeader().getString("session"), r.getResponse().getString("token"));
+			
+			Request req0 = Request.create("TestSessionPlugin", "Request", new JSONObject());
+			session.embed(req0);
+			s.sendRequest(req0);
+			
+			Request req1 = Request.create("TestSessionPlugin", "Responder", new JSONObject());
+			session.embed(req1);
+			s.sendRequest(req1);
+		});
 
 		Thread.sleep(20);
 		assertEquals("Request callback did not trigger", 2, read);
 		patch.close();
+		read = 0;
+	}
+	
+	public static class TestSessionParamKernel extends SessionKernel
+	{
+		public TestSessionParamKernel(Session parent)
+		{
+			super(parent);
+		}
+
+		@Handler("Request")
+		public void onRequest(Request request, Session session)
+		{
+			log.debug(request.toString());
+			log.debug("Session UUID: " + session.getSessionUUID().toString());
+			log.debug("Session token: " + session.getToken());
+			read++;
+		}
 	}
 	
 	@Test
@@ -82,14 +129,11 @@ public class TestSessionPlugin
 			{
 				
 			}
-			
-			@Handler("Request")
-			public void onRequest(Request request, Session session)
+
+			@Override
+			public Class<? extends SessionKernel> getKernelClass()
 			{
-				log.debug(request.toString());
-				log.debug("Session UUID: " + session.getSessionUUID().toString());
-				log.debug("Session token: " + session.getToken());
-				read++;
+				return TestSessionParamKernel.class;
 			}
 		};
 		
@@ -119,5 +163,6 @@ public class TestSessionPlugin
 		Thread.sleep(20);
 		assertEquals("Request callback did not trigger", 1, read);
 		patch.close();
+		read = 0;
 	}
 }

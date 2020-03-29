@@ -7,6 +7,8 @@ public abstract class SessionPlugin extends AbstractCliffPlugin
 {
 	private SessionManager sessionManager;
 	
+	public abstract Class<? extends SessionKernel> getKernelClass();
+	
 	@Override
 	public void registerRequests(RequestHandler requestHandler)
 	{

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import net.jibini.cliff.api.RequestHandler;
 import net.jibini.cliff.api.ResponderCallback;
-import net.jibini.cliff.plugin.AbstractCliffPlugin;
 import net.jibini.cliff.routing.AsyncPatch;
 import net.jibini.cliff.routing.Patch;
 import net.jibini.cliff.routing.Request;
@@ -23,12 +22,14 @@ public class SessionManager implements RequestCallback
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
-	private AbstractCliffPlugin service;
+	private SessionPlugin service;
 	private RequestRouter pluginRouter;
 	
 	private RequestRouter sessionRouter = RequestRouter.create("target", true);
 	private RequestHandler handler = RequestHandler.create();
 	private Map<String, Session> sessions = new HashMap<>();
+	
+	private Class<? extends SessionKernel> kernelClass;
 
 	@Retention(RetentionPolicy.RUNTIME)
 	public static @interface Handler
@@ -39,11 +40,12 @@ public class SessionManager implements RequestCallback
 	private SessionManager()
 	{}
 	
-	public static SessionManager create(AbstractCliffPlugin service)
+	public static SessionManager create(SessionPlugin service)
 	{
 		SessionManager result = new SessionManager();
 		result.service = service;
 		result.pluginRouter = service.getPluginManager().getPluginRouter();
+		result.kernelClass = service.getKernelClass();
 		
 		Patch uplink = AsyncPatch.create();
 		result.sessionRouter.registerEndpoint(RequestRouter.UPSTREAM_NAME, uplink.getUpstream());
@@ -59,7 +61,7 @@ public class SessionManager implements RequestCallback
 	{
 		handler.attachRequestCallback("CreateSession", ResponderCallback.create((s, req) ->
 		{
-			Session session = Session.create(req);
+			Session session = Session.create(service, req);
 			String uuid = req.getHeader().getString("session");
 			log.info("Session initiated for '" + uuid + "'");
 			
@@ -72,9 +74,8 @@ public class SessionManager implements RequestCallback
 		}));
 	}
 	
-	private Object[] createMethodParam(Class<?>[] paramTypes, Request request, StitchLink source)
+	private Session getSession(Request request)
 	{
-		Object[] param = new Object[paramTypes.length];
 		Session session = null;
 		
 		if (request.getHeader().has("session"))
@@ -97,6 +98,14 @@ public class SessionManager implements RequestCallback
 				}
 			}
 		}
+		
+		return session;
+	}
+	
+	private Object[] createMethodParam(Class<?>[] paramTypes, Request request, Session session, StitchLink source)
+	{
+		Object[] param = new Object[paramTypes.length];
+		
 
 		for (int i = 0; i < paramTypes.length; i ++)
 		{
@@ -113,43 +122,38 @@ public class SessionManager implements RequestCallback
 	
 	private void registerReflectCallbacks()
 	{
-		for (Method m : service.getClass().getDeclaredMethods())
+		for (Method m : kernelClass.getDeclaredMethods())
 		{
 			Handler[] handled = m.getAnnotationsByType(Handler.class);
 			
 			for (Handler e : handled)
 			{
-				if (m.getReturnType().isPrimitive() && m.getReturnType().getTypeName().equals("boolean"))
+				log.debug("'" + e.value() + "' <--> '" + m.getName() + "'");
+				
+				handler.attachRequestCallback(e.value(), ResponderCallback.create((source, request) ->
 				{
-					log.debug("'" + e.value() + "' <--> '" + m.getName() + "'");
-					
-					handler.attachRequestCallback(e.value(), ResponderCallback.create((source, request) ->
+					try
 					{
-						try
-						{
-							return (boolean) m.invoke(service,
-									createMethodParam(m.getParameterTypes(), request, source));
-						} catch (Throwable t)
-						{
-							log.error("Failed to invoke session plugin method", t);
-							return false;
-						}
-					}));
-				} else
-				{
-					log.debug("'" + e.value() + "' ---> '" + m.getName() + "'");
-					
-					handler.attachRequestCallback(e.value(), (source, request) ->
+						Session session = getSession(request);
+						if (session == null)
+							log.error("Sessionless connection attempted to invoke");
+						else
+							if (session.getKernel() != null)
+							{
+								Object result = m.invoke(session.getKernel(),
+										createMethodParam(m.getParameterTypes(), request, session, source));
+								if (result != null)
+									if (result.getClass().isPrimitive() && result.getClass().getTypeName().equals("boolean"))
+										return (boolean) result;
+							}
+						
+						return false;
+					} catch (Throwable t)
 					{
-						try
-						{
-							m.invoke(service, createMethodParam(m.getParameterTypes(), request, source));
-						} catch (Throwable t)
-						{
-							log.error("Failed to invoke session plugin method", t);
-						}
-					});
-				}
+						log.error("Failed to invoke session plugin method", t);
+						return false;
+					}
+				}));
 			}
 		}
 	}

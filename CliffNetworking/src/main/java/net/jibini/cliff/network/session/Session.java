@@ -1,24 +1,41 @@
 package net.jibini.cliff.network.session;
 
+import java.lang.reflect.Constructor;
 import java.util.Random;
 import java.util.UUID;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.jibini.cliff.routing.Request;
 
 public class Session
 {
+	private Logger log = LoggerFactory.getLogger(getClass());
+	
 	private UUID sessionUUID;
 	private String token;
+	private SessionKernel kernel = null;
 	
 	private Session()
 	{}
 	
-	public static Session create(Request creationRequest)
+	public static Session create(SessionPlugin plugin, Request creationRequest)
 	{
 		Session result = new Session();
 		result.sessionUUID = UUID.fromString(creationRequest.getHeader().getString("session"));
 		result.generateToken();
 		creationRequest.getResponse().put("token", result.token);
+		
+		try
+		{
+			Constructor<?> construct = plugin.getKernelClass().getConstructor(Session.class);
+			result.kernel = (SessionKernel)construct.newInstance(result);
+		} catch (Throwable t)
+		{
+			result.log.error("Failed to create session kernel", t);
+		}
+		
 		return result;
 	}
 	
@@ -63,4 +80,6 @@ public class Session
 	public UUID getSessionUUID()  { return sessionUUID; }
 	
 	public String getToken()  { return token; }
+	
+	public SessionKernel getKernel()  { return kernel; }
 }
