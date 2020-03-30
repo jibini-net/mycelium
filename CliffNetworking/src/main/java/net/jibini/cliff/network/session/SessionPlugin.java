@@ -13,7 +13,6 @@ public abstract class SessionPlugin extends AbstractCliffPlugin
 	public void registerRequests(RequestHandler requestHandler)
 	{
 		sessionManager = SessionManager.create(this);
-		requestHandler.attachRequestCallback(null, sessionManager);
 	}
 	
 	public SessionManager getSessionManager()  { return sessionManager; }

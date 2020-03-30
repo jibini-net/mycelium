@@ -26,36 +26,40 @@ public class Session
 		result.sessionUUID = UUID.fromString(creationRequest.getHeader().getString("session"));
 		result.generateToken();
 		creationRequest.getResponse().put("token", result.token);
-		
-		try
-		{
-			Constructor<?> construct = plugin.getKernelClass().getConstructor(Session.class);
-			result.kernel = (SessionKernel)construct.newInstance(result);
-		} catch (Throwable t)
-		{
-			result.log.error("Failed to create session kernel", t);
-		}
-		
+		result.createKernel(plugin.getKernelClass());
 		return result;
 	}
 	
-	public static Session create(UUID uuid, String token)
+	public static Session create(Class<? extends SessionKernel> kernel, UUID uuid, String token)
 	{
 		Session result = new Session();
 		result.sessionUUID = uuid;
 		result.token = token;
+		result.createKernel(kernel);
 		return result;
 	}
 	
-	public static Session create(String uuid, String token)
+	public static Session create(Class<? extends SessionKernel> kernel, String uuid, String token)
 	{
-		return create(UUID.fromString(uuid), token);
+		return create(kernel, UUID.fromString(uuid), token);
 	}
 	
 	public void embed(Request request)
 	{
 		request.getHeader().put("session", sessionUUID.toString());
 		request.getHeader().put("token", token);
+	}
+	
+	private void createKernel(Class<? extends SessionKernel> kernel)
+	{
+		try
+		{
+			Constructor<?> construct = kernel.getConstructor(Session.class);
+			this.kernel = (SessionKernel)construct.newInstance(this);
+		} catch (Throwable t)
+		{
+			log.error("Failed to create session kernel", t);
+		}
 	}
 	
 	private void generateToken()

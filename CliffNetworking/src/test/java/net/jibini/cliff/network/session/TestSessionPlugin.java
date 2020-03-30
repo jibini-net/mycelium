@@ -83,7 +83,7 @@ public class TestSessionPlugin
 		
 		downstream.readRequest((s, r) ->
 		{
-			Session session = Session.create(r.getHeader().getString("session"), r.getResponse().getString("token"));
+			Session session = Session.create(null, r.getHeader().getString("session"), r.getResponse().getString("token"));
 			
 			Request req0 = Request.create("TestSessionPlugin", "Request", new JSONObject());
 			session.embed(req0);
@@ -154,7 +154,7 @@ public class TestSessionPlugin
 		
 		downstream.readRequest((s, r) ->
 		{
-			Session session = Session.create(r.getHeader().getString("session"), r.getResponse().getString("token"));
+			Session session = Session.create(null, r.getHeader().getString("session"), r.getResponse().getString("token"));
 			Request req = Request.create("TestSessionPlugin", "Request");
 			session.embed(req);
 			s.sendRequest(req);

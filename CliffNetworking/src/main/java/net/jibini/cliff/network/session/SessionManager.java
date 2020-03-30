@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import net.jibini.cliff.api.RequestHandler;
 import net.jibini.cliff.api.ResponderCallback;
+import net.jibini.cliff.network.service.Service;
 import net.jibini.cliff.routing.AsyncPatch;
 import net.jibini.cliff.routing.Patch;
 import net.jibini.cliff.routing.Request;
@@ -22,13 +23,16 @@ public class SessionManager implements RequestCallback
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
-	private SessionPlugin service;
+	// Server-side
+	private SessionPlugin plugin;
 	private RequestRouter pluginRouter;
+	private boolean serverSide = false;
 	
-	private RequestRouter sessionRouter = RequestRouter.create("target", true);
-	private RequestHandler handler = RequestHandler.create();
+	// Server- and client-side
 	private Map<String, Session> sessions = new HashMap<>();
+	private RequestRouter sessionRouter = RequestRouter.create("target", true);
 	
+	private RequestHandler handler = RequestHandler.create();
 	private Class<? extends SessionKernel> kernelClass;
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -40,12 +44,14 @@ public class SessionManager implements RequestCallback
 	private SessionManager()
 	{}
 	
-	public static SessionManager create(SessionPlugin service)
+	public static SessionManager create(SessionPlugin plugin)
 	{
 		SessionManager result = new SessionManager();
-		result.service = service;
-		result.pluginRouter = service.getPluginManager().getPluginRouter();
-		result.kernelClass = service.getKernelClass();
+		result.serverSide = true;
+		
+		result.plugin = plugin;
+		result.pluginRouter = plugin.getPluginManager().getPluginRouter();
+		result.kernelClass = plugin.getKernelClass();
 		
 		Patch uplink = AsyncPatch.create();
 		result.sessionRouter.registerEndpoint(RequestRouter.UPSTREAM_NAME, uplink.getUpstream());
@@ -54,24 +60,40 @@ public class SessionManager implements RequestCallback
 		result.registerManagerCallbacks();
 		result.registerReflectCallbacks();
 		
+		plugin.getDefaultRequestHandler().attachRequestCallback(null, result);
+		return result;
+	}
+	
+	public static SessionManager create(Service service)
+	{
+		SessionManager result = new SessionManager();
+		
+		result.kernelClass = service.getSession().getKernel().getClass();
+		result.sessions.put(service.getSession().getSessionUUID().toString(), service.getSession());
+		
+		result.registerManagerCallbacks();
+		result.registerReflectCallbacks();
+
+		service.getCliff().addPersistentCallback(result);
 		return result;
 	}
 	
 	private void registerManagerCallbacks()
 	{
-		handler.attachRequestCallback("CreateSession", ResponderCallback.create((s, req) ->
-		{
-			Session session = Session.create(service, req);
-			String uuid = req.getHeader().getString("session");
-			log.info("Session initiated for '" + uuid + "'");
-			
-			synchronized (sessions)
+		if (serverSide)
+			handler.attachRequestCallback("CreateSession", ResponderCallback.create((s, req) ->
 			{
-				sessions.put(uuid, session);
-			}
-			
-			return true;
-		}));
+				Session session = Session.create(plugin, req);
+				String uuid = req.getHeader().getString("session");
+				log.info("Session initiated for '" + uuid + "'");
+				
+				synchronized (sessions)
+				{
+					sessions.put(uuid, session);
+				}
+				
+				return true;
+			}));
 	}
 	
 	private Session getSession(Request request)
@@ -87,13 +109,18 @@ public class SessionManager implements RequestCallback
 				if (sessions.containsKey(uuid))
 				{
 					session = sessions.get(uuid);
-					String tok = request.getHeader().getString("token");
-					request.getHeader().remove("token");
 					
-					if (!session.getToken().equals(tok))
+					//TODO: Consider client-side authentication
+					if (serverSide)
 					{
-						log.error("'" + session.getSessionUUID().toString() + "' sent request with invalid token");
-						session = null;
+						String tok = request.getHeader().getString("token");
+						request.getHeader().remove("token");
+						
+						if (!session.getToken().equals(tok))
+						{
+							log.error("'" + session.getSessionUUID().toString() + "' sent request with invalid token");
+							session = null;
+						}
 					}
 				}
 			}
@@ -143,8 +170,8 @@ public class SessionManager implements RequestCallback
 								Object result = m.invoke(session.getKernel(),
 										createMethodParam(m.getParameterTypes(), request, session, source));
 								if (result != null)
-									if (result.getClass().isPrimitive() && result.getClass().getTypeName().equals("boolean"))
-										return (boolean) result;
+									if (result instanceof Boolean && serverSide)
+										return (Boolean) result;
 							}
 						
 						return false;
