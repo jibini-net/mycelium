@@ -49,7 +49,9 @@ public class TestStitchLink
 	{
 		StitchLink link = AsyncTube.create();
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 0 }")));
+		Thread.sleep(20);
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 1 }")));
+		Thread.sleep(20);
 		
 		RequestCallback callback = (l, r) ->
 		{
@@ -63,10 +65,15 @@ public class TestStitchLink
 		};
 		
 		for (int i = 0; i < 5; i ++)
+		{
 			link.readRequest(callback);
+			Thread.sleep(20);
+		}
 
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 2 }")));
+		Thread.sleep(20);
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 3 }")));
+		Thread.sleep(20);
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 4 }")));
 
 		Thread.sleep(200);
