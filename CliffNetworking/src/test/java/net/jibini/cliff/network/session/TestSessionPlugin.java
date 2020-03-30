@@ -71,7 +71,7 @@ public class TestSessionPlugin
 		manifest.put("version", "1.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(4);
+		Thread.sleep(20);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -94,7 +94,7 @@ public class TestSessionPlugin
 			s.sendRequest(req1);
 		});
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 2, read);
 		patch.close();
 		read = 0;
@@ -142,7 +142,7 @@ public class TestSessionPlugin
 		manifest.put("version", "2.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(4);
+		Thread.sleep(20);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -160,7 +160,7 @@ public class TestSessionPlugin
 			s.sendRequest(req);
 		});
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1, read);
 		patch.close();
 		read = 0;
