@@ -22,10 +22,31 @@ public class TestService
 {
 	private static Logger log = LoggerFactory.getLogger(TestService.class);
 	
-	private static int read = 0;
+	private static int read;
 	
 	private PluginManager manager = PluginManager.create();
 	private StitchLink downstream;
+	
+	private static Object lock;
+	
+	private static void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private static void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
 	
 	public static class TestPluginKernel extends SessionKernel
 	{
@@ -51,6 +72,7 @@ public class TestService
 	public void startPlugin() throws InterruptedException
 	{
 		read = 0;
+		lock = new Object();
 		
 		SessionPlugin plugin = new SessionPlugin()
 		{
@@ -72,7 +94,7 @@ public class TestService
 		manifest.put("version", "1.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(100);
+		Thread.sleep(400);
 		
 		Patch patch = AsyncPatch.create();
 		plugin.getSessionManager().getSessionRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -92,6 +114,7 @@ public class TestService
 		{
 			log.debug("Response received");
 			read++;
+			n();
 		}
 	}
 	
@@ -107,7 +130,7 @@ public class TestService
 		service.waitSessionCreation();
 		service.sendRequest(Request.create("Plugin", "TestRequest"));
 		
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 2, read);
 		read = 0;
 	}

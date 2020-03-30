@@ -19,6 +19,27 @@ public class TestPlugin
 	
 	private int read = 0;
 	
+	private Object lock = new Object();
+	
+	private void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	@Test
 	public void testRegisterPlugin()
 	{
@@ -55,6 +76,7 @@ public class TestPlugin
 				{
 					log.debug(r.toString());
 					read = 1;
+					n();
 				});
 			}
 		};
@@ -68,7 +90,7 @@ public class TestPlugin
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		patch.getDownstream().sendRequest(Request.create("TestPlugin", "HelloWorld", new JSONObject()));
 		
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1, read);
 		patch.close();
 	}
@@ -93,6 +115,7 @@ public class TestPlugin
 				{
 					log.debug(r.toString());
 					read++;
+					n();
 				});
 			}
 
@@ -108,15 +131,16 @@ public class TestPlugin
 		manifest.put("version", "2.0");
 		manager.registerPlugin(testPlugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(40);
+		Thread.sleep(100);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		StitchLink downstream = patch.getDownstream();
 		downstream.sendRequest(Request.create("TestPlugin", "HelloWorld", new JSONObject()));
+		Thread.sleep(40);
 		downstream.sendRequest(Request.create("TestPlugin", "NotHelloWorld", new JSONObject()));
 
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 2, read);
 		patch.close();
 	}

@@ -22,6 +22,27 @@ public class TestSessionPlugin
 	
 	private static int read = 0;
 	
+	private static Object lock = new Object();
+	
+	private static void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private static void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	public static class TestEventAnnotationsKernel extends SessionKernel
 	{
 		public TestEventAnnotationsKernel(Session parent)
@@ -41,6 +62,7 @@ public class TestSessionPlugin
 		{
 			read++;
 			log.debug(request.toString());
+			n();
 			
 			return false;
 		}
@@ -71,7 +93,7 @@ public class TestSessionPlugin
 		manifest.put("version", "1.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(20);
+		Thread.sleep(100);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -89,15 +111,22 @@ public class TestSessionPlugin
 			session.embed(req0);
 			s.sendRequest(req0);
 			
+			try
+			{
+				Thread.sleep(100);
+			} catch (InterruptedException ex)
+			{}
+			
 			Request req1 = Request.create("TestSessionPlugin", "Responder", new JSONObject());
 			session.embed(req1);
 			s.sendRequest(req1);
 		});
 
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 2, read);
 		patch.close();
 		read = 0;
+		lock = new Object();
 	}
 	
 	public static class TestSessionParamKernel extends SessionKernel
@@ -114,6 +143,7 @@ public class TestSessionPlugin
 			log.debug("Session UUID: " + session.getSessionUUID().toString());
 			log.debug("Session token: " + session.getToken());
 			read++;
+			n();
 		}
 	}
 	
@@ -160,9 +190,10 @@ public class TestSessionPlugin
 			s.sendRequest(req);
 		});
 
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1, read);
 		patch.close();
 		read = 0;
+		lock = new Object();
 	}
 }

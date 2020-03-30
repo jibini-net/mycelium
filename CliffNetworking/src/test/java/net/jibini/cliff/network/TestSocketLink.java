@@ -20,6 +20,27 @@ public class TestSocketLink
 	
 	private int read = 0;
 	
+	private Object lock = new Object();
+	
+	private void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	@Test
 	public void testSocketLink() throws IOException, InterruptedException
 	{
@@ -46,9 +67,10 @@ public class TestSocketLink
 		{
 			log.debug(r.toString());
 			read = 1;
+			n();
 		});
 		
-		Thread.sleep(200);
+		w();
 		assertEquals("Message was not received", 1, read);
 		
 		inbound.close();

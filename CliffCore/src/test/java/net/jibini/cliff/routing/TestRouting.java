@@ -15,6 +15,27 @@ public class TestRouting
 	
 	private int read = 0;
 	
+	private Object lock = new Object();
+	
+	private void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	@Test
 	public void testRouting() throws InterruptedException
 	{
@@ -34,9 +55,10 @@ public class TestRouting
 			assertEquals("World", r.getHeader().getString("request"));
 			log.debug(r.toString());
 			read = 1;
+			n();
 		});
 		
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1, read);
 
 		log.debug("Should log a RuntimeException:");
@@ -62,6 +84,7 @@ public class TestRouting
 		{
 			read = r.getResponse().getInt("value");
 			log.debug(r.toString());
+			n();
 		});
 
 		Patch plugD = AsyncPatch.create();
@@ -87,10 +110,10 @@ public class TestRouting
 		routeC.registerEndpoint(RequestRouter.UPSTREAM_NAME, cToD.getUpstream());
 		routeD.registerEndpoint("C", cToD.getDownstream());
 		
-		Thread.sleep(40);
+		Thread.sleep(100);
 		Request request = Request.create("PlugD", "TestRequest");
 		plugA.getDownstream().sendRequest(request);
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1337, read);
 		
 		aToB.close();
@@ -113,6 +136,7 @@ public class TestRouting
 		{
 			read = r.getResponse().getInt("value");
 			log.debug(r.toString());
+			n();
 		});
 
 		Patch plugD = AsyncPatch.create();
@@ -138,14 +162,14 @@ public class TestRouting
 		routeC.registerEndpoint("D", cToD.getUpstream());
 		routeD.registerEndpoint("C", cToD.getDownstream());
 		
-		Thread.sleep(40);
+		Thread.sleep(100);
 		Request request = Request.create("PlugD", "TestRequest");
 		request.getHeader().put("a", "B");
 		request.getHeader().put("b", "C");
 		request.getHeader().put("c", "D");
 		request.getHeader().put("d", "PlugD");
 		plugA.getDownstream().sendRequest(request);
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1337, read);
 		
 		aToB.close();

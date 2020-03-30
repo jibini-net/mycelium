@@ -14,6 +14,27 @@ public class TestStitchLink
 	private int read = 0;
 	private Throwable thrown = null;
 	
+	private Object lock = new Object();
+	
+	private void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	@Test
 	public void testAsyncTube() throws InterruptedException
 	{
@@ -34,6 +55,8 @@ public class TestStitchLink
 			try
 			{
 				assertEquals(read++, r.getBody().getInt("value"));
+				if (read == 5)
+					n();
 			} catch (Throwable thrown)
 			{
 				this.thrown = thrown;
@@ -46,7 +69,7 @@ public class TestStitchLink
 			Thread.sleep(20);
 		}
 
-		Thread.sleep(200);
+		w();
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		link.close();
@@ -66,6 +89,8 @@ public class TestStitchLink
 			try
 			{
 				assertEquals(read++, r.getBody().getInt("value"));
+				if (read == 5)
+					n();
 			} catch (Throwable thrown)
 			{
 				this.thrown = thrown;
@@ -84,7 +109,7 @@ public class TestStitchLink
 		Thread.sleep(20);
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 4 }")));
 
-		Thread.sleep(200);
+		w();
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		assertEquals("Callback was not triggered 5 times", 5, read);
@@ -101,6 +126,8 @@ public class TestStitchLink
 			try
 			{
 				assertEquals(read++, r.getBody().getInt("value"));
+				if (read == 5)
+					n();
 			} catch (Throwable thrown)
 			{
 				this.thrown = thrown;
@@ -119,7 +146,7 @@ public class TestStitchLink
 		Thread.sleep(20);
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 4 }")));
 
-		Thread.sleep(200);
+		w();
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		assertEquals("Callback was not triggered 5 times", 5, read);
@@ -153,18 +180,22 @@ public class TestStitchLink
 		helloDownstream.addPersistentCallback((s, r) ->
 		{
 			log.debug("Downstream triggered");
-			if (read == 2)
-				assertEquals("NotWorld", r.getHeader().getString("request"));
-			if (read == 4)
-				log.debug(r.toString());
 			read += 2;
+			
+			if (read == 4)
+				assertEquals("NotWorld", r.getHeader().getString("request"));
+			if (read == 6)
+			{
+				log.debug(r.toString());
+				n();
+			}
 		});
 		
 		helloUpstream.sendRequest(Request.create("NotHello", "NotWorld", new JSONObject()));
 		Thread.sleep(40);
 		helloUpstream.sendRequest(Request.create("NotHell", "NotWorl", new JSONObject()));
-		Thread.sleep(40);
 		
+		w();
 		assertEquals("Request callback did not trigger", 6, read);
 		hello.close();
 	}

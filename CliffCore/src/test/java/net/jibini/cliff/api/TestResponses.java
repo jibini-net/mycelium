@@ -21,6 +21,27 @@ public class TestResponses
 	
 	private int read = 0;
 	
+	private Object lock = new Object();
+	
+	private void w() throws InterruptedException
+	{
+		if (lock != null)
+			synchronized (lock)
+			{
+				if (lock != null)
+					lock.wait();
+			}
+	}
+	
+	private void n()
+	{
+		synchronized (lock)
+		{
+			lock.notifyAll();
+			lock = null;
+		}
+	}
+	
 	@Test
 	public void testResponder() throws InterruptedException
 	{
@@ -48,7 +69,7 @@ public class TestResponses
 		manifest0.put("name", "TestPlugin0");
 		manifest0.put("version", "1.0");
 		manager.registerPlugin(testPlugin0, manifest0);
-		Thread.sleep(50);
+		Thread.sleep(100);
 		
 		CliffPlugin testPlugin1 = new CliffPlugin()
 		{
@@ -63,6 +84,7 @@ public class TestResponses
 				{
 					log.debug(req.toString());
 					read++;
+					n();
 				});
 			}
 		};
@@ -71,8 +93,8 @@ public class TestResponses
 		manifest1.put("name", "TestPlugin1");
 		manifest1.put("version", "2.0");
 		manager.registerPlugin(testPlugin1, manifest1);
-		
-		Thread.sleep(300);
+
+		w();
 		assertEquals("Request callback did not trigger", 2, read);
 	}
 	
@@ -106,6 +128,7 @@ public class TestResponses
 		manifest.put("version", "3.0");
 		manager.registerPlugin(testPlugin, manifest);
 		manager.notifyPluginStart();
+		Thread.sleep(100);
 		
 		Patch sender = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Sender", sender.getUpstream());
@@ -114,9 +137,10 @@ public class TestResponses
 		{
 			log.debug(r.toString());
 			read = r.getResponse().getInt("value");
+			n();
 		});
 		
-		Thread.sleep(200);
+		w();
 		assertEquals("Request callback did not trigger", 1337, read);
 	}
 }
