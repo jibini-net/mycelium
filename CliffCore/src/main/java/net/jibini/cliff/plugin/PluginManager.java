@@ -36,7 +36,7 @@ public class PluginManager
 		if (pluginStream == null)
 		{
 			if (plugin instanceof URLClassLoader)
-			((URLClassLoader)plugin).close();
+				((URLClassLoader)plugin).close();
 			throw new RuntimeException("Plugin failed to load, missing 'plugin.json'");
 		}
 		
