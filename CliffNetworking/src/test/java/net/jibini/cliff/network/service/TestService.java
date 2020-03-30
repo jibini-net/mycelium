@@ -39,6 +39,7 @@ public class TestService
 		public boolean onRequest(Request request)
 		{
 			log.debug("Request received");
+			log.debug(request.toString());
 			request.getResponse().put("Hello", "World");
 			read++;
 			
@@ -71,10 +72,10 @@ public class TestService
 		manifest.put("version", "1.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(4);
+		Thread.sleep(20);
 		
 		Patch patch = AsyncPatch.create();
-		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
+		plugin.getSessionManager().getSessionRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		downstream = patch.getDownstream();
 	}
 	

@@ -110,7 +110,6 @@ public class SessionManager implements RequestCallback
 				{
 					session = sessions.get(uuid);
 					
-					//TODO: Consider client-side authentication
 					if (serverSide)
 					{
 						String tok = request.getHeader().getString("token");
@@ -121,6 +120,9 @@ public class SessionManager implements RequestCallback
 							log.error("'" + session.getSessionUUID().toString() + "' sent request with invalid token");
 							session = null;
 						}
+					} else
+					{
+						//TODO: Consider client-side authentication
 					}
 				}
 			}
@@ -190,4 +192,6 @@ public class SessionManager implements RequestCallback
 	{
 		handler.onRequest(source, request);
 	}
+	
+	public RequestRouter getSessionRouter()  { return sessionRouter; }
 }
