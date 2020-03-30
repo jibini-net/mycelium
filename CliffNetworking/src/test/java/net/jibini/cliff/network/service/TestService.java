@@ -72,7 +72,7 @@ public class TestService
 		manifest.put("version", "1.0");
 		manager.registerPlugin(plugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(20);
+		Thread.sleep(100);
 		
 		Patch patch = AsyncPatch.create();
 		plugin.getSessionManager().getSessionRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -107,7 +107,7 @@ public class TestService
 		service.waitSessionCreation();
 		service.sendRequest(Request.create("Plugin", "TestRequest"));
 		
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 2, read);
 		read = 0;
 	}

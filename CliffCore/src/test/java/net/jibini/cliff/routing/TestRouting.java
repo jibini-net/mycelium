@@ -36,12 +36,12 @@ public class TestRouting
 			read = 1;
 		});
 		
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1, read);
 
 		log.debug("Should log a RuntimeException:");
 		worldDownstream.sendRequest(Request.create("NotHello", "World", new JSONObject()));
-		Thread.sleep(20);
+		Thread.sleep(200);
 		
 		hello.close();
 		world.close();
@@ -87,10 +87,10 @@ public class TestRouting
 		routeC.registerEndpoint(RequestRouter.UPSTREAM_NAME, cToD.getUpstream());
 		routeD.registerEndpoint("C", cToD.getDownstream());
 		
-		Thread.sleep(4);
+		Thread.sleep(40);
 		Request request = Request.create("PlugD", "TestRequest");
 		plugA.getDownstream().sendRequest(request);
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1337, read);
 		
 		aToB.close();
@@ -138,14 +138,14 @@ public class TestRouting
 		routeC.registerEndpoint("D", cToD.getUpstream());
 		routeD.registerEndpoint("C", cToD.getDownstream());
 		
-		Thread.sleep(4);
+		Thread.sleep(40);
 		Request request = Request.create("PlugD", "TestRequest");
 		request.getHeader().put("a", "B");
 		request.getHeader().put("b", "C");
 		request.getHeader().put("c", "D");
 		request.getHeader().put("d", "PlugD");
 		plugA.getDownstream().sendRequest(request);
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1337, read);
 		
 		aToB.close();

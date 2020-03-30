@@ -38,7 +38,7 @@ public class TestStitchLink
 		for (int i = 0; i < 5; i ++)
 			link.readRequest(callback);
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		link.close();
@@ -69,7 +69,7 @@ public class TestStitchLink
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 3 }")));
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 4 }")));
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		assertEquals("Callback was not triggered 5 times", 5, read);
@@ -100,7 +100,7 @@ public class TestStitchLink
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 3 }")));
 		link.sendRequest(Request.create("Test", "HelloWorld", new JSONObject("{ 'value': 4 }")));
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		if (thrown != null)
 			throw new RuntimeException(thrown);
 		assertEquals("Callback was not triggered 5 times", 5, read);
@@ -127,9 +127,9 @@ public class TestStitchLink
 		});
 		
 		helloDownstream.sendRequest(Request.create("Hello", "World", new JSONObject()));
-		Thread.sleep(4);
+		Thread.sleep(40);
 		helloDownstream.sendRequest(Request.create("Hell", "Worl", new JSONObject()));
-		Thread.sleep(4);
+		Thread.sleep(40);
 		
 		helloDownstream.addPersistentCallback((s, r) ->
 		{
@@ -142,9 +142,9 @@ public class TestStitchLink
 		});
 		
 		helloUpstream.sendRequest(Request.create("NotHello", "NotWorld", new JSONObject()));
-		Thread.sleep(4);
+		Thread.sleep(40);
 		helloUpstream.sendRequest(Request.create("NotHell", "NotWorl", new JSONObject()));
-		Thread.sleep(4);
+		Thread.sleep(40);
 		
 		assertEquals("Request callback did not trigger", 6, read);
 		hello.close();

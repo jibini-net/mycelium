@@ -48,7 +48,7 @@ public class TestSocketLink
 			read = 1;
 		});
 		
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Message was not received", 1, read);
 		
 		inbound.close();

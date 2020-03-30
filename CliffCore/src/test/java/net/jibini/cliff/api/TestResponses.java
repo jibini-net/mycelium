@@ -48,7 +48,7 @@ public class TestResponses
 		manifest0.put("name", "TestPlugin0");
 		manifest0.put("version", "1.0");
 		manager.registerPlugin(testPlugin0, manifest0);
-		Thread.sleep(30);
+		Thread.sleep(50);
 		
 		CliffPlugin testPlugin1 = new CliffPlugin()
 		{
@@ -72,7 +72,7 @@ public class TestResponses
 		manifest1.put("version", "2.0");
 		manager.registerPlugin(testPlugin1, manifest1);
 		
-		Thread.sleep(30);
+		Thread.sleep(300);
 		assertEquals("Request callback did not trigger", 2, read);
 	}
 	
@@ -116,7 +116,7 @@ public class TestResponses
 			read = r.getResponse().getInt("value");
 		});
 		
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1337, read);
 	}
 }

@@ -68,7 +68,7 @@ public class TestPlugin
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
 		patch.getDownstream().sendRequest(Request.create("TestPlugin", "HelloWorld", new JSONObject()));
 		
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 1, read);
 		patch.close();
 	}
@@ -108,7 +108,7 @@ public class TestPlugin
 		manifest.put("version", "2.0");
 		manager.registerPlugin(testPlugin, manifest);
 		manager.notifyPluginStart();
-		Thread.sleep(4);
+		Thread.sleep(40);
 		
 		Patch patch = AsyncPatch.create();
 		manager.getPluginRouter().registerEndpoint("Endpoint", patch.getUpstream());
@@ -116,7 +116,7 @@ public class TestPlugin
 		downstream.sendRequest(Request.create("TestPlugin", "HelloWorld", new JSONObject()));
 		downstream.sendRequest(Request.create("TestPlugin", "NotHelloWorld", new JSONObject()));
 
-		Thread.sleep(20);
+		Thread.sleep(200);
 		assertEquals("Request callback did not trigger", 2, read);
 		patch.close();
 	}
