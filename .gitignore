@@ -14,5 +14,6 @@ buildNumber.properties
 .settings/
 
 config/
+/CliffCore/plugins/
 *.log
 *.temp

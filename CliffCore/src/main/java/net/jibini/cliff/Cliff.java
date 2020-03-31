@@ -1,5 +1,6 @@
 package net.jibini.cliff;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -87,7 +88,7 @@ public class Cliff
 		JSONObject cliffManifest = getCliffManifest();
 		log.info("Starting " + cliffManifest.getString("app-name") + " " + cliffManifest.getString("version"));
 		
-		//TODO: Load plugins from file
+		pluginManager.loadPlugins(new File("plugins"));
 		pluginManager.notifyPluginStart();
 	}
 	

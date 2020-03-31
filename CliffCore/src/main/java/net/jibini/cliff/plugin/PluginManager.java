@@ -1,6 +1,7 @@
 package net.jibini.cliff.plugin;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -19,14 +20,32 @@ public class PluginManager
 {
 	private static Logger log = LoggerFactory.getLogger(PluginManager.class);
 	
-	public static CliffPlugin loadPlugin(File file, JSONObject data)
-			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException
+	private static class JarClassLoader extends URLClassLoader
 	{
-		URLClassLoader jar = new URLClassLoader(new URL[] { file.toURI().toURL() });
-		JSONObject plugin = getPluginManifest(jar);
-		Class<?> pluginClass = Class.forName(plugin.getString("class"), true, jar);
-		CliffPlugin instance = (CliffPlugin)pluginClass.newInstance();
-		return instance;
+		public JarClassLoader(URL[] urls)
+		{
+			super(urls);
+		}
+
+		@Override
+		public void addURL(URL url)
+		{
+			super.addURL(url);
+		}
+	}
+	
+	private JarClassLoader classLoader = new JarClassLoader(new URL[0]);
+	
+	private RequestRouter pluginRouter = RequestRouter.create("target");
+	private Object pluginStartLock = new Object();
+	
+	
+	private PluginManager()
+	{}
+	
+	public static PluginManager create()
+	{
+		return new PluginManager();
 	}
 	
 	public static JSONObject getPluginManifest(ClassLoader plugin) throws IOException
@@ -46,16 +65,48 @@ public class PluginManager
 		return manifest;
 	}
 	
-	
-	private PluginManager()
-	{}
-	
-	private RequestRouter pluginRouter = RequestRouter.create("target");
-	private Object pluginStartLock = new Object();
-	
-	public static PluginManager create()
+	public CliffPlugin loadPlugin(File file)
+			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException
 	{
-		return new PluginManager();
+		URLClassLoader jar = new URLClassLoader(new URL[] { file.toURI().toURL() });
+		JSONObject plugin = getPluginManifest(jar);
+		
+		classLoader.addURL(file.toURI().toURL());
+		Class<?> pluginClass = Class.forName(plugin.getString("class"), true, classLoader);
+		CliffPlugin instance = (CliffPlugin)pluginClass.newInstance();
+		
+		registerPlugin(instance, plugin);
+		return instance;
+	}
+	
+	public void loadPlugins(File directory)
+	{
+		try
+		{
+			if (!directory.exists())
+				directory.mkdirs();
+			
+			File[] children = directory.listFiles(new FileFilter()
+			{
+				@Override
+				public boolean accept(File file)
+				{
+					return file.getName().endsWith(".jar");
+				}
+			});
+			
+			for (File file : children)
+				try
+				{
+					loadPlugin(file);
+				} catch (Throwable t)
+				{
+					log.error("Failed to load plugin file '" + file.getName() + "'", t);
+				}
+		} catch (Throwable t)
+		{
+			log.error("Failed to load plugin directory", t);
+		}
 	}
 	
 	public void registerPlugin(CliffPlugin plugin, JSONObject manifest)

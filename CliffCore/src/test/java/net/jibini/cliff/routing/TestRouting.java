@@ -49,6 +49,8 @@ public class TestRouting
 		StitchLink helloDownstream = hello.getDownstream();
 		StitchLink worldDownstream = world.getDownstream();
 		
+		Thread.sleep(100);
+		
 		worldDownstream.sendRequest(Request.create("Hello", "World", new JSONObject()));
 		helloDownstream.readRequest((s, r) ->
 		{
