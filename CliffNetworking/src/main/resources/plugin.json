@@ -2,5 +2,7 @@
 	"name": "CliffNetworking",
 	"version": "0.0.1-SNAPSHOT",
 	
-	"class": "net.jibini.cliff.network.CliffNetworking"
+	"class": "net.jibini.cliff.network.CliffNetworking",
+	
+	"dependencies": []
 }

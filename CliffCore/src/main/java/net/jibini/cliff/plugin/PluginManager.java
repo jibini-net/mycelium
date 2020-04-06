@@ -6,6 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -65,18 +68,40 @@ public class PluginManager
 		return manifest;
 	}
 	
-	public CliffPlugin loadPlugin(File file)
+	private boolean checkDep(JSONObject manifest, Map<String, CliffPlugin> loaded)
+	{
+		if (!manifest.has("dependencies"))
+			return true;
+		List<Object> depList = manifest.getJSONArray("dependencies").toList();
+		String name = manifest.getString("name");
+		
+		for (Object o : depList)
+			if (!loaded.containsKey((String)o))
+			{
+				log.error("Could not find dependency for '" + name + "': '" + (String)o + "'");
+				return false;
+			}
+		
+		return true;
+	}
+	
+	private JSONObject loadPlugin(File file, Map<String, CliffPlugin> loaded, boolean register)
 			throws ClassNotFoundException, InstantiationException, IllegalAccessException, IOException
 	{
 		URLClassLoader jar = new URLClassLoader(new URL[] { file.toURI().toURL() });
 		JSONObject plugin = getPluginManifest(jar);
 		
-		classLoader.addURL(file.toURI().toURL());
 		Class<?> pluginClass = Class.forName(plugin.getString("class"), true, classLoader);
 		CliffPlugin instance = (CliffPlugin)pluginClass.newInstance();
 		
-		registerPlugin(instance, plugin);
-		return instance;
+		synchronized (loaded)
+		{
+			loaded.put(plugin.getString("name"), instance);
+		}
+		
+		if (register)
+			registerPlugin(instance, plugin);
+		return plugin;
 	}
 	
 	public void loadPlugins(File directory)
@@ -85,23 +110,46 @@ public class PluginManager
 		{
 			if (!directory.exists())
 				directory.mkdirs();
+			Map<String, CliffPlugin> loaded = new HashMap<>();
+			Map<String, JSONObject> man = new HashMap<>();
 			
 			File[] children = directory.listFiles(new FileFilter()
 			{
 				@Override
 				public boolean accept(File file)
 				{
-					return file.getName().endsWith(".jar");
+					try
+					{
+						boolean acc = file.getName().endsWith(".jar");
+						if (acc)
+							classLoader.addURL(file.toURI().toURL());
+						return acc;
+					} catch (Throwable t)
+					{
+						log.error("Failed to add URL to classloader", t);
+						return false;
+					}
 				}
 			});
 			
 			for (File file : children)
 				try
 				{
-					loadPlugin(file);
+					JSONObject m = loadPlugin(file, loaded, false);
+					man.put(m.getString("name"), m);
 				} catch (Throwable t)
 				{
 					log.error("Failed to load plugin file '" + file.getName() + "'", t);
+				}
+			
+			for (String name : loaded.keySet())
+				try
+				{
+					if (checkDep(man.get(name), loaded))
+						registerPlugin(loaded.get(name), man.get(name));
+				} catch (Throwable t)
+				{
+					log.error("Failed to check plugin dependencies for '" + name + "'", t);
 				}
 		} catch (Throwable t)
 		{
