@@ -8,8 +8,8 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.file.TextFile;
 import net.jibini.mycelium.plugin.PluginManager;
-import net.jibini.mycelium.util.StreamUtil;
 
 public class Mycelium
 {
@@ -74,7 +74,7 @@ public class Mycelium
 		try
 		{
 			InputStream manifestStream = getClass().getClassLoader().getResourceAsStream("mycelium.json");
-			JSONObject manifest = new JSONObject(StreamUtil.readTextFile(manifestStream));
+			JSONObject manifest = new JSONObject(new TextFile().from(manifestStream).readRemaining(true));
 			return manifest;
 		} catch (IOException ex)
 		{

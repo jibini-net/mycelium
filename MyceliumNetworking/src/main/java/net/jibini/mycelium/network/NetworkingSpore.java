@@ -2,12 +2,13 @@ package net.jibini.mycelium.network;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import net.jibini.mycelium.Mycelium;
-import net.jibini.mycelium.ConfigFile;
 import net.jibini.mycelium.api.RequestHandler;
+import net.jibini.mycelium.config.ConfigFile;
 import net.jibini.mycelium.plugin.AbstractSpore;
 import net.jibini.mycelium.plugin.PluginManager;
 import net.jibini.mycelium.routing.AsyncPatch;
@@ -24,38 +25,34 @@ public class NetworkingSpore extends AbstractSpore
 	
 	private void createConfigs() throws IOException
 	{
-		{ /*			NETWORK CONFIG				*/
-			networkConfig = ConfigFile.create("config/network.json");
+			networkConfig = new ConfigFile()
+					.at("config/network.json")
+					.load()
+					
+					.defaultValue("tick-millis", 500)
+					
+					.pushNode("node-bind")
+					.defaultValue("address", "0.0.0.0")
+					.defaultValue("port", 25605)
+					.popNode()
+					
+					.pushNode("link")
+					.defaultValue("max-connections", 100)
+					.defaultValue("persistence-ticks", 10)
+					.defaultValue("close-timeout-ticks", 2)
+					.popNode()
+					
+					.defaultValue("redirects", new JSONArray()
+							.put(new JSONObject()
+									.put("target", "ExampleTarget")
+									.put("address", "127.0.0.1")
+									.put("port", 25605)))
+					
+					.popNode()
+					.write()
+					.close();
 			
-			networkConfig.setDefault("tick-millis", 500);
-			
-			{ /*		BIND SECTION				*/
-				networkConfig.setDefault("node-bind", new JSONObject());
-				JSONObject bind = networkConfig.getJSONObject("node-bind");
-				networkConfig.setDefault(bind, "address", "0.0.0.0");
-				networkConfig.setDefault(bind, "port", 25605);
-			}
-			
-			{ /*		LINK SECTION				*/
-				networkConfig.setDefault("link", new JSONObject());
-				JSONObject link = networkConfig.getJSONObject("link");
-				networkConfig.setDefault(link, "max-connections", 100);
-				networkConfig.setDefault(link, "allow-indefinite-persistence", true);
-				networkConfig.setDefault(link, "persistence-ticks", 10);
-				networkConfig.setDefault(link, "close-timeout-ticks", 2);
-			}
-			
-			{ /*		REDIRECT SECTION			*/
-				JSONObject redirects = new JSONObject();
-				JSONObject exampleRedirect = new JSONObject();
-				exampleRedirect.put("address", "127.0.0.1");
-				exampleRedirect.put("port", "25605");
-				redirects.put("TargetName", exampleRedirect);
-				networkConfig.setDefault("redirects", redirects);
-			}
-			
-			networkConfig.writeConfig();
-		}
+			System.out.println("YOYOYO" + networkConfig.toString());
 	}
 	
 	@Override
@@ -92,7 +89,7 @@ public class NetworkingSpore extends AbstractSpore
 			registerRedirect(r.getBody().getString("target"), r.getBody().getString("address"), r.getBody().getInt("port"));
 		});
 		
-		JSONObject redirects = networkConfig.getJSONObject("redirects");
+		JSONObject redirects = (JSONObject)networkConfig.value("redirects");
 		for (String target : redirects.keySet())
 			try
 			{
@@ -121,6 +118,18 @@ public class NetworkingSpore extends AbstractSpore
 		{
 			ex.printStackTrace();
 		}
+		
+		new Thread(() ->
+		{
+			try
+			{
+				Thread.sleep(15000);
+				System.err.println("Test period timeout");
+				
+				Mycelium.kill();
+			} catch (InterruptedException ex)
+			{ }
+		}).start();
 		
 		Mycelium.main(args);
 	}

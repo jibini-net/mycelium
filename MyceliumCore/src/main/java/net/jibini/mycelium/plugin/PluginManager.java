@@ -14,10 +14,10 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.file.TextFile;
 import net.jibini.mycelium.routing.AsyncPatch;
 import net.jibini.mycelium.routing.Patch;
 import net.jibini.mycelium.routing.RequestRouter;
-import net.jibini.mycelium.util.StreamUtil;
 
 public class PluginManager
 {
@@ -62,7 +62,8 @@ public class PluginManager
 			throw new RuntimeException("Plugin failed to load, missing 'plugin.json'");
 		}
 		
-		String pluginText = StreamUtil.readTextFile(pluginStream);
+		String pluginText = new TextFile().from(pluginStream).readRemaining(true);
+		pluginStream.close();
 		JSONObject manifest = new JSONObject(pluginText);
 		
 		return manifest;
