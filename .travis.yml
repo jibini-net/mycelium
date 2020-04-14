@@ -6,4 +6,4 @@ notifications:
   email: false
 after_success:
   - mvn -Pjacoco clean test jacoco:report
-  - mvn -DdryRun=true coveralls:report
+  - mvn coveralls:report
