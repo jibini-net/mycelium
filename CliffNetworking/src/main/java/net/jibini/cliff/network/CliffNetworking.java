@@ -30,8 +30,8 @@ public class CliffNetworking extends AbstractCliffPlugin
 			networkConfig.setDefault("tick-millis", 500);
 			
 			{ /*		BIND SECTION				*/
-				networkConfig.setDefault("bind", new JSONObject());
-				JSONObject bind = networkConfig.getJSONObject("bind");
+				networkConfig.setDefault("node-bind", new JSONObject());
+				JSONObject bind = networkConfig.getJSONObject("node-bind");
 				networkConfig.setDefault(bind, "address", "0.0.0.0");
 				networkConfig.setDefault(bind, "port", 25605);
 			}
@@ -47,7 +47,10 @@ public class CliffNetworking extends AbstractCliffPlugin
 			
 			{ /*		REDIRECT SECTION			*/
 				JSONObject redirects = new JSONObject();
-				redirects.put("TargetName", "CliffNodeName");
+				JSONObject exampleRedirect = new JSONObject();
+				exampleRedirect.put("address", "127.0.0.1");
+				exampleRedirect.put("port", "25605");
+				redirects.put("TargetName", exampleRedirect);
 				networkConfig.setDefault("redirects", redirects);
 			}
 			
@@ -73,13 +76,12 @@ public class CliffNetworking extends AbstractCliffPlugin
 		super.create(master, manifest, uplink);
 	}
 	
-	public void registerRedirect(String target, String cliffNode)
+	public void registerRedirect(String target, String address, int port)
 	{
 		Patch redirect = AsyncPatch.create();
 		router.registerEndpoint(target, redirect.getDownstream());
 		//TODO: Throw patch upstream to network handling
-		//TODO: Register cliff nodes
-		log.info("Registered network redirect from target '" + target + "' to node '" + cliffNode + "'");
+		log.info("Registered network redirect from target '" + target + "' to node '" + address + ":" + port + "'");
 	}
 	
 	@Override
@@ -87,12 +89,19 @@ public class CliffNetworking extends AbstractCliffPlugin
 	{
 		requestHandler.attachRequestCallback("RegisterRedirectRequest", (s, r) ->
 		{
-			registerRedirect(r.getBody().getString("target"), r.getBody().getString("cliff-node"));
+			registerRedirect(r.getBody().getString("target"), r.getBody().getString("address"), r.getBody().getInt("port"));
 		});
 		
 		JSONObject redirects = networkConfig.getJSONObject("redirects");
 		for (String target : redirects.keySet())
-			registerRedirect(target, redirects.getString(target));
+			try
+			{
+				JSONObject t = redirects.getJSONObject(target);
+				registerRedirect(target, t.getString("address"), t.getInt("port"));
+			} catch (Throwable t)
+			{
+				log.error("Failed to register redirect for '" + target + "'", t);
+			}
 	}
 
 	@Override

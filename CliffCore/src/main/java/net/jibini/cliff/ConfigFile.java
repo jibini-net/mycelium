@@ -35,6 +35,7 @@ public class ConfigFile extends JSONObject
 		if (file.exists())
 		{
 			log.debug("Found existing config file '" + path + "', loading . . .");
+			log.debug("(" + file.getAbsolutePath() + ")");
 			FileInputStream input = new FileInputStream(file);
 			String configContents = StreamUtil.readTextFile(input);
 			result = new ConfigFile(configContents);
