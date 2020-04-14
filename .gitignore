@@ -13,7 +13,7 @@ buildNumber.properties
 .project
 .settings/
 
-config/
+*/config/*.json
 /MyceliumCore/plugins/
 *.log
 *.temp
