@@ -1,5 +1,9 @@
 language: java
+dist: trusty
+jdk: openjdk8
+
 notifications:
   email: false
 after_success:
-  - mvn clean test jacoco:report coveralls:report
+  - mvn -Pjacoco clean test jacoco:report
+  - mvn -DdryRun=true coveralls:report
