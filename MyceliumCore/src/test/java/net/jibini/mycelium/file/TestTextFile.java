@@ -2,7 +2,14 @@ package net.jibini.mycelium.file;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 
 import org.junit.After;
 import org.junit.Test;
@@ -11,8 +18,78 @@ import net.jibini.mycelium.file.TextFile;
 
 public class TestTextFile
 {
+	private void writeTestFile(File file) throws IOException
+	{
+		FileOutputStream output = new FileOutputStream(file);
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+		writer.write("Hello, world!");
+		writer.close();
+	}
+	
+	private void readAndAssert(File file) throws IOException
+	{
+		FileInputStream input = new FileInputStream(file);
+		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+		assertEquals(reader.readLine(), "Hello, world!");
+		reader.close();
+	}
+	
 	@Test
-	public void testReadWrite() throws IOException
+	public void testWrite() throws IOException
+	{
+		File file = new File("test.txt");
+		file.createNewFile();
+		file.deleteOnExit();
+		
+		new TextFile()
+			.from(new FileOutputStream(file))
+			.append("Hello, world!")
+			.close();
+		
+		readAndAssert(file);
+	}
+	
+	@Test
+	public void testFromFileWrite() throws IOException
+	{
+		File file = new File("test.txt");
+		
+		new TextFile()
+			.from(file)
+			.createIfNotExist("Hello, world!")
+			.deleteOnExit()
+			.close();
+		
+		readAndAssert(file);
+	}
+	
+	@Test
+	public void testSubDirectoryFile() throws IOException
+	{
+		File file = new File("config/test/test.json");
+		
+		new TextFile()
+			.from(file)
+			.createIfNotExist("Hello, world!")
+			.deleteOnExit()
+			.close();
+		
+		readAndAssert(file);
+	}
+
+	@Test
+	public void testRead() throws IOException
+	{
+		File file = new File("test.txt");
+		writeTestFile(file);
+		
+		assertEquals("Hello, world!", new TextFile()
+			.from(new FileInputStream(file))
+			.readRemaining(true));
+	}
+	
+	@Test
+	public void testReadRemaining() throws IOException
 	{
 		String test = new TextFile()
 				.at("test.txt")

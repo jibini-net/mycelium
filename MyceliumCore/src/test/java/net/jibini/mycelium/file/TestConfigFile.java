@@ -2,9 +2,12 @@ package net.jibini.mycelium.file;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Test;
 
@@ -32,6 +35,7 @@ public class TestConfigFile
 				.load()
 				.defaultValue("name", "Hello, world!")
 				.write()
+				.deleteOnExit()
 				.close();
 		
 		ConfigFile config = new ConfigFile()
@@ -56,6 +60,7 @@ public class TestConfigFile
 					.popNode()
 				.popNode()
 				.write()
+				.deleteOnExit()
 				.close();
 		
 		ConfigFile config = new ConfigFile()
@@ -81,6 +86,7 @@ public class TestConfigFile
 					.popNode()
 				.popNode()
 				.write()
+				.deleteOnExit()
 				.close();
 		
 		ConfigFile config = new ConfigFile()
@@ -90,6 +96,29 @@ public class TestConfigFile
 		
 		assertEquals("Hello, world!", config.pushArray("node").valueString(1));
 		assertEquals("Foo Bar", config.pushArray("node").pushNode(0).valueString("name"));
+	}
+	
+	@Test
+	public void testDefaultArray()
+	{
+		ConfigFile config = new ConfigFile()
+				.defaultArray("array")
+				.put("Hello, world!")
+				.popNode()
+			.popNode();
+		
+		assertEquals("Hello, world!", config.pushArray("array").valueString(0));
+		
+		config = new ConfigFile()
+				.pushArray("array")
+					.put("Hello, world!")
+				.popNode()
+				.defaultArray("array")
+					.put("Foo Bar")
+				.popNode()
+			.popNode();
+		
+		assertEquals("Hello, world!", config.pushArray("array").valueString(0));
 	}
 	
 	@Test
@@ -117,6 +146,7 @@ public class TestConfigFile
 					.popNode()
 				.popNode()
 				.write()
+				.deleteOnExit()
 				.close();
 		
 		ConfigFile config = new ConfigFile()
@@ -143,7 +173,78 @@ public class TestConfigFile
 				.pushArray(1)
 				.pushNode(2)
 				.pushNode("node")
-				.valueString("default"));
+				.value("default"));
+
+		assertEquals("{\"datapoints\":24,\"floating-point\":0.421,\"datasample\":["
+				+ "{\"floating-equiv\":0.3,\"meta-taken\":true},[0.31,0.4123,{\"no"
+				+ "de\":{\"default\":\"success\"}}]]}", config.toString());
+	}
+	
+	@Test
+	public void testMapDataTypes()
+	{
+		ConfigFile config = new ConfigFile()
+				.value("object", "value")
+				.value("string", "value")
+				.value("boolean", true)
+				.value("int", 10)
+				.value("float", 3.2f)
+				.value("double", 43.4d);
+		assertEquals(config.value("object"), "value");
+		assertEquals(config.valueString("string"), "value");
+		assertEquals(config.valueBoolean("boolean"), true);
+		assertEquals(config.valueInt("int"), 10);
+		assertEquals(config.valueFloat("float"), 3.2f, 0.01f);
+		assertEquals(config.valueDouble("double"), 43.4d, 0.001d);
+	}
+	
+	@Test
+	public void testArrayDataTypes()
+	{
+		ConfigFile config = new ConfigFile()
+				.pushArray("array")
+					.put("value")
+					.put("value")
+					.put(true)
+					.put(10)
+					.put(3.2f)
+					.put(43.4d)
+					.popNode()
+				.popNode();
+		assertEquals(config.pushArray("array").value(0), "value");
+		assertEquals(config.pushArray("array").valueString(1), "value");
+		assertEquals(config.pushArray("array").valueBoolean(2), true);
+		assertEquals(config.pushArray("array").valueInt(3), 10);
+		assertEquals(config.pushArray("array").valueFloat(4), 3.2f, 0.01f);
+		assertEquals(config.pushArray("array").valueDouble(5), 43.4d, 0.001d);
+	}
+	
+	@Test
+	public void testConfigDelete() throws FileNotFoundException, IOException
+	{
+		File file = new File("test.json");
+		new ConfigFile().from(file).createIfNotExist().close();
+		assertEquals(true, file.exists());
+		new ConfigFile().from(file).delete();
+		assertEquals(false, file.exists());
+	}
+	
+	@Test
+	public void testValueJSONArray()
+	{
+		ConfigFile config = new ConfigFile().pushArray("array").popNode().popNode();
+		JSONArray object = config.valueJSONArray("array");
+		object.put("Hello, world!");
+		assertEquals("Hello, world!", config.pushArray("array").valueString(0));
+	}
+	
+	@Test
+	public void testValueJSONObject()
+	{
+		ConfigFile config = new ConfigFile().pushNode("node").popNode().popNode();
+		JSONObject object = config.valueJSONObject("node");
+		object.put("message", "Hello, world!");
+		assertEquals("Hello, world!", config.pushNode("node").valueString("message"));
 	}
 	
 	@After

@@ -33,7 +33,7 @@ public final class MapNode<ParentType extends ConfigNode<?, ?>> implements Confi
 	@Override
 	public ParentType popNode()
 	{
-		if (orphan)
+		if (isOrphan())
 			throw new RuntimeException("Configuration node is orphaned");
 		return parent;
 	}

@@ -120,10 +120,15 @@ public final class ConfigFile implements ConfigNode<String, ConfigFile>
 	{
 		return contents.pushArray(key);
 	}
+	
+	public ArrayNode<MapNode<ConfigFile>> defaultArray(String key) { return contents.defaultArray(key); }
+	
 
 	@Override
 	public ConfigFile popNode()
 	{
+		if (isOrphan())
+			throw new RuntimeException("Configuration node is orphaned");
 		return this;
 	}
 	
