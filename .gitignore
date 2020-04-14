@@ -14,6 +14,6 @@ buildNumber.properties
 .settings/
 
 config/
-/CliffCore/plugins/
+/MyceliumCore/plugins/
 *.log
 *.temp

@@ -1,0 +1,8 @@
+{
+	"name": "MyceliumNetworking",
+	"version": "1.0.0a-SNAPSHOT",
+	
+	"class": "net.jibini.mycelium.network.NetworkingSpore",
+	
+	"dependencies": []
+}
