@@ -1,2 +1,1 @@
-### CliffBackend<br/>![Version](https://img.shields.io/badge/version-1.0.0-green.svg) ![Status](https://img.shields.io/badge/status-alpha-orange.svg)  [![Build Status](https://travis-ci.com/zgoethel12/CliffBackend.svg?branch=master)](https://travis-ci.com/zgoethel12/CliffBackend)
-
+<img src="https://i.imgur.com/bawDSvL.png" width="370px" /><br/>![Version](https://img.shields.io/badge/version-1.0.0-green.svg) ![Status](https://img.shields.io/badge/status-alpha-orange.svg)  [![Build Status](https://travis-ci.com/zgoethel12/CliffBackend.svg?branch=master)](https://travis-ci.com/zgoethel12/CliffBackend)
