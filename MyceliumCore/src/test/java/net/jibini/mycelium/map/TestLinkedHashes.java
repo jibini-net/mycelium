@@ -140,4 +140,114 @@ public class TestLinkedHashes
 				.withMutableIndices()
 				.value(0);
 	}
+	
+	@Test
+	public void testNegativeIndex()
+	{
+		assertEquals("Hello, world!", new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.insert(-1, "Hello, world!")
+				.value(-1));
+	}
+
+	@Test(expected=RuntimeException.class)
+	public void testAppendImmutable()
+	{
+		new LinkedHashes<Integer, String>()
+				.append("Hello, world!");
+	}
+
+	@Test
+	public void testMutableAppend()
+	{
+		LinkedHashes<Integer, String> data = new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.append("Hello, world!")
+				.append("Foo Bar");
+		assertEquals("Hello, world!", data.value(0));
+		assertEquals("Foo Bar", data.value(1));
+	}
+
+	@Test
+	public void testMutableNonSequentialAppend()
+	{
+		LinkedHashes<Integer, String> data = new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.insert(1, "Foo")
+				.append("Hello, world!")
+				.insert(20, "Bar")
+				.append("Foo Bar");
+		assertEquals("Hello, world!", data.value(2));
+		assertEquals("Foo Bar", data.value(21));
+	}
+
+	@Test
+	public void testMutableIterator()
+	{
+		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+				.withMutableIndices()
+				.append(0)
+				.append(1)
+				.append(2)
+				.append(3)
+				.append(4);
+		int c = 0;
+		for (Integer i : data.values())
+			assertEquals(c ++, i.intValue());
+		assertEquals(5, c);
+	}
+
+	@Test
+	public void testIteratorSequential()
+	{
+		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+				.insert(0, 0)
+				.insert(1, 1)
+				.insert(2, 2)
+				.insert(3, 3)
+				.insert(4, 4);
+		int c = 0;
+		for (Integer i : data.values())
+			assertEquals(c ++, i.intValue());
+		assertEquals(5, c);
+	}
+
+	@Test
+	public void testMutableIteratorNonSequential()
+	{
+		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+				.withMutableIndices()
+				.insert(0, 0)
+				.insert(1, 2)
+				.insert(1, 1)
+				.insert(4, 4)
+				.insert(3, 3);
+		int c = 0;
+		for (Integer i : data.values())
+			assertEquals(c ++, i.intValue());
+		assertEquals(5, c);
+	}
+
+	@Test
+	public void testIteratorInsertPreStart()
+	{
+		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+				.insert(10, 1)
+				.insert(0, 0)
+				.insert(11, 2);
+		int c = 0;
+		for (Integer i : data.values())
+			assertEquals(c ++, i.intValue());
+		assertEquals(3, c);
+	}
+
+	@Test
+	public void testIteratorNotReady()
+	{
+		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>();
+		int c = 0;
+		for (@SuppressWarnings("unused") Integer i : data.values())
+			throw new RuntimeException("Should have no elements to iterate");
+		assertEquals(0, c);
+	}
 }

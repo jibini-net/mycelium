@@ -1,5 +1,7 @@
 package net.jibini.mycelium.map;
 
+import java.util.Iterator;
+
 public class LinkedHashes<K, V>
 {
 	private int size = 0;
@@ -9,36 +11,42 @@ public class LinkedHashes<K, V>
 	
 	public LinkedHashes<K, V> withMutableIndices() { mutableIndices = true; return this; }
 	
-	public LinkedHashes<K, V> insertLink(LinkedElement<K, V> previous, K key, V value)
+	public LinkedHashes<K, V> insertLink(LinkedElement<K, V> previous, int hash, V value)
 	{
 		LinkedElement<K, V> added = new LinkedElement<K, V>()
 				.after(previous)
-				.withIndex(key.hashCode())
-				.put(key, value);
+				.withIndex(hash)
+				.put(hash, value);
 		
 		if (previous.hasNext())
 		{
-			previous.next().after(added);
 			added.before(previous.next());
+			previous.next().after(added);
 		}
 		
 		previous.before(added);
 		return this;
 	}
 	
-	public LinkedHashes<K, V> insert(K key, V value)
+	public LinkedHashes<K, V> resetChain(int hash, V first)
 	{
-		int index = key.hashCode();
-		if (size == 0)
-			first = new LinkedElement<K, V>()
-				.withIndex(index)
-				.put(key, value);
-		else if (index < first.chunkStart())
+		this.first = new LinkedElement<K, V>()
+			.withIndex(hash)
+			.put(hash, first);
+		size = 1;
+		return this;
+	}
+	
+	public LinkedHashes<K, V> insertHashed(int hash, V value)
+	{
+		if (size() == 0)
+			resetChain(hash, value);
+		else if (hash < first.chunkStart())
 		{
 			first.after(new LinkedElement<K, V>()
-					.withIndex(index)
+					.withIndex(hash)
 					.before(first)
-					.put(key, value));
+					.put(hash, value));
 			first = first.previous();
 		} else
 		{
@@ -46,27 +54,28 @@ public class LinkedHashes<K, V>
 			
 			while (true)
 			{
-				if (mutableIndices)
-				{
-					boolean nextClaims = false;
-					if (e.hasNext()) if (e.next().claims(index)) nextClaims = true;
-					if (e.claims(index) && !nextClaims)
-						e.put(key, value);
-					else if (e.claimEnd() < index && !nextClaims)
-						insertLink(e, key, value);
-				} else
-				{
-					boolean nextClaims = false;
-					if (e.hasNext()) if (e.next().chunkStart() == index) nextClaims = true;
-					if (e.chunkStart() == index)
-						e.put(key, value);
-					else if (e.chunkStart() < index && !nextClaims)
-						insertLink(e, key, value);
-				}
+					boolean nextClaims = false, nextTooFar = true;
+					
+					if (e.hasNext())
+					{
+						if (e.next().claims(hash, mutableIndices)) nextClaims = true;
+						if (e.next().chunkStart() <= hash) nextTooFar = false;
+					}
+					
+					if (e.claims(hash, mutableIndices) && !nextClaims)
+					{
+						e.put(hash, value);
+						break;
+					} else if (e.claimEnd(mutableIndices) < hash && nextTooFar)
+					{
+						insertLink(e, hash, value);
+						break;
+					}
 				
-				if (!e.hasNext())
-					break;
-				e = e.next();
+				if (e.hasNext())
+					e = e.next();
+				else
+					throw new RuntimeException("Internal error, failed to place insert");
 			}
 		}
 
@@ -74,9 +83,35 @@ public class LinkedHashes<K, V>
 		return this;
 	}
 	
-	public V value(K key)
+	public LinkedHashes<K, V> insert(K key, V value) { return insertHashed(key.hashCode(), value); }
+	
+	
+	public int lastHash()
 	{
-		if (size == 0)
+		LinkedElement<K, V> e = first;
+		
+		while (true)
+		{
+			if (!e.hasNext())
+				return e.chunkEnd(mutableIndices);
+			e = e.next();
+		}
+	}
+	
+	public LinkedHashes<K, V> append(V value)
+	{
+		if (mutableIndices)
+		{
+			if (size == 0)
+				return insertHashed(0, value);
+			return insertHashed(lastHash() + 1, value);
+		} else
+			throw new RuntimeException("May only append an index with mutable indices");
+	}
+	
+	public V valueHashed(int hash)
+	{
+		if (size() == 0)
 			throw new RuntimeException("Size is zero, no values exist");
 		else
 		{
@@ -84,16 +119,35 @@ public class LinkedHashes<K, V>
 			
 			while (true)
 			{
-				if (e.contains(key.hashCode()))
-					return e.value(key, mutableIndices);
+				if (e.contains(hash, mutableIndices))
+					return e.value(hash, mutableIndices);
 				
 				if (!e.hasNext())
 					break;
 				e = e.next();
 			}
 		}
+		
 		throw new RuntimeException("Could not find value for key");
 	}
 	
+	public V value(K key) { return valueHashed(key.hashCode()); }
+	
 	public int size() { return size; }
+	
+
+	public Iterable<V> values()
+	{
+		return new Iterable<V>()
+				{
+					@Override
+					public Iterator<V> iterator()
+					{
+						LinkedElementValues<K, V> iterator = new LinkedElementValues<K, V>();
+						if (size() > 0) iterator.withFirst(first);
+						if (mutableIndices) iterator.withMutableIndices();
+						return iterator;
+					}
+				};
+	}
 }
