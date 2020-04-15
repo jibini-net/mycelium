@@ -85,4 +85,59 @@ public class TestLinkedHashes
 				.insert(0, "Bar")
 				.value(0));
 	}
+	
+	@Test
+	public void testMutableChunkOverrun()
+	{
+		assertEquals("World", new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.insert(1, "Hello, world!")
+				.insert(3, "Foo")
+				.insert(2, "Hello")
+				.insert(3, "World")
+				.value(3));
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testValueNotFound()
+	{
+		new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.insert(0, "Hello, world!")
+				.value(100);
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testValueNotFoundChunkClaim()
+	{
+		new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.insert(0, "Hello, world!")
+				.value(1);
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testValueNotFoundChunk()
+	{
+		new LinkedElement<Integer, String>()
+				.withIndex(0)
+				.put(0, "Hello, world!")
+				.value(1, true);
+	}
+	
+	public void testValueChunkImmutable()
+	{
+		new LinkedElement<Integer, String>()
+				.withIndex(0)
+				.put(0, "Hello, world!")
+				.value(1, false);
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testZeroSizeError()
+	{
+		new LinkedHashes<Integer, String>()
+				.withMutableIndices()
+				.value(0);
+	}
 }
