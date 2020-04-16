@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import net.jibini.mycelium.file.TextFile;
@@ -30,7 +31,7 @@ public class TestTextFile
 	{
 		FileInputStream input = new FileInputStream(file);
 		BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-		assertEquals(reader.readLine(), "Hello, world!");
+		assertEquals("Hello, world!", reader.readLine());
 		reader.close();
 	}
 	
@@ -45,7 +46,6 @@ public class TestTextFile
 			.from(new FileOutputStream(file))
 			.append("Hello, world!")
 			.close();
-		
 		readAndAssert(file);
 	}
 	
@@ -59,7 +59,6 @@ public class TestTextFile
 			.createIfNotExist("Hello, world!")
 			.deleteOnExit()
 			.close();
-		
 		readAndAssert(file);
 	}
 	
@@ -67,14 +66,14 @@ public class TestTextFile
 	public void testSubDirectoryFile() throws IOException
 	{
 		File file = new File("config/test/test.json");
-		
 		new TextFile()
 			.from(file)
 			.createIfNotExist("Hello, world!")
-			.deleteOnExit()
 			.close();
-		
 		readAndAssert(file);
+		
+		file.delete();
+		file.getParentFile().delete();
 	}
 
 	@Test
@@ -195,6 +194,42 @@ public class TestTextFile
 		assertEquals("Foo, Bar", test);
 	}
 	
+	@Test(expected=RuntimeException.class)
+	public void testNoStreams() throws IOException
+	{
+		new TextFile()
+				.createReader();
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testNoInputStream() throws IOException
+	{
+		new TextFile()
+				.from(System.out)
+				.createReader();
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testNoOutputStream() throws IOException
+	{
+		new TextFile()
+				.from(System.in)
+				.createWriter();
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testNoFileDelete() throws IOException
+	{
+		new TextFile().delete();
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testNoFileDeleteOnExit() throws IOException
+	{
+		new TextFile().deleteOnExit();
+	}
+
+	@Before
 	@After
 	public void deleteTestFile()
 	{
@@ -204,6 +239,6 @@ public class TestTextFile
 					.at("test.txt")
 					.delete();
 		} catch (Throwable t)
-		{  }
+		{ t.printStackTrace(); }
 	}
 }

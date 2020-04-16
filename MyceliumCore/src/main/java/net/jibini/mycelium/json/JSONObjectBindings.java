@@ -7,7 +7,7 @@ import org.json.JSONObject;
 
 import net.jibini.mycelium.map.KeyValuePair;
 
-public class JSONObjectBindings implements JSONBindings<String>
+public final class JSONObjectBindings implements JSONBindings<String>
 {
 	private JSONObject origin = new JSONObject();
 	

@@ -14,29 +14,39 @@ import java.io.OutputStreamWriter;
 
 public final class TextFile
 {
-	private File file = null;
-	private InputStream in = null;
-	private OutputStream out = null;
+	private InputStream in;
+	private OutputStream out;
+	private File file;
 	
 	private boolean open = false;
-	private Object openLock = new Object();
+	private boolean hasFile = false;
+	private boolean hasIn = false;
+	private boolean hasOut = false;
 	
-	public TextFile from(InputStream in, OutputStream out)
+	public TextFile from(InputStream in, OutputStream out) { return from(in).from(out); }
+	
+	
+	public TextFile from(InputStream in)
 	{
 		this.open = true;
 		this.in = in;
-		this.out = out;
+		this.hasIn = true;
 		return this;
 	}
 	
-	public TextFile from(InputStream in) { return from(in, null); }
-	
-	public TextFile from(OutputStream out) { return from(null, out); }
+	public TextFile from(OutputStream out)
+	{
+		this.open = true;
+		this.out = out;
+		this.hasOut = true;
+		return this;
+	}
 	
 	
 	public TextFile from(File file)
 	{
 		this.file = file;
+		this.hasFile = true;
 		return this;
 	}
 	
@@ -45,19 +55,19 @@ public final class TextFile
 	
 	public TextFile createIfNotExist(String write) throws IOException
 	{
-		if (!file.exists())
-		{
-			try
+		if (hasFile)
+			if (!file.exists())
 			{
-				file.getParentFile().mkdirs();
-			} catch (Throwable t)
-			{  }
-			
-			file.createNewFile();
-			this.append(write);
-		}
-		
-		return from(file);
+				try
+				{
+					file.getParentFile().mkdirs();
+				} catch (Throwable t)
+				{  }
+				
+				file.createNewFile();
+				this.append(write);
+			}
+		return this;
 	}
 	
 	public TextFile createIfNotExist() throws IOException { return createIfNotExist(""); }
@@ -66,13 +76,19 @@ public final class TextFile
 	public BufferedReader createReader() throws FileNotFoundException
 	{
 		openIfNot();
-		return new BufferedReader(new InputStreamReader(in));
+		if (hasIn)
+			return new BufferedReader(new InputStreamReader(in));
+		else
+			throw new RuntimeException("No input stream defined for text file");
 	}
 	
 	public BufferedWriter createWriter() throws FileNotFoundException
 	{
 		openIfNot();
-		return new BufferedWriter(new OutputStreamWriter(out));
+		if (hasOut)
+			return new BufferedWriter(new OutputStreamWriter(out));
+		else
+			throw new RuntimeException("No output stream defined for text file");
 	}
 	
 	public String readRemaining(boolean closeAfter) throws IOException
@@ -101,58 +117,49 @@ public final class TextFile
 
 	public TextFile overwrite(String contents) throws IOException
 	{
-		close().openIfNot(false);
+		if (hasFile)
+			close().openIfNot(false);
 		return append(contents);
 	}
 	
-	public synchronized TextFile openIfNot(boolean append) throws FileNotFoundException
+	public TextFile openIfNot(boolean append) throws FileNotFoundException
 	{
-		synchronized (openLock)
-		{
 			if (!open)
-			{
-				in = new FileInputStream(file);
-				out = new FileOutputStream(file, append);
-			}
-			
-			open = true;
+				if (hasFile)
+					from(new FileInputStream(file), new FileOutputStream(file, append));
+				else
+					throw new RuntimeException("Cannot open, no file or streams specified");
 			return this;
-		}
 	}
 	
-	public synchronized TextFile openIfNot() throws FileNotFoundException
-	{
-		return openIfNot(true);
-	}
+	public synchronized TextFile openIfNot() throws FileNotFoundException { return openIfNot(true); }
 	
-	public synchronized TextFile close() throws IOException
+	
+	public TextFile close() throws IOException
 	{
-		synchronized (openLock)
-		{
-			open = false;
-			if (in != null)
-				in.close();
-			if (out != null)
-				out.close();
-			return this;
-		}
+		open = false;
+		if (hasIn)
+			in.close();
+		if (hasOut)
+			out.close();
+		return this;
 	}
 	
 	public TextFile delete()
 	{
-		if (file == null)
-			throw new RuntimeException("No file specified, cannot delete");
-		else
+		if (hasFile)
 			file.delete();
+		else
+			throw new RuntimeException("No file specified, cannot delete");
 		return this;
 	}
 	
 	public TextFile deleteOnExit()
 	{
-		if (file == null)
-			throw new RuntimeException("No file specified, cannot delete");
-		else
+		if (hasFile)
 			file.deleteOnExit();
+		else
+			throw new RuntimeException("No file specified, cannot delete");
 		return this;
 	}
 }

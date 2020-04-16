@@ -26,8 +26,8 @@ public class NetworkingSpore extends AbstractSpore
 	private void createConfigs() throws IOException
 	{
 			networkConfig = new ConfigFile()
-//					.at("config/network.json")
-//					.load()
+					.at("config/network.json")
+					.load()
 					.defaultValue("tick-millis", 500)
 					
 					.pushMap("node-bind")
@@ -45,9 +45,9 @@ public class NetworkingSpore extends AbstractSpore
 							.put(new JSONObject()
 									.put("target", "ExampleTarget")
 									.put("address", "127.0.0.1")
-									.put("port", 25605)));
-//					.write()
-//					.close();
+									.put("port", 25605)))
+					.write()
+					.close();
 	}
 	
 	@Override

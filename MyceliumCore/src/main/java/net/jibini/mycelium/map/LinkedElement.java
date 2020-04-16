@@ -48,7 +48,10 @@ public final class LinkedElement<K, V>
 	
 	public LinkedElement<K, V> next()
 	{
-		return next;
+		if (hasNext)
+			return next;
+		else
+			throw new RuntimeException("Chunk has no next link");
 	}
 	
 	

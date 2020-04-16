@@ -126,6 +126,20 @@ public class TestLinkedHashMap
 				.value(1, true);
 	}
 	
+	@Test(expected=RuntimeException.class)
+	public void testHasNoPrevious()
+	{
+		new LinkedElement<Integer, String>()
+				.previous();
+	}
+	
+	@Test(expected=RuntimeException.class)
+	public void testHasNoNext()
+	{
+		new LinkedElement<Integer, String>()
+				.next();
+	}
+	
 	public void testValueChunkImmutable()
 	{
 		new LinkedElement<Integer, String>()
