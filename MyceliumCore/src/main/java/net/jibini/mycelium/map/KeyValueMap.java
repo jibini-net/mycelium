@@ -14,6 +14,10 @@ public interface KeyValueMap<K, V>
 	
 	int size();
 	
+	boolean hasKey(K key);
+	
+	boolean hasValue(V value);
+	
 	Iterable<KeyValuePair<K, V>> iterable();
 	
 	Iterable<V> values();

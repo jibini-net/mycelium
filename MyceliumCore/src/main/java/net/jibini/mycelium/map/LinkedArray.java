@@ -59,4 +59,10 @@ public final class LinkedArray<V> implements KeyValueMap<Integer, V>
 
 	@Override
 	public int size() { return origin.size(); }
+
+	@Override
+	public boolean hasKey(Integer key) { return origin.hasKey(key); }
+
+	@Override
+	public boolean hasValue(V value) { return origin.hasValue(value); }
 }

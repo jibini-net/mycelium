@@ -14,7 +14,7 @@ public final class LinkedElement<K, V>
 	
 	public LinkedElement<K, V> put(int index, KeyValuePair<K, V> keyValue)
 	{
-		this.keyValues.add(index - this.index, keyValue);
+		this.keyValues().add(index - this.index, keyValue);
 		return this;
 	}
 	
@@ -70,13 +70,11 @@ public final class LinkedElement<K, V>
 		if (contains(index, mutableIndices))
 		{
 			if (mutableIndices)
-				return keyValues.get(index - this.index).value();
+				return keyValues().get(index - this.index).value();
 			else
-				return keyValues.get(0).value();
+				return keyValues().get(0).value();
 		} else
-		{
 			throw new RuntimeException("Could not find value for key in chunk");
-		}
 	}
 	
 	public KeyValuePair<K, V> keyValue(int index, boolean mutableIndices)
@@ -87,11 +85,9 @@ public final class LinkedElement<K, V>
 				return new KeyValuePair<K, V>()
 						.withValue(value(index, mutableIndices));
 			else
-				return keyValues().get(index - this.index);
+				return keyValues().get(0);
 		} else
-		{
 			throw new RuntimeException("Could not find value for key in chunk");
-		}
 	}
 	
 	public int chunkStart() { return index; }
@@ -100,7 +96,7 @@ public final class LinkedElement<K, V>
 	public int chunkEnd(boolean mutableIndices)
 	{
 		if (mutableIndices)
-			return Math.max(0, index + keyValues.size() - 1);
+			return Math.max(0, index + keyValues().size() - 1);
 		else
 			return chunkStart();
 	}
@@ -108,7 +104,7 @@ public final class LinkedElement<K, V>
 	public int claimEnd(boolean mutableIndices)
 	{
 		if (mutableIndices)
-			return index + keyValues.size();
+			return index + keyValues().size();
 		else
 			return chunkStart();
 	}

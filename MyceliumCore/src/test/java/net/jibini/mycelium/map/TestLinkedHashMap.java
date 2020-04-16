@@ -282,4 +282,46 @@ public class TestLinkedHashMap
 		for (KeyValuePair<Integer, Integer> i : data.iterable())
 			i.key();
 	}
+	
+	@Test
+	public void testImmutableIterator()
+	{
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
+				.insert(1, 1)
+				.insert(2, 3)
+				.insert(2, 2)
+				.insert(0, 0)
+				.insert(4, 5)
+				.insert(4, 4)
+				.insert(3, 3);
+		int c = 0;
+		
+		for (KeyValuePair<Integer, Integer> i : data.iterable())
+		{
+			assertEquals(c, i.value().intValue());
+			assertEquals(c ++, i.key().intValue());
+		}
+		
+		assertEquals(5, c);
+	}
+	
+	@Test
+	public void testHasValue()
+	{
+		LinkedHashMap<String, String> data = new LinkedHashMap<String, String>()
+				.insert("Hello", "world!")
+				.insert("Foo", "Bar");
+		assertEquals(false, data.hasValue("Foo"));
+		assertEquals(true, data.hasValue("world!"));
+	}
+	
+	@Test
+	public void testHasKey()
+	{
+		LinkedHashMap<String, String> data = new LinkedHashMap<String, String>()
+				.insert("Hello", "world!")
+				.insert("Foo", "Bar");
+		assertEquals(false, data.hasKey("world!"));
+		assertEquals(true, data.hasKey("Foo"));
+	}
 }

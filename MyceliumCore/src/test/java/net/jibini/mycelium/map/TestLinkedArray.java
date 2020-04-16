@@ -77,4 +77,30 @@ public class TestLinkedArray
 			assertEquals(expected[c ++], i.intValue());
 		assertEquals(5, c);
 	}
+	
+	@Test
+	public void testHasValue()
+	{
+		LinkedArray<Integer> array = new LinkedArray<Integer>()
+				.append(0)
+				.append(3)
+				.append(2)
+				.append(6)
+				.append(2);
+		assertEquals(false, array.hasValue(1));
+		assertEquals(true, array.hasValue(0));
+	}
+	
+	@Test
+	public void testHasKey()
+	{
+		LinkedArray<Integer> array = new LinkedArray<Integer>()
+				.append(0)
+				.append(3)
+				.append(2)
+				.append(6)
+				.append(2);
+		assertEquals(false, array.hasKey(5));
+		assertEquals(true, array.hasKey(4));
+	}
 }

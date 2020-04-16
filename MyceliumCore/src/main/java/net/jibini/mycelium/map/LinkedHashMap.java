@@ -202,4 +202,26 @@ public final class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 					}
 				};
 	}
+
+	@Override
+	public boolean hasKey(K key)
+	{
+		try
+		{
+			value(key);
+			return true;
+		} catch (RuntimeException ex)
+		{
+			return false;
+		}
+	}
+
+	@Override
+	public boolean hasValue(V value)
+	{
+		for (V v : values())
+			if (v.equals(value))
+				return true;
+		return false;
+	}
 }
