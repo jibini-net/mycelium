@@ -1,13 +1,13 @@
 package net.jibini.mycelium.conf;
 
-import net.jibini.mycelium.json.JSONBinding;
+import net.jibini.mycelium.json.JSONBindings;
 
 public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, SpawnedConfigNode<K, P>>
 {
 	private P parent;
 	private boolean hasParent = false;
 	
-	private JSONBinding<K> dataMap;
+	private JSONBindings<K> dataMap;
 	private boolean hasDataMap = false;
 	
 	public SpawnedConfigNode<K, P> withParent(P parent)
@@ -17,7 +17,7 @@ public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, Spaw
 		return this;
 	}
 	
-	public SpawnedConfigNode<K, P> withDataMap(JSONBinding<K> dataMap)
+	public SpawnedConfigNode<K, P> withDataMap(JSONBindings<K> dataMap)
 	{
 		this.dataMap = dataMap;
 		this.hasDataMap = true;
@@ -34,7 +34,7 @@ public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, Spaw
 	}
 
 	@Override
-	public JSONBinding<K> dataMap()
+	public JSONBindings<K> dataMap()
 	{
 		if (hasDataMap)
 			return dataMap;

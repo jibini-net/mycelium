@@ -30,6 +30,10 @@ public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>>
 			value(key, value);
 		return self;
 	}
+	
+	@Override
+	public S append(Object value) { dataMap().append(value); return self; }
+	
 
 	@Override
 	public SpawnedConfigNode<String, S> pushMap(K key)
@@ -72,16 +76,9 @@ public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>>
 	@Override
 	public JSONArray valueJSONArray(K key) { return dataMap().valueJSONArray(key); }
 	
+	@Override
+	public String toString() { return dataMap().toString(); }
 	
 	@Override
-	public String toString()
-	{
-		return dataMap().toString();
-	}
-	
-	@Override
-	public String toString(int indentFactor)
-	{
-		return dataMap().toString(indentFactor);
-	}
+	public String toString(int indentFactor) { return dataMap().toString(indentFactor); }
 }

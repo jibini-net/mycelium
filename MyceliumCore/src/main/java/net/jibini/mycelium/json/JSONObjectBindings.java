@@ -5,10 +5,9 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import net.jibini.mycelium.map.KeyValueMap;
 import net.jibini.mycelium.map.KeyValuePair;
 
-public class JSONObjectBindings implements JSONBinding<String>
+public class JSONObjectBindings implements JSONBindings<String>
 {
 	private JSONObject origin = new JSONObject();
 	
@@ -31,21 +30,21 @@ public class JSONObjectBindings implements JSONBinding<String>
 	
 
 	@Override
-	public KeyValueMap<String, Object> insert(KeyValuePair<String, Object> keyValue)
+	public JSONObjectBindings insert(KeyValuePair<String, Object> keyValue)
 	{
 		origin.put(keyValue.key(), keyValue.value());
 		return this;
 	}
 
 	@Override
-	public KeyValueMap<String, Object> insert(String key, Object value)
+	public JSONObjectBindings insert(String key, Object value)
 	{
 		origin.put(key, value);
 		return this;
 	}
 
 	@Override
-	public KeyValueMap<String, Object> append(Object value)
+	public JSONObjectBindings append(Object value)
 	{
 		throw new RuntimeException("Cannot append value to JSONObject");
 	}
@@ -58,7 +57,7 @@ public class JSONObjectBindings implements JSONBinding<String>
 	public boolean hasKey(String key) { return origin.has(key); }
 
 	@Override
-	public boolean hasValue(Object value) { return origin.keySet().contains(value); }
+	public boolean hasValue(Object value) { return origin.toMap().containsValue(value); }
 	
 
 	@Override

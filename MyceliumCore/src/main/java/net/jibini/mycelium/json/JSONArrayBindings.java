@@ -5,10 +5,9 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import net.jibini.mycelium.map.KeyValueMap;
 import net.jibini.mycelium.map.KeyValuePair;
 
-public final class JSONArrayBindings implements JSONBinding<Integer>
+public final class JSONArrayBindings implements JSONBindings<Integer>
 {
 	private JSONArray origin = new JSONArray();
 	
@@ -31,21 +30,27 @@ public final class JSONArrayBindings implements JSONBinding<Integer>
 	
 
 	@Override
-	public KeyValueMap<Integer, Object> insert(KeyValuePair<Integer, Object> keyValue)
+	public JSONArrayBindings insert(KeyValuePair<Integer, Object> keyValue)
 	{
 		origin.put(keyValue.key(), keyValue.value());
 		return this;
 	}
 
+	/*
+	 * Expected behavior:
+	 * JSONArrayBindings mimics the insertion behavior of JSONArray,
+	 * therefore "inserting" an object at an existing index replaces
+	 * the previous value.
+	 */
 	@Override
-	public KeyValueMap<Integer, Object> insert(Integer key, Object value)
+	public JSONArrayBindings insert(Integer key, Object value)
 	{
 		origin.put(key, value);
 		return this;
 	}
 
 	@Override
-	public KeyValueMap<Integer, Object> append(Object value)
+	public JSONArrayBindings append(Object value)
 	{
 		origin.put(value);
 		return this;
