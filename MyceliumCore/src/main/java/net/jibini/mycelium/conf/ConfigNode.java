@@ -1,8 +1,9 @@
 package net.jibini.mycelium.conf;
 
-import net.jibini.mycelium.map.KeyValueMap;
+import net.jibini.mycelium.json.JSONBinding;
+import net.jibini.mycelium.map.VariedTypeMap;
 
-public interface ConfigNode<K, P>
+public interface ConfigNode<K, P> extends VariedTypeMap<K>
 {
 	Object value(K key);
 	
@@ -16,5 +17,9 @@ public interface ConfigNode<K, P>
 	
 	P pop();
 	
-	KeyValueMap<K, Object> dataMap();
+	JSONBinding<K> dataMap();
+	
+	String toString(int indentFactor);
+	
+	String toString();
 }

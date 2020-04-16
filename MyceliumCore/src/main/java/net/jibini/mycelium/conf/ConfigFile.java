@@ -1,15 +1,14 @@
 package net.jibini.mycelium.conf;
 
-import net.jibini.mycelium.map.KeyValueMap;
-import net.jibini.mycelium.map.LinkedHashMap;
+import net.jibini.mycelium.json.JSONObjectBindings;
 
 public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, ConfigFile>
 {
-	KeyValueMap<String, Object> dataMap = new LinkedHashMap<String, Object>();
+	JSONObjectBindings dataMap = new JSONObjectBindings();
 
 	@Override
 	public ConfigFile pop() { return this; }
 
 	@Override
-	public KeyValueMap<String, Object> dataMap() { return dataMap; }
+	public JSONObjectBindings dataMap() { return dataMap; }
 }

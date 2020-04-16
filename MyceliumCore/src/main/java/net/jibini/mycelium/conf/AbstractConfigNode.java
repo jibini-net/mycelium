@@ -1,7 +1,10 @@
 package net.jibini.mycelium.conf;
 
-import net.jibini.mycelium.map.LinkedArray;
-import net.jibini.mycelium.map.LinkedHashMap;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import net.jibini.mycelium.json.JSONArrayBindings;
+import net.jibini.mycelium.json.JSONObjectBindings;
 
 public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>> 
 		implements ConfigNode<K, P>
@@ -28,25 +31,57 @@ public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>>
 		return self;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public SpawnedConfigNode<String, S> pushMap(K key)
 	{
-		// Store JSONObject with given key (not node)
-		defaultValue(key, new SpawnedConfigNode<String, S>()
+		defaultValue(key, new JSONObject());
+		return new SpawnedConfigNode<String, S>()
 				.withParent(self)
-				.withDataMap(new LinkedHashMap<String, Object>()));
-		return (SpawnedConfigNode<String, S>) value(key);
+				.withDataMap(new JSONObjectBindings()
+						.from(valueJSONObject(key)));
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public SpawnedConfigNode<Integer, S> pushArray(K key)
 	{
-		// Store JSONArray with given key (not node)
-		defaultValue(key, new SpawnedConfigNode<Integer, S>()
+		defaultValue(key, new JSONArray());
+		return new SpawnedConfigNode<Integer, S>()
 				.withParent(self)
-				.withDataMap(new LinkedArray<Object>()));
-		return (SpawnedConfigNode<Integer, S>) value(key);
+				.withDataMap(new JSONArrayBindings()
+						.from(valueJSONArray(key)));
+	}
+
+	@Override
+	public String valueString(K key) { return dataMap().valueString(key); }
+
+	@Override
+	public boolean valueBoolean(K key) { return dataMap().valueBoolean(key); }
+
+	@Override
+	public int valueInt(K key) { return dataMap().valueInt(key); }
+
+	@Override
+	public float valueFloat(K key) { return dataMap().valueFloat(key); }
+
+	@Override
+	public double valueDouble(K key) { return dataMap().valueDouble(key); }
+
+	@Override
+	public JSONObject valueJSONObject(K key) { return dataMap().valueJSONObject(key); }
+
+	@Override
+	public JSONArray valueJSONArray(K key) { return dataMap().valueJSONArray(key); }
+	
+	
+	@Override
+	public String toString()
+	{
+		return dataMap().toString();
+	}
+	
+	@Override
+	public String toString(int indentFactor)
+	{
+		return dataMap().toString(indentFactor);
 	}
 }

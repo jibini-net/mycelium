@@ -2,6 +2,7 @@ package net.jibini.mycelium.network;
 
 import java.io.IOException;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
@@ -24,34 +25,29 @@ public class NetworkingSpore extends AbstractSpore
 	
 	private void createConfigs() throws IOException
 	{
-//			networkConfig = new ConfigFile()
+			networkConfig = new ConfigFile()
 //					.at("config/network.json")
 //					.load()
-//					
-//					.defaultValue("tick-millis", 500)
-//					
-//					.pushNode("node-bind")
-//					.defaultValue("address", "0.0.0.0")
-//					.defaultValue("port", 25605)
-//					.popNode()
-//					
-//					.pushNode("link")
-//					.defaultValue("max-connections", 100)
-//					.defaultValue("persistence-ticks", 10)
-//					.defaultValue("close-timeout-ticks", 2)
-//					.popNode()
-//					
-//					.defaultValue("redirects", new JSONArray()
-//							.put(new JSONObject()
-//									.put("target", "ExampleTarget")
-//									.put("address", "127.0.0.1")
-//									.put("port", 25605)))
-//					
-//					.popNode()
+					.defaultValue("tick-millis", 500)
+					
+					.pushMap("node-bind")
+						.defaultValue("address", "0.0.0.0")
+						.defaultValue("port", 25605)
+					.pop()
+					
+					.pushMap("link")
+						.defaultValue("max-connections", 100)
+						.defaultValue("persistence-ticks", 10)
+						.defaultValue("close-timeout-ticks", 2)
+					.pop()
+					
+					.defaultValue("redirects", new JSONArray()
+							.put(new JSONObject()
+									.put("target", "ExampleTarget")
+									.put("address", "127.0.0.1")
+									.put("port", 25605)));
 //					.write()
 //					.close();
-			
-			System.out.println("YOYOYO" + networkConfig.toString());
 	}
 	
 	@Override
@@ -88,15 +84,15 @@ public class NetworkingSpore extends AbstractSpore
 			registerRedirect(r.getBody().getString("target"), r.getBody().getString("address"), r.getBody().getInt("port"));
 		});
 		
-		JSONObject redirects = (JSONObject)networkConfig.value("redirects");
-		for (String target : redirects.keySet())
+		JSONArray redirects = networkConfig.valueJSONArray("redirects");
+		for (int i = 0; i < redirects.length(); i ++)
 			try
 			{
-				JSONObject t = redirects.getJSONObject(target);
-				registerRedirect(target, t.getString("address"), t.getInt("port"));
+				JSONObject t = redirects.getJSONObject(i);
+				registerRedirect(t.getString("target"), t.getString("address"), t.getInt("port"));
 			} catch (Throwable t)
 			{
-				log.error("Failed to register redirect for '" + target + "'", t);
+				log.error("Failed to register redirect for entry #" + i, t);
 			}
 	}
 
