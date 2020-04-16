@@ -9,12 +9,12 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.RequestHandler;
 import net.jibini.mycelium.api.ResponderCallback;
 import net.jibini.mycelium.network.service.Service;
 import net.jibini.mycelium.routing.AsyncPatch;
 import net.jibini.mycelium.routing.Patch;
-import net.jibini.mycelium.routing.Request;
 import net.jibini.mycelium.routing.RequestCallback;
 import net.jibini.mycelium.routing.RequestRouter;
 import net.jibini.mycelium.routing.StitchLink;
@@ -84,7 +84,7 @@ public class SessionManager implements RequestCallback
 			handler.attachRequestCallback("CreateSession", ResponderCallback.create((s, req) ->
 			{
 				Session session = Session.create(plugin, req);
-				String uuid = req.getHeader().getString("session");
+				String uuid = req.header().getString("session");
 				log.info("Session initiated for '" + uuid + "'");
 				
 				synchronized (sessions)
@@ -100,9 +100,9 @@ public class SessionManager implements RequestCallback
 	{
 		Session session = null;
 		
-		if (request.getHeader().has("session"))
+		if (request.header().has("session"))
 		{
-			String uuid = request.getHeader().getString("session");
+			String uuid = request.header().getString("session");
 			
 			synchronized (sessions)
 			{
@@ -112,8 +112,8 @@ public class SessionManager implements RequestCallback
 					
 					if (serverSide)
 					{
-						String tok = request.getHeader().getString("token");
-						request.getHeader().remove("token");
+						String tok = request.header().getString("token");
+						request.header().remove("token");
 						
 						if (!session.getToken().equals(tok))
 						{

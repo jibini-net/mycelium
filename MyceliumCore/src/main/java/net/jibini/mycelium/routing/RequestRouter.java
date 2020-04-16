@@ -46,9 +46,9 @@ public class RequestRouter
 		{
 			try
 			{
-				String target = request.getHeader().getString("target");
-				String element = request.getHeader().getString(headerElement);
-				JSONArray route = request.getHeader().getJSONArray("route");
+				String target = request.header().getString("target");
+				String element = request.header().getString(headerElement);
+				JSONArray route = request.header().getJSONArray("route");
 				
 				if (target.equals(RESPONSE_TARGET))
 				{

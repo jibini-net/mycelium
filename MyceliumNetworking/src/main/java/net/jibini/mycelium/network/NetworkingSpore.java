@@ -81,7 +81,7 @@ public class NetworkingSpore extends AbstractSpore
 	{
 		requestHandler.attachRequestCallback("RegisterRedirectRequest", (s, r) ->
 		{
-			registerRedirect(r.getBody().getString("target"), r.getBody().getString("address"), r.getBody().getInt("port"));
+			registerRedirect(r.body().getString("target"), r.body().getString("address"), r.body().getInt("port"));
 		});
 		
 		JSONArray redirects = networkConfig.valueJSONArray("redirects");
@@ -108,7 +108,7 @@ public class NetworkingSpore extends AbstractSpore
 		try
 		{
 			NetworkingSpore instance = new NetworkingSpore();
-			Mycelium.getInstance().getPluginManager().registerPlugin(instance, PluginManager.getPluginManifest(instance.getClass().getClassLoader()));
+			Mycelium.instance().getPluginManager().registerPlugin(instance, PluginManager.getPluginManifest(instance.getClass().getClassLoader()));
 		} catch (IOException ex)
 		{
 			ex.printStackTrace();

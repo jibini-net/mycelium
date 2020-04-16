@@ -6,6 +6,8 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.Request;
+
 public abstract class AbstractLink implements StitchLink
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
@@ -115,7 +117,8 @@ public abstract class AbstractLink implements StitchLink
 	{
 		synchronized (buffer)
 		{
-			buffer.add(Request.create(request));
+			buffer.add(new Request()
+					.from(request));
 			
 			synchronized(getLock())
 			{

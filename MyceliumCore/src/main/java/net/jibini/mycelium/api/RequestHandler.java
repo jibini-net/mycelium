@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import net.jibini.mycelium.routing.Request;
 import net.jibini.mycelium.routing.RequestCallback;
 import net.jibini.mycelium.routing.StitchLink;
 
@@ -25,9 +24,9 @@ public class RequestHandler implements RequestCallback
 	@Override
 	public void onRequest(StitchLink source, Request request)
 	{
-		if (request.getHeader().has("request"))
+		if (request.header().has("request"))
 		{
-			String req = request.getHeader().getString("request");
+			String req = request.header().getString("request");
 
 			synchronized (callbacks)
 			{

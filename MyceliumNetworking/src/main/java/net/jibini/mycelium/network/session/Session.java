@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.mycelium.routing.Request;
+import net.jibini.mycelium.api.Request;
 
 public class Session
 {
@@ -23,9 +23,9 @@ public class Session
 	public static Session create(SessionPlugin plugin, Request creationRequest)
 	{
 		Session result = new Session();
-		result.sessionUUID = UUID.fromString(creationRequest.getHeader().getString("session"));
+		result.sessionUUID = UUID.fromString(creationRequest.header().getString("session"));
 		result.generateToken();
-		creationRequest.getResponse().put("token", result.token);
+		creationRequest.response().put("token", result.token);
 		result.createKernel(plugin.getKernelClass());
 		return result;
 	}
@@ -46,8 +46,8 @@ public class Session
 	
 	public void embed(Request request)
 	{
-		request.getHeader().put("session", sessionUUID.toString());
-		request.getHeader().put("token", token);
+		request.header().put("session", sessionUUID.toString());
+		request.header().put("token", token);
 	}
 	
 	private void createKernel(Class<? extends SessionKernel> kernel)

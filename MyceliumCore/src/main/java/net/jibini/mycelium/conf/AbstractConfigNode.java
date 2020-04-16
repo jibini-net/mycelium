@@ -3,11 +3,12 @@ package net.jibini.mycelium.conf;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import net.jibini.mycelium.json.DecoratedJSONBindings;
 import net.jibini.mycelium.json.JSONArrayBindings;
 import net.jibini.mycelium.json.JSONObjectBindings;
 
 public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>> 
-		implements ConfigNode<K, P>
+		extends DecoratedJSONBindings<K> implements ConfigNode<K, P>
 {
 	@SuppressWarnings("unchecked")
 	private S self = (S)this;
@@ -54,31 +55,4 @@ public abstract class AbstractConfigNode<K, P, S extends ConfigNode<K, P>>
 				.withDataMap(new JSONArrayBindings()
 						.from(valueJSONArray(key)));
 	}
-
-	@Override
-	public String valueString(K key) { return dataMap().valueString(key); }
-
-	@Override
-	public boolean valueBoolean(K key) { return dataMap().valueBoolean(key); }
-
-	@Override
-	public int valueInt(K key) { return dataMap().valueInt(key); }
-
-	@Override
-	public float valueFloat(K key) { return dataMap().valueFloat(key); }
-
-	@Override
-	public double valueDouble(K key) { return dataMap().valueDouble(key); }
-
-	@Override
-	public JSONObject valueJSONObject(K key) { return dataMap().valueJSONObject(key); }
-
-	@Override
-	public JSONArray valueJSONArray(K key) { return dataMap().valueJSONArray(key); }
-	
-	@Override
-	public String toString() { return dataMap().toString(); }
-	
-	@Override
-	public String toString(int indentFactor) { return dataMap().toString(indentFactor); }
 }

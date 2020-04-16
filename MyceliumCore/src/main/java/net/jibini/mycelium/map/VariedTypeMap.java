@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 public interface VariedTypeMap<K>
 {
+	Object value(K key);
+
 	String valueString(K key);
 	
 	boolean valueBoolean(K key);

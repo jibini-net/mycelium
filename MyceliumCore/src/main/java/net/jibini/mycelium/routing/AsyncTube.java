@@ -1,5 +1,7 @@
 package net.jibini.mycelium.routing;
 
+import net.jibini.mycelium.api.Request;
+
 public class AsyncTube extends AbstractLink
 {
 	private AsyncTube()

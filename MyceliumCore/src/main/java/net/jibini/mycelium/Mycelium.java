@@ -26,7 +26,7 @@ public class Mycelium
 		return result;
 	}
 	
-	public static Mycelium getInstance()
+	public static Mycelium instance()
 	{
 		if (INSTANCE == null)
 			Mycelium.create();
@@ -45,7 +45,7 @@ public class Mycelium
 	{
 		Thread myceliumThread = new Thread(() ->
 		{
-			Mycelium mycelium = Mycelium.getInstance();
+			Mycelium mycelium = Mycelium.instance();
 			mycelium.start();
 		});
 		
@@ -69,7 +69,7 @@ public class Mycelium
 	
 	private PluginManager pluginManager = PluginManager.create();
 	
-	public JSONObject getManifest()
+	public JSONObject manifest()
 	{
 		try
 		{
@@ -85,7 +85,7 @@ public class Mycelium
 	
 	public void start()
 	{
-		JSONObject manifest = getManifest();
+		JSONObject manifest = manifest();
 		log.info("Starting " + manifest.getString("app-name") + " " + manifest.getString("version"));
 		
 		pluginManager.loadPlugins(new File("plugins"));

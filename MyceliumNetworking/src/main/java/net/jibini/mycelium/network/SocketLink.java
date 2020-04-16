@@ -10,8 +10,8 @@ import java.net.SocketException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.routing.AbstractLink;
-import net.jibini.mycelium.routing.Request;
 
 public class SocketLink extends AbstractLink
 {
@@ -35,7 +35,8 @@ public class SocketLink extends AbstractLink
 					close();
 				else
 				{
-					Request request = Request.create(requestContents);
+					Request request = new Request()
+							.from(requestContents);
 					pushRequest(request);
 				}
 			} catch (SocketException ex)

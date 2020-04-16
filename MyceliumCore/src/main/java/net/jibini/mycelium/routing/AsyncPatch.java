@@ -1,5 +1,7 @@
 package net.jibini.mycelium.routing;
 
+import net.jibini.mycelium.api.Request;
+
 public class AsyncPatch implements Patch
 {
 	private AsyncTube upstream = AsyncTube.create();
