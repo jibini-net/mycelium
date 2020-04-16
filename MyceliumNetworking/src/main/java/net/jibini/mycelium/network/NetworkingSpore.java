@@ -2,13 +2,12 @@ package net.jibini.mycelium.network;
 
 import java.io.IOException;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 
 import net.jibini.mycelium.Mycelium;
 import net.jibini.mycelium.api.RequestHandler;
-import net.jibini.mycelium.config.ConfigFile;
+import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.plugin.AbstractSpore;
 import net.jibini.mycelium.plugin.PluginManager;
 import net.jibini.mycelium.routing.AsyncPatch;
@@ -25,32 +24,32 @@ public class NetworkingSpore extends AbstractSpore
 	
 	private void createConfigs() throws IOException
 	{
-			networkConfig = new ConfigFile()
-					.at("config/network.json")
-					.load()
-					
-					.defaultValue("tick-millis", 500)
-					
-					.pushNode("node-bind")
-					.defaultValue("address", "0.0.0.0")
-					.defaultValue("port", 25605)
-					.popNode()
-					
-					.pushNode("link")
-					.defaultValue("max-connections", 100)
-					.defaultValue("persistence-ticks", 10)
-					.defaultValue("close-timeout-ticks", 2)
-					.popNode()
-					
-					.defaultValue("redirects", new JSONArray()
-							.put(new JSONObject()
-									.put("target", "ExampleTarget")
-									.put("address", "127.0.0.1")
-									.put("port", 25605)))
-					
-					.popNode()
-					.write()
-					.close();
+//			networkConfig = new ConfigFile()
+//					.at("config/network.json")
+//					.load()
+//					
+//					.defaultValue("tick-millis", 500)
+//					
+//					.pushNode("node-bind")
+//					.defaultValue("address", "0.0.0.0")
+//					.defaultValue("port", 25605)
+//					.popNode()
+//					
+//					.pushNode("link")
+//					.defaultValue("max-connections", 100)
+//					.defaultValue("persistence-ticks", 10)
+//					.defaultValue("close-timeout-ticks", 2)
+//					.popNode()
+//					
+//					.defaultValue("redirects", new JSONArray()
+//							.put(new JSONObject()
+//									.put("target", "ExampleTarget")
+//									.put("address", "127.0.0.1")
+//									.put("port", 25605)))
+//					
+//					.popNode()
+//					.write()
+//					.close();
 			
 			System.out.println("YOYOYO" + networkConfig.toString());
 	}
