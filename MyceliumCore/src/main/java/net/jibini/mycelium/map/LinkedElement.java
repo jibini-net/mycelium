@@ -3,18 +3,18 @@ package net.jibini.mycelium.map;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LinkedElement<K, V>
+public final class LinkedElement<K, V>
 {
 	private int index;
 
-	private List<V> values = new ArrayList<>();
+	private List<KeyValuePair<K, V>> keyValues = new ArrayList<>();
 	private LinkedElement<K, V> previous, next;
 	
 	private boolean hasPrevious = false, hasNext = false;
 	
-	public LinkedElement<K, V> put(int index, V value)
+	public LinkedElement<K, V> put(int index, KeyValuePair<K, V> keyValue)
 	{
-		this.values.add(index - this.index, value);
+		this.keyValues.add(index - this.index, keyValue);
 		return this;
 	}
 	
@@ -38,9 +38,18 @@ public class LinkedElement<K, V>
 		return this;
 	}
 	
-	public LinkedElement<K, V> previous() { return previous; }
+	public LinkedElement<K, V> previous()
+	{
+		if (hasPrevious)
+			return previous;
+		else
+			throw new RuntimeException("Chunk has no previous link");
+	}
 	
-	public LinkedElement<K, V> next() { return next; }
+	public LinkedElement<K, V> next()
+	{
+		return next;
+	}
 	
 	
 	public boolean contains(int hash, boolean mutableIndices)
@@ -53,7 +62,7 @@ public class LinkedElement<K, V>
 		return (chunkStart() <= hash && hash <= claimEnd(mutableIndices));
 	}
 	
-	public List<V> values() { return values; }
+	public List<KeyValuePair<K, V>> keyValues() { return keyValues; }
 	
 	
 	public V value(int index, boolean mutableIndices)
@@ -61,9 +70,24 @@ public class LinkedElement<K, V>
 		if (contains(index, mutableIndices))
 		{
 			if (mutableIndices)
-				return values.get(index - this.index);
+				return keyValues.get(index - this.index).value();
 			else
-				return values.get(0);
+				return keyValues.get(0).value();
+		} else
+		{
+			throw new RuntimeException("Could not find value for key in chunk");
+		}
+	}
+	
+	public KeyValuePair<K, V> keyValue(int index, boolean mutableIndices)
+	{
+		if (contains(index, mutableIndices))
+		{
+			if (mutableIndices)
+				return new KeyValuePair<K, V>()
+						.withValue(value(index, mutableIndices));
+			else
+				return keyValues().get(index - this.index);
 		} else
 		{
 			throw new RuntimeException("Could not find value for key in chunk");
@@ -76,7 +100,7 @@ public class LinkedElement<K, V>
 	public int chunkEnd(boolean mutableIndices)
 	{
 		if (mutableIndices)
-			return Math.max(0, index + values.size() - 1);
+			return Math.max(0, index + keyValues.size() - 1);
 		else
 			return chunkStart();
 	}
@@ -84,7 +108,7 @@ public class LinkedElement<K, V>
 	public int claimEnd(boolean mutableIndices)
 	{
 		if (mutableIndices)
-			return index + values.size();
+			return index + keyValues.size();
 		else
 			return chunkStart();
 	}

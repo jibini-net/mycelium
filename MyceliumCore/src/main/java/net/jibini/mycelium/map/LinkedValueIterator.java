@@ -2,14 +2,14 @@ package net.jibini.mycelium.map;
 
 import java.util.Iterator;
 
-public class LinkedElementValues<K, V> implements Iterator<V>
+public abstract class LinkedValueIterator<K, V, O> implements Iterator<O>
 {
 	private LinkedElement<K, V> current;
 	private int currentIndex;
 	
 	private boolean ready = false, mutableIndices = false;
 	
-	public LinkedElementValues<K, V> withFirst(LinkedElement<K, V> first)
+	public LinkedValueIterator<K, V, O> withFirst(LinkedElement<K, V> first)
 	{
 		this.current = first;
 		this.currentIndex = first.chunkStart();
@@ -17,7 +17,7 @@ public class LinkedElementValues<K, V> implements Iterator<V>
 		return this;
 	}
 	
-	public LinkedElementValues<K, V> withMutableIndices() { this.mutableIndices = true; return this; }
+	public LinkedValueIterator<K, V, O> withMutableIndices() { this.mutableIndices = true; return this; }
 	
 	
 	@Override
@@ -38,8 +38,8 @@ public class LinkedElementValues<K, V> implements Iterator<V>
 	}
 
 	@Override
-	public V next()
-	{
-		return current.value(currentIndex ++, mutableIndices);
-	}
+	public O next() { return iterated(current, currentIndex ++, mutableIndices); }
+	
+	
+	public abstract O iterated(LinkedElement<K, V> current, int currentIndex, boolean mutableIndices);
 }

@@ -4,12 +4,12 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-public class TestLinkedHashes
+public class TestLinkedHashMap
 {
 	@Test
 	public void testSimpleMutable()
 	{
-		assertEquals("Hello, world!", new LinkedHashes<Integer, String>()
+		assertEquals("Hello, world!", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(0, "Hello, world!")
 				.insert(1, "Foo Bar")
@@ -19,7 +19,7 @@ public class TestLinkedHashes
 	@Test
 	public void testSimpleMutableInsert()
 	{
-		assertEquals("Foo Bar", new LinkedHashes<Integer, String>()
+		assertEquals("Foo Bar", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(0, "Hello, world!")
 				.insert(0, "Foo Bar")
@@ -29,7 +29,7 @@ public class TestLinkedHashes
 	@Test
 	public void testSimpleGap()
 	{
-		assertEquals("Bar", new LinkedHashes<Integer, String>()
+		assertEquals("Bar", new LinkedHashMap<Integer, String>()
 				.insert(0, "Hello, world!")
 				.insert(100, "Foo")
 				.insert(200, "Bar")
@@ -39,7 +39,7 @@ public class TestLinkedHashes
 	@Test
 	public void testGapWithInsert()
 	{
-		assertEquals("Bar", new LinkedHashes<Integer, String>()
+		assertEquals("Bar", new LinkedHashMap<Integer, String>()
 				.insert(0, "Hello, world!")
 				.insert(100, "Foo")
 				.insert(50, "Bar")
@@ -49,7 +49,7 @@ public class TestLinkedHashes
 	@Test
 	public void testGapWithPreFirst()
 	{
-		assertEquals("Foo", new LinkedHashes<Integer, String>()
+		assertEquals("Foo", new LinkedHashMap<Integer, String>()
 				.insert(50, "Hello, world!")
 				.insert(10, "Foo")
 				.value(10));
@@ -58,7 +58,7 @@ public class TestLinkedHashes
 	@Test
 	public void testStringKey()
 	{
-		assertEquals("Bar", new LinkedHashes<String, String>()
+		assertEquals("Bar", new LinkedHashMap<String, String>()
 				.insert("test", "Hello, world!")
 				.insert("Foo", "Bar")
 				.value("Foo"));
@@ -67,7 +67,7 @@ public class TestLinkedHashes
 	@Test
 	public void testMutableBackToBack()
 	{
-		assertEquals("Bar", new LinkedHashes<Integer, String>()
+		assertEquals("Bar", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(0, "Hello, world!")
 				.insert(2, "Foo")
@@ -78,7 +78,7 @@ public class TestLinkedHashes
 	@Test
 	public void testBackToBackPreFirst()
 	{
-		assertEquals("Bar", new LinkedHashes<Integer, String>()
+		assertEquals("Bar", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(1, "Hello, world!")
 				.insert(2, "Foo")
@@ -89,7 +89,7 @@ public class TestLinkedHashes
 	@Test
 	public void testMutableChunkOverrun()
 	{
-		assertEquals("World", new LinkedHashes<Integer, String>()
+		assertEquals("World", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(1, "Hello, world!")
 				.insert(3, "Foo")
@@ -101,7 +101,7 @@ public class TestLinkedHashes
 	@Test(expected=RuntimeException.class)
 	public void testValueNotFound()
 	{
-		new LinkedHashes<Integer, String>()
+		new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(0, "Hello, world!")
 				.value(100);
@@ -110,7 +110,7 @@ public class TestLinkedHashes
 	@Test(expected=RuntimeException.class)
 	public void testValueNotFoundChunkClaim()
 	{
-		new LinkedHashes<Integer, String>()
+		new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(0, "Hello, world!")
 				.value(1);
@@ -121,7 +121,8 @@ public class TestLinkedHashes
 	{
 		new LinkedElement<Integer, String>()
 				.withIndex(0)
-				.put(0, "Hello, world!")
+				.put(0, new KeyValuePair<Integer, String>()
+						.withValue("Hello, world!"))
 				.value(1, true);
 	}
 	
@@ -129,14 +130,15 @@ public class TestLinkedHashes
 	{
 		new LinkedElement<Integer, String>()
 				.withIndex(0)
-				.put(0, "Hello, world!")
+				.put(0, new KeyValuePair<Integer, String>()
+						.withValue("Hello, world!"))
 				.value(1, false);
 	}
 	
 	@Test(expected=RuntimeException.class)
 	public void testZeroSizeError()
 	{
-		new LinkedHashes<Integer, String>()
+		new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.value(0);
 	}
@@ -144,7 +146,7 @@ public class TestLinkedHashes
 	@Test
 	public void testNegativeIndex()
 	{
-		assertEquals("Hello, world!", new LinkedHashes<Integer, String>()
+		assertEquals("Hello, world!", new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(-1, "Hello, world!")
 				.value(-1));
@@ -153,14 +155,14 @@ public class TestLinkedHashes
 	@Test(expected=RuntimeException.class)
 	public void testAppendImmutable()
 	{
-		new LinkedHashes<Integer, String>()
+		new LinkedHashMap<Integer, String>()
 				.append("Hello, world!");
 	}
 
 	@Test
 	public void testMutableAppend()
 	{
-		LinkedHashes<Integer, String> data = new LinkedHashes<Integer, String>()
+		LinkedHashMap<Integer, String> data = new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.append("Hello, world!")
 				.append("Foo Bar");
@@ -171,7 +173,7 @@ public class TestLinkedHashes
 	@Test
 	public void testMutableNonSequentialAppend()
 	{
-		LinkedHashes<Integer, String> data = new LinkedHashes<Integer, String>()
+		LinkedHashMap<Integer, String> data = new LinkedHashMap<Integer, String>()
 				.withMutableIndices()
 				.insert(1, "Foo")
 				.append("Hello, world!")
@@ -184,7 +186,7 @@ public class TestLinkedHashes
 	@Test
 	public void testMutableIterator()
 	{
-		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
 				.withMutableIndices()
 				.append(0)
 				.append(1)
@@ -200,7 +202,7 @@ public class TestLinkedHashes
 	@Test
 	public void testIteratorSequential()
 	{
-		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
 				.insert(0, 0)
 				.insert(1, 1)
 				.insert(2, 2)
@@ -215,7 +217,7 @@ public class TestLinkedHashes
 	@Test
 	public void testMutableIteratorNonSequential()
 	{
-		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
 				.withMutableIndices()
 				.insert(0, 0)
 				.insert(1, 2)
@@ -231,7 +233,7 @@ public class TestLinkedHashes
 	@Test
 	public void testIteratorInsertPreStart()
 	{
-		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>()
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
 				.insert(10, 1)
 				.insert(0, 0)
 				.insert(11, 2);
@@ -244,10 +246,40 @@ public class TestLinkedHashes
 	@Test
 	public void testIteratorNotReady()
 	{
-		LinkedHashes<Integer, Integer> data = new LinkedHashes<Integer, Integer>();
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>();
 		int c = 0;
 		for (@SuppressWarnings("unused") Integer i : data.values())
 			throw new RuntimeException("Should have no elements to iterate");
 		assertEquals(0, c);
+	}
+
+	@Test
+	public void testKeyValueIterator()
+	{
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
+				.withMutableIndices()
+				.insert(0, 0)
+				.insert(1, 2)
+				.insert(1, 1)
+				.insert(4, 4)
+				.insert(3, 3);
+		int c = 0;
+		for (KeyValuePair<Integer, Integer> i : data.iterable())
+			assertEquals(c ++, i.value().intValue());
+		assertEquals(5, c);
+	}
+
+	@Test(expected=RuntimeException.class)
+	public void testMutableKeysNotReturned()
+	{
+		LinkedHashMap<Integer, Integer> data = new LinkedHashMap<Integer, Integer>()
+				.withMutableIndices()
+				.insert(0, 0)
+				.insert(1, 2)
+				.insert(1, 1)
+				.insert(4, 4)
+				.insert(3, 3);
+		for (KeyValuePair<Integer, Integer> i : data.iterable())
+			i.key();
 	}
 }
