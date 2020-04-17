@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import net.jibini.mycelium.map.impl.LinkedElement;
+import net.jibini.mycelium.map.impl.LinkedHashMap;
+
 public class TestLinkedHashMap
 {
 	@Test

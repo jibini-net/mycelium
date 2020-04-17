@@ -1,5 +1,7 @@
 package net.jibini.mycelium.map;
 
+import net.jibini.mycelium.error.MissingResourceException;
+
 public final class KeyValuePair<K, V>
 {
 	private K key;
@@ -25,13 +27,13 @@ public final class KeyValuePair<K, V>
 	{
 		if (hasKey)
 			return key;
-		throw new RuntimeException("Key-value pair has no key");
+		throw new MissingResourceException("Key-value pair has no key");
 	}
 	
 	public V value()
 	{
 		if (hasValue)
 			return value;
-		throw new RuntimeException("Key-value pair has no value");
+		throw new MissingResourceException("Key-value pair has no value");
 	}
 }

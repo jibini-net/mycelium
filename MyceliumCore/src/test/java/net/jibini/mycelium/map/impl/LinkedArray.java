@@ -1,6 +1,9 @@
-package net.jibini.mycelium.map;
+package net.jibini.mycelium.map.impl;
 
 import java.util.Iterator;
+
+import net.jibini.mycelium.map.KeyValueMap;
+import net.jibini.mycelium.map.KeyValuePair;
 
 public final class LinkedArray<V> implements KeyValueMap<Integer, V>
 {

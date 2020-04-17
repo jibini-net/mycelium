@@ -12,6 +12,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import net.jibini.mycelium.error.MissingResourceException;
+
 public final class TextFile
 {
 	private InputStream in;
@@ -79,7 +81,7 @@ public final class TextFile
 		if (hasIn)
 			return new BufferedReader(new InputStreamReader(in));
 		else
-			throw new RuntimeException("No input stream defined for text file");
+			throw new MissingResourceException("No input stream defined for text file");
 	}
 	
 	public BufferedWriter createWriter() throws FileNotFoundException
@@ -88,7 +90,7 @@ public final class TextFile
 		if (hasOut)
 			return new BufferedWriter(new OutputStreamWriter(out));
 		else
-			throw new RuntimeException("No output stream defined for text file");
+			throw new MissingResourceException("No output stream defined for text file");
 	}
 	
 	public String readRemaining(boolean closeAfter) throws IOException
@@ -128,7 +130,7 @@ public final class TextFile
 				if (hasFile)
 					from(new FileInputStream(file), new FileOutputStream(file, append));
 				else
-					throw new RuntimeException("Cannot open, no file or streams specified");
+					throw new MissingResourceException("Cannot open, no file or streams specified");
 			return this;
 	}
 	
@@ -150,7 +152,7 @@ public final class TextFile
 		if (hasFile)
 			file.delete();
 		else
-			throw new RuntimeException("No file specified, cannot delete");
+			throw new MissingResourceException("No file specified, cannot delete");
 		return this;
 	}
 	
@@ -159,7 +161,7 @@ public final class TextFile
 		if (hasFile)
 			file.deleteOnExit();
 		else
-			throw new RuntimeException("No file specified, cannot delete");
+			throw new MissingResourceException("No file specified, cannot delete");
 		return this;
 	}
 }

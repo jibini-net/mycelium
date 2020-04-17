@@ -5,6 +5,7 @@ import java.util.Iterator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import net.jibini.mycelium.error.InvalidOperationException;
 import net.jibini.mycelium.map.KeyValuePair;
 
 public final class JSONObjectBindings implements JSONBindings<String>
@@ -46,7 +47,7 @@ public final class JSONObjectBindings implements JSONBindings<String>
 	@Override
 	public JSONObjectBindings append(Object value)
 	{
-		throw new RuntimeException("Cannot append value to JSONObject");
+		throw new InvalidOperationException("Cannot append value to JSONObject");
 	}
 
 	@Override

@@ -1,7 +1,11 @@
-package net.jibini.mycelium.map;
+package net.jibini.mycelium.map.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import net.jibini.mycelium.error.EndOfStackException;
+import net.jibini.mycelium.error.MissingResourceException;
+import net.jibini.mycelium.map.KeyValuePair;
 
 public final class LinkedElement<K, V>
 {
@@ -43,7 +47,7 @@ public final class LinkedElement<K, V>
 		if (hasPrevious)
 			return previous;
 		else
-			throw new RuntimeException("Chunk has no previous link");
+			throw new EndOfStackException("Chunk has no previous link");
 	}
 	
 	public LinkedElement<K, V> next()
@@ -51,7 +55,7 @@ public final class LinkedElement<K, V>
 		if (hasNext)
 			return next;
 		else
-			throw new RuntimeException("Chunk has no next link");
+			throw new EndOfStackException("Chunk has no next link");
 	}
 	
 	
@@ -77,7 +81,7 @@ public final class LinkedElement<K, V>
 			else
 				return keyValues().get(0).value();
 		} else
-			throw new RuntimeException("Could not find value for key in chunk");
+			throw new MissingResourceException("Could not find value for key in chunk");
 	}
 	
 	public KeyValuePair<K, V> keyValue(int index, boolean mutableIndices)
@@ -90,7 +94,7 @@ public final class LinkedElement<K, V>
 			else
 				return keyValues().get(0);
 		} else
-			throw new RuntimeException("Could not find value for key in chunk");
+			throw new MissingResourceException("Could not find value for key in chunk");
 	}
 	
 	public int chunkStart() { return index; }

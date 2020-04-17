@@ -14,6 +14,8 @@ public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, Con
 {
 	private JSONObjectBindings dataMap = new JSONObjectBindings();
 	private TextFile origin = new TextFile();
+	
+	private boolean cached = false;
 
 	public ConfigFile from(InputStream in, OutputStream out) { origin.from(in, out); return this; }
 
@@ -36,6 +38,7 @@ public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, Con
 	{
 		createIfNotExist();
 		dataMap.from(new JSONObject(origin.readRemaining()));
+		cached = true;
 		return this;
 	}
 	
@@ -57,4 +60,6 @@ public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, Con
 
 	@Override
 	public JSONObjectBindings dataMap() { return dataMap; }
+	
+	public boolean isCached() { return cached; }
 }

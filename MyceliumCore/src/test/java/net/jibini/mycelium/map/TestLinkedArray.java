@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import net.jibini.mycelium.map.impl.LinkedArray;
+
 public class TestLinkedArray
 {
 	@Test

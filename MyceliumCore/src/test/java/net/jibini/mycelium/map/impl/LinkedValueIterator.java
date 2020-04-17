@@ -1,4 +1,4 @@
-package net.jibini.mycelium.map;
+package net.jibini.mycelium.map.impl;
 
 import java.util.Iterator;
 

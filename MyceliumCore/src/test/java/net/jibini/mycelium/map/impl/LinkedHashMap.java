@@ -1,6 +1,11 @@
-package net.jibini.mycelium.map;
+package net.jibini.mycelium.map.impl;
 
 import java.util.Iterator;
+
+import net.jibini.mycelium.error.InvalidOperationException;
+import net.jibini.mycelium.error.MissingResourceException;
+import net.jibini.mycelium.map.KeyValueMap;
+import net.jibini.mycelium.map.KeyValuePair;
 
 public final class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 {
@@ -114,13 +119,13 @@ public final class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 			return insertHashed(lastHash() + 1, new KeyValuePair<K, V>()
 					.withValue(value));
 		} else
-			throw new RuntimeException("May only append an index with mutable indices");
+			throw new InvalidOperationException("May only append an index with mutable indices");
 	}
 	
 	public V valueHashed(int hash)
 	{
 		if (size() == 0)
-			throw new RuntimeException("Size is zero, no values exist");
+			throw new MissingResourceException("Size is zero, no values exist");
 		else
 		{
 			LinkedElement<K, V> e = first;
@@ -134,7 +139,7 @@ public final class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 			}
 		}
 		
-		throw new RuntimeException("Could not find value for key");
+		throw new MissingResourceException("Could not find value for key");
 	}
 	
 	@Override

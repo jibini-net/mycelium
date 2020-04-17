@@ -1,5 +1,7 @@
 package net.jibini.mycelium.conf;
 
+import net.jibini.mycelium.error.EndOfStackException;
+import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.json.JSONBindings;
 
 public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, SpawnedConfigNode<K, P>>
@@ -30,7 +32,7 @@ public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, Spaw
 		if (hasParent)
 			return parent;
 		else
-			throw new RuntimeException("Cannot pop config node, is orphaned");
+			throw new EndOfStackException("Cannot pop config node, is orphaned");
 	}
 
 	@Override
@@ -39,6 +41,6 @@ public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, Spaw
 		if (hasDataMap)
 			return dataMap;
 		else
-			throw new RuntimeException("Spawned config node was not given a data map");
+			throw new MissingResourceException("Spawned config node was not given a data map");
 	}
 }
