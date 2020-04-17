@@ -19,6 +19,7 @@ import net.jibini.mycelium.routing.AsyncPatch;
 import net.jibini.mycelium.routing.Patch;
 import net.jibini.mycelium.routing.RequestRouter;
 
+@Deprecated
 public class PluginManager
 {
 	private static Logger log = LoggerFactory.getLogger(PluginManager.class);

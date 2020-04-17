@@ -8,6 +8,7 @@ import java.util.Map;
 import net.jibini.mycelium.routing.RequestCallback;
 import net.jibini.mycelium.routing.StitchLink;
 
+@Deprecated
 public class RequestHandler implements RequestCallback
 {
 	private Map<String, RequestCallback> callbacks = new HashMap<>();

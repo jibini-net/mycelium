@@ -4,6 +4,7 @@ import net.jibini.mycelium.routing.RequestCallback;
 import net.jibini.mycelium.routing.RequestRouter;
 import net.jibini.mycelium.routing.StitchLink;
 
+@Deprecated
 public class ResponderCallback implements RequestCallback
 {
 	private Responder responder;

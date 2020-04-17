@@ -3,10 +3,8 @@ package net.jibini.mycelium.map;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public interface VariedTypeMap<K>
+public interface VariedTypeMap<K> extends DirectMap<K, Object>
 {
-	Object value(K key);
-
 	String valueString(K key);
 	
 	boolean valueBoolean(K key);

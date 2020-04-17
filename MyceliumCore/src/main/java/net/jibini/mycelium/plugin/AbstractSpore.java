@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import net.jibini.mycelium.api.RequestHandler;
 import net.jibini.mycelium.routing.StitchLink;
 
+@Deprecated
 public abstract class AbstractSpore implements MyceliumSpore
 {
 	private Logger log = LoggerFactory.getLogger(getClass());

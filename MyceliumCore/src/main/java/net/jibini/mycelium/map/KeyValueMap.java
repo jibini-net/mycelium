@@ -1,10 +1,8 @@
 package net.jibini.mycelium.map;
 
-public interface KeyValueMap<K, V>
+public interface KeyValueMap<K, V> extends DirectMap<K, V>
 {
 	KeyValuePair<K, V> keyValue(K key);
-	
-	V value(K key);
 	
 	KeyValueMap<K, V> insert(KeyValuePair<K, V> keyValue);
 	

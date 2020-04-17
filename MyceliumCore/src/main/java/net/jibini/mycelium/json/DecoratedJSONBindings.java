@@ -8,7 +8,7 @@ import net.jibini.mycelium.map.VariedTypeMap;
 public abstract class DecoratedJSONBindings<K> implements VariedTypeMap<K>
 {
 	@Override
-	public Object value(K key) { return dataMap().valueString(key); }
+	public Object value(K key) { return dataMap().value(key); }
 	
 	@Override
 	public String valueString(K key) { return dataMap().valueString(key); }
