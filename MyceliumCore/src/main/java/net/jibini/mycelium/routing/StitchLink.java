@@ -1,14 +1,16 @@
 package net.jibini.mycelium.routing;
 
+import java.io.Closeable;
+
+import net.jibini.mycelium.api.ReceivedRequest;
 import net.jibini.mycelium.api.Request;
 
-public interface StitchLink
+public interface StitchLink extends Closeable
 {
-	void sendRequest(Request request);
+	void send(Request request);
 	
-	void readRequest(RequestCallback callback);
+	ReceivedRequest read();
 	
-	void addPersistentCallback(RequestCallback callback);
-	
-	void close();
+	// TODO
+//	BreakoutThread breakoutExchange(StitchLink link)
 }
