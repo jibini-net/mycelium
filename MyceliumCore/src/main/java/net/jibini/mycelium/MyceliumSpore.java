@@ -19,7 +19,8 @@ public final class MyceliumSpore implements Spore
 	
 	private ConfigFile generalConfig = new ConfigFile()
 			.at("config/" + profile().serviceName() + ".json");
-	private StitchPatch selfPatch = new StitchPatch();
+	private StitchPatch selfPatch = new StitchPatch()
+			.withName("Mycelium");
 	private RequestSwitch nodes = new RequestSwitch()
 			.routeBy("target")
 			.attach(selfPatch);

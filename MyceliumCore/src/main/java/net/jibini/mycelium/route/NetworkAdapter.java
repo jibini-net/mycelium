@@ -65,7 +65,15 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 		{
 			if (!hasSocket)
 				throw new MissingResourceException("Adapter was not given a socket");
-			return new InternalRequest().from(reader.readLine());
+			String line = reader.readLine();
+			
+			if (line == null)
+			{
+				close();
+				throw new NetworkException("Network adapter is closing");
+			}
+			
+			return new InternalRequest().from(line);
 		} catch (SocketException ex)
 		{
 			close();

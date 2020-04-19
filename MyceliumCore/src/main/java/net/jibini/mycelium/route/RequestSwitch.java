@@ -31,9 +31,13 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 		{
 			Request request = new InternalRequest().from(member.link().read());
 			JSONObject route = request.header().getJSONObject("route");
+			
 			if (route.has(uuid.toString()))
-				attached.get(route.get(uuid.toString())).link().send(request);
-			else
+			{
+				String routeReturn = route.getString(uuid.toString());
+				route.put(uuid.toString(), member.address());
+				attached.get(routeReturn).link().send(request);
+			} else
 			{
 				route.put(uuid.toString(), member.address());
 				String target = request.header().getString(headerElement);
@@ -52,7 +56,7 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 			}
 		} catch (Throwable t)
 		{
-			log.error("Error in routing request", t);
+			log.warn("Error in routing request", t);
 		}
 	}
 	
