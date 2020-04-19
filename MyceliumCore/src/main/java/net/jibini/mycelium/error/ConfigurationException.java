@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public class ConfigurationException extends RuntimeException
+public final class ConfigurationException extends RuntimeException
 {
 	public ConfigurationException(String message) { super(message); }
 	

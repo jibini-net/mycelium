@@ -33,6 +33,7 @@
 					<version>0.7.6.201602180812</version>
 					<configuration>
 						<excludes>
+							<exclude>net/jibini/mycelium/*</exclude>
 							<exclude>net/jibini/mycelium/error/**/*</exclude>
 						</excludes>
 					</configuration>

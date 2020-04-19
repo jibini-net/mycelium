@@ -4,13 +4,15 @@ import java.io.IOException;
 
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.error.ConfigurationException;
-import net.jibini.mycelium.routing.StitchLink;
+import net.jibini.mycelium.link.StitchLink;
+import net.jibini.mycelium.link.StitchPatch;
 
 public abstract class AbstractSpore implements Spore
 {
 	private ConfigFile generalConfig = new ConfigFile()
 			.at("config/" + profile().serviceName() + ".json");
-	private ConfigFile runtimeConfig = new ConfigFile();
+	
+	private StitchPatch patch = new StitchPatch();
 	
 	@Override
 	public ConfigFile generalConfig()
@@ -39,15 +41,12 @@ public abstract class AbstractSpore implements Spore
 		
 		return generalConfig;
 	}
-
-	@Override
-	public ConfigFile runtimeConfig() { return runtimeConfig.defaultValue("spore", false); }
 	
 
 	@Override
 	public StitchLink uplink()
 	{
-		return null;
+		return patch;
 	}
 	
 	public abstract SporeProfile profile();

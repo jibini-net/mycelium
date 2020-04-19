@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public class EndOfStackException extends RuntimeException
+public final class EndOfStackException extends RuntimeException
 {
 	public EndOfStackException(String message) { super(message); }
 	
