@@ -13,7 +13,7 @@ buildNumber.properties
 .project
 .settings/
 
-config/
-/CliffCore/plugins/
+*/config/*.json
+/MyceliumCore/plugins/
 *.log
 *.temp
