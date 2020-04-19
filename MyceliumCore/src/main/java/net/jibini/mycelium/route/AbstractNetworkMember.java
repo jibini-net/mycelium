@@ -16,7 +16,7 @@ public abstract class AbstractNetworkMember<THIS> implements NetworkMember
 		if (hasName)
 			return name;
 		else
-			return getClass().getSimpleName() + ':' + uuid.toString();
+			return getClass().getSimpleName() + ':' + uuid().toString();
 	}
 	
 	public THIS withName(String name)

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.error.RoutingException;
@@ -28,7 +29,7 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	{
 		try
 		{
-			Request request = member.link().read();
+			Request request = new InternalRequest().from(member.link().read());
 			JSONObject route = request.header().getJSONObject("route");
 			if (route.has(uuid.toString()))
 				attached.get(route.get(uuid.toString())).link().send(request);

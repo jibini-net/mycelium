@@ -32,6 +32,7 @@ public class TestStitchPatch
 		assertEquals("Hello, world!", patch
 				.read()
 					.body().getString("value"));
+		patch.close();
 	}
 	
 	@Test(timeout=1000)
@@ -54,6 +55,7 @@ public class TestStitchPatch
 			assertEquals(i, patch
 					.link().read()
 						.body().getInt("value"));
+		patch.close();
 	}
 
 	@Test(timeout=1000)
@@ -76,5 +78,6 @@ public class TestStitchPatch
 			assertEquals(i, patch
 					.read()
 						.body().getInt("value"));
+		patch.close();
 	}
 }

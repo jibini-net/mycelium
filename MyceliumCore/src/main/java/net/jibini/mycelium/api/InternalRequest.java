@@ -28,7 +28,7 @@ public final class InternalRequest extends DecoratedJSONBindings<String>
 	
 	public InternalRequest from(String contents) { return from(new JSONObject(contents)); }
 	
-	public InternalRequest from(InternalRequest request) { return from(request.toString()); }
+	public InternalRequest from(Request request) { return from(request.toString()); }
 	
 	public InternalRequest withHeader(JSONObject header) { dataMap().insert("header", header); return this; }
 	
