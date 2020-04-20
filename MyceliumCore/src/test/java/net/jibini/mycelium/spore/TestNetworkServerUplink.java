@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -116,5 +117,15 @@ public class TestNetworkServerUplink
 					}
 				}.start();
 			assertEquals("Endpoint", received.header().get("target"));
+	}
+	
+	@After
+	public void closeServer()
+	{
+		try
+		{
+			socket.close();
+		} catch (IOException ex)
+		{  }
 	}
 }
