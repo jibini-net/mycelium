@@ -32,6 +32,8 @@ public final class InternalRequest extends DecoratedJSONBindings<String>
 	
 	public InternalRequest withHeader(JSONObject header) { dataMap().insert("header", header); return this; }
 	
+	public InternalRequest withHeader(String key, Object value) { header().put(key, value); return this; }
+	
 	public InternalRequest withBody(JSONObject body) { dataMap().insert("body", body); return this; }
 	
 //	public THIS withResponse(JSONObject response) { dataMap().insert("response", response); return this; }
