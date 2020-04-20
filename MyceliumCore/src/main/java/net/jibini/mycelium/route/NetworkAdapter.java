@@ -22,6 +22,8 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	private BufferedReader reader;
 	private BufferedWriter writer;
 	
+	private boolean embedInteraction = false;
+	
 	public NetworkAdapter withSocket(Socket socket)
 	{
 		try
@@ -65,7 +67,18 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 		{
 			if (!hasSocket)
 				throw new MissingResourceException("Adapter was not given a socket");
-			return new InternalRequest().from(reader.readLine());
+			String line = reader.readLine();
+			
+			if (line == null)
+			{
+				close();
+				throw new NetworkException("Network adapter is closing");
+			}
+			
+			InternalRequest request = new InternalRequest().from(line);
+			if (embedInteraction)
+				request.header().put("interaction", uuid().toString());
+			return request;
 		} catch (SocketException ex)
 		{
 			close();
@@ -75,6 +88,9 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 			throw new NetworkException("Failed to read from network adapter", ex);
 		}
 	}
+	
+	public NetworkAdapter embedInteraction() { this.embedInteraction = true; return this; }
+	
 
 	@Override
 	public boolean isAlive()
