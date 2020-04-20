@@ -6,6 +6,7 @@ import java.net.Socket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.RoutedInteractions;
 import net.jibini.mycelium.conf.ConfigFile;
@@ -74,6 +75,17 @@ public abstract class AbstractSpore implements Spore
 		}
 	}
 	
+	private void serviceAvailable()
+	{
+		Request serviceAvailable = new InternalRequest()
+				.withTarget("Mycelium")
+				.withRequest("ServiceAvailable");
+		serviceAvailable.body()
+				.put("target", generalConfig().pushMap("spore").valueString("node-name"))
+				.put("service", profile().serviceName());
+		uplink().send(serviceAvailable);
+	}
+	
 	private void update()
 	{
 		Request request;
@@ -83,13 +95,14 @@ public abstract class AbstractSpore implements Spore
 			request = uplink().read();
 		} catch (Throwable t)
 		{
-			log().warn("Could not read request from uplink", t);
+			if (System.getProperties().getOrDefault("verboseNetworking", false).equals("true"))
+				log().warn("Could not read request from uplink", t);
 			return;
 		}
 		
 		try
 		{
-			interactions.continueInteraction(request);
+			interactions.continueInteraction(request, uplink());
 		} catch (Throwable t)
 		{
 			//TODO: Error responses
@@ -101,8 +114,12 @@ public abstract class AbstractSpore implements Spore
 	public AbstractSpore start()
 	{
 		log().info("Starting spore " + profile().serviceName() + " (" + profile().version() + ") . . .");
+		
 		connectUplink();
 		postUplink();
+		serviceAvailable();
+		postServiceAvailable();
+		
 		while (uplink().isAlive())
 			update();
 		return this;
@@ -120,4 +137,6 @@ public abstract class AbstractSpore implements Spore
 	public abstract SporeProfile profile();
 	
 	public abstract void postUplink();
+	
+	public abstract void postServiceAvailable();
 }

@@ -110,6 +110,12 @@ public class TestAbstractSporeUplink
 								.withTarget("Endpoint")
 								.withRequest("TestRequest"));
 					}
+
+					@Override
+					public void postServiceAvailable()
+					{
+						
+					}
 				}.start();
 			assertEquals("Endpoint", received.header().get("target"));
 	}

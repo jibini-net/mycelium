@@ -7,6 +7,8 @@ import java.net.ServerSocket;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.jibini.mycelium.api.Request;
+import net.jibini.mycelium.api.RoutedInteractions;
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.error.ConfigurationException;
 import net.jibini.mycelium.error.NetworkException;
@@ -27,8 +29,12 @@ public final class MyceliumSpore implements Spore
 	
 	private NetworkServer server = new NetworkServer()
 			.embedInteraction()
-			.attach(selfPatch)
-			.withDefaultGateway(selfPatch);
+			.attach(selfPatch);
+//			.withDefaultGateway(selfPatch);
+	private boolean isAlive = false;
+	
+	private RoutedInteractions interactions = new RoutedInteractions()
+			.registerStartPoint("ServiceAvailable", new MyceliumInteractions.ServiceAvailable());
 	
 	public void startServer()
 	{
@@ -48,18 +54,46 @@ public final class MyceliumSpore implements Spore
 		}
 	}
 	
+	private void update()
+	{
+		Request request;
+		
+		try
+		{
+			request = uplink().read();
+		} catch (Throwable t)
+		{
+			if (System.getProperties().getOrDefault("verboseNetworking", false).equals("true"))
+				log.warn("Could not read request from uplink", t);
+			return;
+		}
+		
+		try
+		{
+			interactions.continueInteraction(request, uplink());
+		} catch (Throwable t)
+		{
+			//TODO: Error responses
+			log.error("Could not continue request interaction", t);
+		}
+	}
+	
 	@Override
 	public MyceliumSpore start()
 	{
 		log.info("Starting " + profile().serviceName() + " (" + profile().version() + ")");
 		startServer();
+		isAlive = true;
+		
+		while (isAlive)
+			update();
 		return this;
 	}
 
-	public SporeProfile profile()
-	{
-		return new MyceliumProfile();
-	}
+	public SporeProfile profile() { return new MyceliumProfile(); }
+	
+	public NetworkServer server() { return server; }
+	
 
 	@Override
 	public ConfigFile generalConfig()
@@ -74,7 +108,7 @@ public final class MyceliumSpore implements Spore
 						.pop()
 						
 						.pushMap("bind")
-							.defaultValue("address", "127.0.0.1")
+							.defaultValue("address", "0.0.0.0")
 							.defaultValue("port", 25605)
 							.defaultValue("secret", "")
 						.pop()
@@ -91,4 +125,14 @@ public final class MyceliumSpore implements Spore
 
 	@Override
 	public StitchLink uplink() { return selfPatch; }
+	
+	
+	public void close()
+	{
+		log.info("Shutting down . . .");
+		isAlive = false;
+		selfPatch.close();
+		server.close();
+		log.info("Good-bye!");
+	}
 }

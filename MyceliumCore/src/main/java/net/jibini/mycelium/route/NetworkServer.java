@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.thread.NamedThread;
 
-public class NetworkServer
+public final class NetworkServer
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -52,7 +52,8 @@ public class NetworkServer
 			Thread.sleep(20);
 		} catch (Throwable t)
 		{
-			log.warn("Unable to accept incoming connection", t);
+			if (System.getProperties().getOrDefault("verboseNetworking", false).equals("true"))
+				log.warn("Unable to accept incoming connection", t);
 		}
 	}
 	
@@ -70,6 +71,8 @@ public class NetworkServer
 	public NetworkServer withDefaultGateway(NetworkMember gateway) { targets.withDefaultGateway(gateway); return this; }
 	
 	public NetworkServer start() { acceptThread.start(); return this; }
+	
+	public RequestSwitch router() { return targets; }
 	
 	
 	public NetworkServer close()

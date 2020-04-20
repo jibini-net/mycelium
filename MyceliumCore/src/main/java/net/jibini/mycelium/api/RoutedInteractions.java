@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.jibini.mycelium.error.InteractionException;
+import net.jibini.mycelium.link.StitchLink;
 
 public final class RoutedInteractions implements Interactions
 {
@@ -27,7 +28,7 @@ public final class RoutedInteractions implements Interactions
 	}
 
 	@Override
-	public Interaction continueInteraction(Request request)
+	public Interaction continueInteraction(Request request, StitchLink source)
 	{
 		if (!request.header().has("interaction"))
 			throw new InteractionException("Supplied request does not specify an interaction UUID");
@@ -40,12 +41,12 @@ public final class RoutedInteractions implements Interactions
 			active.put(interaction, spawnInteraction(reqName));
 		
 		Interaction act = active.get(interaction);
-		invokeHandlerMethod(act, request);
+		invokeHandlerMethod(act, request, source);
 		return active.get(interaction);
 	}
 	
 	// Reflection is a necessary evil.
-	private void invokeHandlerMethod(Interaction interaction, Request request)
+	private void invokeHandlerMethod(Interaction interaction, Request request, StitchLink source)
 	{
 		String reqName = request.header().getString("request");
 		Method[] methods = interaction.getClass().getMethods();
@@ -59,7 +60,14 @@ public final class RoutedInteractions implements Interactions
 					try
 					{
 						found = true;
-						m.invoke(interaction, request);
+						switch (m.getParameterCount())
+						{
+						case 1:
+							m.invoke(interaction, request);
+							break;
+						case 2:
+							m.invoke(interaction, request, source);
+						}
 					} catch (Throwable t)
 					{
 						throw new InteractionException("Failed to invoke request handle", t);

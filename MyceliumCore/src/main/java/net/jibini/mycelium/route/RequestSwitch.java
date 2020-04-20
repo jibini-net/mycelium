@@ -25,6 +25,8 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	private NetworkMember defaultGateway;
 	private boolean hasDefaultGateway = false;
 	
+	private Map<String, JSONObject> targetRoutes = new ConcurrentHashMap<>();
+	
 	private void routerLoop(NetworkMember member)
 	{
 		try
@@ -32,19 +34,28 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 			Request request = new InternalRequest().from(member.link().read());
 			JSONObject route = request.header().getJSONObject("route");
 			
-			if (route.has(uuid.toString()))
+			boolean hasExisting = route.has(uuid.toString());
+			String existing = hasExisting ? route.getString(uuid.toString()) : "";
+			route.put(uuid.toString(), member.address());
+			
+			if (hasExisting)
+				attached.get(existing).link().send(request);
+			else
 			{
-				String routeReturn = route.getString(uuid.toString());
-				route.put(uuid.toString(), member.address());
-				attached.get(routeReturn).link().send(request);
-			} else
-			{
-				route.put(uuid.toString(), member.address());
 				String target = request.header().getString(headerElement);
 				
 				if (attached.containsKey(target))
 					attached.get(target).link().send(request);
-				else
+				else if (targetRoutes.containsKey(target))
+				{
+					JSONObject routeAdds = targetRoutes.get(target);
+					for (String key : routeAdds.keySet())
+						route.put(key, routeAdds.get(key));
+					
+					target = route.getString(uuid.toString());
+					route.put(uuid.toString(), member.address());
+					attached.get(target).link().send(request);
+				} else
 					try
 					{
 						log.debug("No attachment found, resorting to default gateway");
@@ -56,7 +67,8 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 			}
 		} catch (Throwable t)
 		{
-			log.warn("Error in routing request", t);
+			if (System.getProperties().getOrDefault("verboseNetworking", false).equals("true"))
+				log.warn("Error in routing request", t);
 		}
 	}
 	
@@ -66,6 +78,8 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 		this.hasDefaultGateway = true;
 		return this;
 	}
+	
+	public RequestSwitch staticRoute(String target, JSONObject route) { this.targetRoutes.put(target, route); return this; }
 	
 	public RequestSwitch routeBy(String headerElement) { this.headerElement = headerElement; return this; }
 	
