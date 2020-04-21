@@ -10,10 +10,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.jibini.mycelium.api.Handles;
 import net.jibini.mycelium.api.Interaction;
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
+import net.jibini.mycelium.api.RequestEvent;
+import net.jibini.mycelium.event.Handles;
 import net.jibini.mycelium.link.StitchPatch;
 import net.jibini.mycelium.route.NetworkServer;
 
@@ -32,9 +33,9 @@ public class TestNetworkServerUplink
 		}
 		
 		@Handles("TestRequest")
-		public void testRequest(Request request)
+		public void testRequest(RequestEvent event)
 		{
-			received = request;
+			received = event.request();
 		}
 	}
 	

@@ -1,6 +1,6 @@
 package net.jibini.mycelium.api;
 
-public interface Interaction
-{
-	Interaction spawn();
-}
+import net.jibini.mycelium.event.Spawnable;
+
+public interface Interaction extends Spawnable
+{  }

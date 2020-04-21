@@ -12,6 +12,7 @@ import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.error.RoutingException;
+import net.jibini.mycelium.resource.Checked;
 import net.jibini.mycelium.thread.NamedThread;
 
 public final class RequestSwitch implements Switch<RequestSwitch>
@@ -22,9 +23,8 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	private Map<String, NetworkMember> attached = new ConcurrentHashMap<>();
 	private String headerElement = "target";
 	
-	private NetworkMember defaultGateway;
-	private boolean hasDefaultGateway = false;
-	
+	private Checked<NetworkMember> defaultGateway = new Checked<NetworkMember>()
+			.withName("Default Gateway");
 	private Map<String, JSONObject> targetRoutes = new ConcurrentHashMap<>();
 	
 	private void routerLoop(NetworkMember member)
@@ -74,8 +74,7 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	
 	public RequestSwitch withDefaultGateway(NetworkMember gateway)
 	{
-		this.defaultGateway = gateway;
-		this.hasDefaultGateway = true;
+		this.defaultGateway.value(gateway);
 		return this;
 	}
 	
@@ -109,11 +108,5 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	}
 	
 	@Override
-	public NetworkMember defaultGateway()
-	{
-		if (hasDefaultGateway)
-			return defaultGateway;
-		else
-			throw new MissingResourceException("Switch has no default gateway");
-	}
+	public NetworkMember defaultGateway() { return defaultGateway.value(); }
 }

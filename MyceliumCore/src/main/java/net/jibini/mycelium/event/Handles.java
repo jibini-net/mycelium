@@ -1,4 +1,4 @@
-package net.jibini.mycelium.api;
+package net.jibini.mycelium.event;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

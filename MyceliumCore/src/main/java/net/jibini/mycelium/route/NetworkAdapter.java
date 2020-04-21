@@ -13,12 +13,13 @@ import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.StitchLink;
+import net.jibini.mycelium.resource.Checked;
 
 public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 		implements StitchLink
 {
-	private Socket socket;
-	private boolean hasSocket = false;
+	private Checked<Socket> socket = new Checked<Socket>()
+			.withName("Socket");
 	private BufferedReader reader;
 	private BufferedWriter writer;
 	
@@ -28,14 +29,24 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			this.socket = socket;
-			writer = new BufferedWriter(new OutputStreamWriter(this.socket.getOutputStream()));
-			reader = new BufferedReader(new InputStreamReader(this.socket.getInputStream()));
-			hasSocket = true;
+			this.socket.value(socket);
+			writer = new BufferedWriter(new OutputStreamWriter(this.socket.value().getOutputStream()));
+			reader = new BufferedReader(new InputStreamReader(this.socket.value().getInputStream()));
 			return this;
 		} catch (IOException ex)
 		{
 			throw new NetworkException("Failed to initiate network adapter", ex);
+		}
+	}
+	
+	public NetworkAdapter connect(String address, int port)
+	{
+		try
+		{
+			return withSocket(new Socket(address, port));
+		} catch (IOException ex)
+		{
+			throw new NetworkException("Failed to open new socket", ex);
 		}
 	}
 
@@ -48,7 +59,7 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			if (!hasSocket)
+			if (!socket.has())
 				throw new MissingResourceException("Adapter was not given a socket");
 			writer.write(request.toString());
 			writer.write('\n');
@@ -65,7 +76,7 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			if (!hasSocket)
+			if (!socket.has())
 				throw new MissingResourceException("Adapter was not given a socket");
 			String line = reader.readLine();
 			
@@ -95,9 +106,9 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	@Override
 	public boolean isAlive()
 	{
-		if (!hasSocket)
+		if (!socket.has())
 			return false;
-		return !socket.isClosed();
+		return !socket.value().isClosed();
 	}
 
 	@Override
@@ -105,9 +116,7 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			if (!hasSocket)
-				throw new MissingResourceException("Adapter was not given a socket");
-			socket.close();
+			socket.value().close();
 			return this;
 		} catch (Exception ex)
 		{

@@ -4,9 +4,9 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.mycelium.api.Handles;
 import net.jibini.mycelium.api.Interaction;
-import net.jibini.mycelium.api.Request;
+import net.jibini.mycelium.api.RequestEvent;
+import net.jibini.mycelium.event.Handles;
 
 public final class MyceliumInteractions
 {
@@ -19,11 +19,11 @@ public final class MyceliumInteractions
 		public Interaction spawn() { return new ServiceAvailable(); }
 		
 		@Handles("ServiceAvailable")
-		public void serviceAvailable(Request request)
+		public void serviceAvailable(RequestEvent event)
 		{
 			//TODO: Check secret key
-			String target = request.body().getString("target");
-			JSONObject route = request.header().getJSONObject("route");
+			String target = event.request().body().getString("target");
+			JSONObject route = event.request().header().getJSONObject("route");
 			SPORE.server().router().staticRoute(target, route);
 			
 			LOG.info("Registered static route for '" + target + "'");

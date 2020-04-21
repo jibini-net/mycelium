@@ -1,39 +1,27 @@
 package net.jibini.mycelium.map;
 
-import net.jibini.mycelium.error.MissingResourceException;
+import net.jibini.mycelium.resource.Checked;
 
 public final class KeyValuePair<K, V>
 {
-	private K key;
-	private V value;
-	
-	private boolean hasKey = false, hasValue = false;
+	private Checked<K> key = new Checked<K>()
+			.withName("Key");
+	private Checked<V> value = new Checked<V>()
+			.withName("Value");
 	
 	public KeyValuePair<K, V> withKey(K key)
 	{
-		this.key = key;
-		this.hasKey = true;
+		this.key.value(key);
 		return this;
 	}
 	
 	public KeyValuePair<K, V> withValue(V value)
 	{
-		this.value = value;
-		this.hasValue = true;
+		this.value.value(value);
 		return this;
 	}
 	
-	public K key()
-	{
-		if (hasKey)
-			return key;
-		throw new MissingResourceException("Key-value pair has no key");
-	}
+	public K key() { return key.value(); }
 	
-	public V value()
-	{
-		if (hasValue)
-			return value;
-		throw new MissingResourceException("Key-value pair has no value");
-	}
+	public V value() { return value.value(); }
 }

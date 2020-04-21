@@ -12,18 +12,18 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
-import net.jibini.mycelium.error.MissingResourceException;
+import net.jibini.mycelium.resource.Checked;
 
 public final class TextFile
 {
-	private InputStream in;
-	private OutputStream out;
-	private File file;
+	private Checked<InputStream> in = new Checked<InputStream>()
+			.withName("Input Stream");
+	private Checked<OutputStream> out = new Checked<OutputStream>()
+			.withName("Output Stream");
+	private Checked<File> file = new Checked<File>()
+			.withName("File");
 	
 	private boolean open = false;
-	private boolean hasFile = false;
-	private boolean hasIn = false;
-	private boolean hasOut = false;
 	
 	public TextFile from(InputStream in, OutputStream out) { return from(in).from(out); }
 	
@@ -31,24 +31,21 @@ public final class TextFile
 	public TextFile from(InputStream in)
 	{
 		this.open = true;
-		this.in = in;
-		this.hasIn = true;
+		this.in.value(in);
 		return this;
 	}
 	
 	public TextFile from(OutputStream out)
 	{
 		this.open = true;
-		this.out = out;
-		this.hasOut = true;
+		this.out.value(out);
 		return this;
 	}
 	
 	
 	public TextFile from(File file)
 	{
-		this.file = file;
-		this.hasFile = true;
+		this.file.value(file);
 		return this;
 	}
 	
@@ -57,16 +54,16 @@ public final class TextFile
 	
 	public TextFile createIfNotExist(String write) throws IOException
 	{
-		if (hasFile)
-			if (!file.exists())
+		if (file.has())
+			if (!file.value().exists())
 			{
 				try
 				{
-					file.getParentFile().mkdirs();
+					file.value().getParentFile().mkdirs();
 				} catch (Throwable t)
 				{  }
 				
-				file.createNewFile();
+				file.value().createNewFile();
 				this.append(write);
 			}
 		return this;
@@ -78,19 +75,13 @@ public final class TextFile
 	public BufferedReader createReader() throws FileNotFoundException
 	{
 		openIfNot();
-		if (hasIn)
-			return new BufferedReader(new InputStreamReader(in));
-		else
-			throw new MissingResourceException("No input stream defined for text file");
+		return new BufferedReader(new InputStreamReader(in.value()));
 	}
 	
 	public BufferedWriter createWriter() throws FileNotFoundException
 	{
 		openIfNot();
-		if (hasOut)
-			return new BufferedWriter(new OutputStreamWriter(out));
-		else
-			throw new MissingResourceException("No output stream defined for text file");
+		return new BufferedWriter(new OutputStreamWriter(out.value()));
 	}
 	
 	public String readRemaining(boolean closeAfter) throws IOException
@@ -119,7 +110,7 @@ public final class TextFile
 
 	public TextFile overwrite(String contents) throws IOException
 	{
-		if (hasFile)
+		if (file.has())
 			close().openIfNot(false);
 		return append(contents);
 	}
@@ -127,14 +118,12 @@ public final class TextFile
 	public TextFile openIfNot(boolean append) throws FileNotFoundException
 	{
 			if (!open)
-				if (hasFile)
-				{
-					FileInputStream input = new FileInputStream(file);
-					FileOutputStream output = new FileOutputStream(file, append);
-					from(input, output);
-				}
-				else
-					throw new MissingResourceException("Cannot open, no file or streams specified");
+			{
+				FileInputStream input = new FileInputStream(file.value());
+				FileOutputStream output = new FileOutputStream(file.value(), append);
+				from(input, output);
+			}
+			
 			return this;
 	}
 	
@@ -144,28 +133,22 @@ public final class TextFile
 	public TextFile close() throws IOException
 	{
 		open = false;
-		if (hasIn)
-			in.close();
-		if (hasOut)
-			out.close();
+		if (in.has())
+			in.value().close();
+		if (out.has())
+			out.value().close();
 		return this;
 	}
 	
 	public TextFile delete()
 	{
-		if (hasFile)
-			file.delete();
-		else
-			throw new MissingResourceException("No file specified, cannot delete");
+		file.value().delete();
 		return this;
 	}
 	
 	public TextFile deleteOnExit()
 	{
-		if (hasFile)
-			file.deleteOnExit();
-		else
-			throw new MissingResourceException("No file specified, cannot delete");
+		file.value().deleteOnExit();
 		return this;
 	}
 }

@@ -1,10 +1,12 @@
 package net.jibini.mycelium.thread;
 
+import net.jibini.mycelium.resource.Checked;
+
 public final class NamedThread
 {
 	private Thread origin = new Thread();
-	private Throwable thrown;
-	private boolean hasException = false;
+	private Checked<Throwable> thrown = new Checked<Throwable>()
+			.withName("Thrown Exception");
 	
 	public NamedThread() { origin.setDaemon(false); }
 	
@@ -18,10 +20,7 @@ public final class NamedThread
 		origin.setDaemon(daemon);
 		
 		origin.setUncaughtExceptionHandler((Thread t, Throwable ex) ->
-		{
-			thrown = ex;
-			hasException = true;
-		});
+			thrown.value(ex));
 		
 		return withName(name);
 	}
@@ -42,8 +41,8 @@ public final class NamedThread
 	
 	public NamedThread checkException() throws Throwable
 	{
-		if (hasException)
-			throw thrown;
+		if (thrown.has())
+			throw thrown.value();
 		return this;
 	}
 }

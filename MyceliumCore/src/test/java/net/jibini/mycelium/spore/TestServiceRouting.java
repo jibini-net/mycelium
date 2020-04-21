@@ -2,19 +2,16 @@ package net.jibini.mycelium.spore;
 
 import static org.junit.Assert.assertEquals;
 
-import java.io.IOException;
-import java.net.Socket;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import net.jibini.mycelium.Mycelium;
-import net.jibini.mycelium.api.Handles;
 import net.jibini.mycelium.api.Interaction;
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.link.StitchLink;
+import net.jibini.mycelium.api.RequestEvent;
+import net.jibini.mycelium.event.Handles;
 import net.jibini.mycelium.route.NetworkAdapter;
 
 public class TestServiceRouting
@@ -30,18 +27,18 @@ public class TestServiceRouting
 		}
 		
 		@Handles("TestRequest")
-		public void testRequest(Request request, StitchLink source)
+		public void testRequest(RequestEvent event)
 		{
 //			System.err.println(request);
-			source.send(request);
+			event.echo();
 		}
 		
 		@Handles("TestRequest2")
-		public void testRequest2(Request request, StitchLink source)
+		public void testRequest2(RequestEvent event)
 		{
 //			System.err.println(request);
-			request.body().put("value", "Foo Bar");
-			source.send(request);
+			event.request().body().put("value", "Foo Bar");
+			event.source().send(event.request());
 		}
 	}
 	
@@ -76,10 +73,10 @@ public class TestServiceRouting
 			};
 
 	@Test(timeout=2500)
-	public void testUplinkEcho() throws InterruptedException, IOException
+	public void testUplinkEcho() throws InterruptedException
 	{
 		NetworkAdapter net = new NetworkAdapter()
-				.withSocket(new Socket("127.0.0.1", 25605));
+				.connect("127.0.0.1", 25605);
 
 		new Thread(() ->
 		{

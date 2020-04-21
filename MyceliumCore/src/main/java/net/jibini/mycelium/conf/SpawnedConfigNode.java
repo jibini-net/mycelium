@@ -3,44 +3,39 @@ package net.jibini.mycelium.conf;
 import net.jibini.mycelium.error.EndOfStackException;
 import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.json.JSONBindings;
+import net.jibini.mycelium.resource.Checked;
 
 public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, SpawnedConfigNode<K, P>>
 {
-	private P parent;
-	private boolean hasParent = false;
-	
-	private JSONBindings<K> dataMap;
-	private boolean hasDataMap = false;
+	private Checked<P> parent = new Checked<P>()
+			.withName("Parent Node");
+	private Checked<JSONBindings<K>> dataMap = new Checked<JSONBindings<K>>()
+			.withName("Data Map");
 	
 	public SpawnedConfigNode<K, P> withParent(P parent)
 	{
-		this.parent = parent;
-		this.hasParent = true;
+		this.parent.value(parent);
 		return this;
 	}
 	
 	public SpawnedConfigNode<K, P> withDataMap(JSONBindings<K> dataMap)
 	{
-		this.dataMap = dataMap;
-		this.hasDataMap = true;
+		this.dataMap.value(dataMap);
 		return this;
 	}
 	
 	@Override
 	public P pop()
 	{
-		if (hasParent)
-			return parent;
-		else
-			throw new EndOfStackException("Cannot pop config node, is orphaned");
+		try
+		{
+			return parent.value();
+		} catch (MissingResourceException ex)
+		{
+			throw new EndOfStackException("Cannot pop, node is orphaned", ex);
+		}
 	}
-
+	
 	@Override
-	public JSONBindings<K> dataMap()
-	{
-		if (hasDataMap)
-			return dataMap;
-		else
-			throw new MissingResourceException("Spawned config node was not given a data map");
-	}
+	public JSONBindings<K> dataMap() { return dataMap.value(); }
 }

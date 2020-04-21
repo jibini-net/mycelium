@@ -8,7 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.api.RoutedInteractions;
+import net.jibini.mycelium.api.Interactions;
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.error.ConfigurationException;
 import net.jibini.mycelium.error.NetworkException;
@@ -33,7 +33,7 @@ public final class MyceliumSpore implements Spore
 //			.withDefaultGateway(selfPatch);
 	private boolean isAlive = false;
 	
-	private RoutedInteractions interactions = new RoutedInteractions()
+	private Interactions interactions = new Interactions()
 			.registerStartPoint("ServiceAvailable", new MyceliumInteractions.ServiceAvailable());
 	
 	public void startServer()

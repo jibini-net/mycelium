@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.api.RoutedInteractions;
+import net.jibini.mycelium.api.Interactions;
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.error.ConfigurationException;
 import net.jibini.mycelium.error.NetworkException;
@@ -26,7 +26,7 @@ public abstract class AbstractSpore implements Spore
 //	private RequestSwitch interactionSwitch = new RequestSwitch()
 //			.routeBy("interaction")
 //			.withDefaultGateway(uplink);
-	private RoutedInteractions interactions = new RoutedInteractions();
+	private Interactions interactions = new Interactions();
 	
 	@Override
 	public ConfigFile generalConfig()
@@ -131,7 +131,7 @@ public abstract class AbstractSpore implements Spore
 	
 	public Logger log() { return log; }
 	
-	public RoutedInteractions interactions() { return interactions; }
+	public Interactions interactions() { return interactions; }
 	
 	
 	public abstract SporeProfile profile();

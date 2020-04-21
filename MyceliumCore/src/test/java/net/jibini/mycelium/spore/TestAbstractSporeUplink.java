@@ -16,10 +16,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.jibini.mycelium.api.Handles;
 import net.jibini.mycelium.api.Interaction;
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
+import net.jibini.mycelium.api.RequestEvent;
+import net.jibini.mycelium.event.Handles;
 
 public class TestAbstractSporeUplink
 {
@@ -36,9 +37,9 @@ public class TestAbstractSporeUplink
 		}
 		
 		@Handles("TestRequest")
-		public void testRequest(Request request)
+		public void testRequest(RequestEvent event)
 		{
-			received = request;
+			received = event.request();
 		}
 	}
 
