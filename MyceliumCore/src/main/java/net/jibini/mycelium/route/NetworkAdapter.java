@@ -10,7 +10,6 @@ import java.net.SocketException;
 
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.resource.Checked;
@@ -59,8 +58,9 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			if (!socket.has())
-				throw new MissingResourceException("Adapter was not given a socket");
+			// Throws an error if no socket is present
+			socket.value();
+			
 			writer.write(request.toString());
 			writer.write('\n');
 			writer.flush();
@@ -76,8 +76,7 @@ public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
 	{
 		try
 		{
-			if (!socket.has())
-				throw new MissingResourceException("Adapter was not given a socket");
+			socket.value();
 			String line = reader.readLine();
 			
 			if (line == null)
