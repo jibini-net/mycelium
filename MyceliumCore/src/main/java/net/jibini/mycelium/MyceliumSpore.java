@@ -81,12 +81,20 @@ public final class MyceliumSpore implements Spore
 	@Override
 	public MyceliumSpore start()
 	{
-		log.info("Starting " + profile().serviceName() + " (" + profile().version() + ")");
-		startServer();
-		isAlive = true;
-		
-		while (isAlive)
-			update();
+		try
+		{
+			log.info("Starting " + profile().serviceName() + " (" + profile().version() + ")");
+			startServer();
+			isAlive = true;
+		} catch (Throwable t)
+		{
+			log.error("Could not start node", t);
+			close();
+			return this;
+		}
+			
+			while (isAlive)
+				update();
 		return this;
 	}
 

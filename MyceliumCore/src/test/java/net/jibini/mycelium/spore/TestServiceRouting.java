@@ -19,6 +19,8 @@ import net.jibini.mycelium.route.NetworkAdapter;
 
 public class TestServiceRouting
 {
+	private String verboseNet = "false";
+	
 	public static class TestInteraction implements Interaction
 	{
 		@Override
@@ -44,10 +46,12 @@ public class TestServiceRouting
 	}
 	
 	@Before
-	public void startMycelium()
+	public void startMycelium() throws InterruptedException
 	{ 
-//		System.setProperty("verboseNetworking", "true");
+		verboseNet = (String)System.getProperties().getOrDefault("verboseNetworking", "false");
+		System.setProperty("verboseNetworking", "true");
 		Mycelium.main(new String[0]);
+		Thread.sleep(500);
 	}
 	
 	private SporeProfile testProfile = new SporeProfile()
@@ -124,5 +128,9 @@ public class TestServiceRouting
 	}
 	
 	@After
-	public void closeMycelium() { Mycelium.SPORE.close(); }
+	public void closeMycelium()
+	{
+		Mycelium.SPORE.close();
+		System.setProperty("verboseNetworking", verboseNet);
+	}
 }
