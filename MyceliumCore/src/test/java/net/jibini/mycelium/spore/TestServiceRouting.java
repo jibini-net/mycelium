@@ -128,9 +128,10 @@ public class TestServiceRouting
 	}
 	
 	@After
-	public void closeMycelium()
+	public void closeMycelium() throws InterruptedException
 	{
 		Mycelium.SPORE.close();
 		System.setProperty("verboseNetworking", verboseNet);
+		Thread.sleep(500);
 	}
 }
