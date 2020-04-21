@@ -128,7 +128,11 @@ public final class TextFile
 	{
 			if (!open)
 				if (hasFile)
-					from(new FileInputStream(file), new FileOutputStream(file, append));
+				{
+					FileInputStream input = new FileInputStream(file);
+					FileOutputStream output = new FileOutputStream(file, append);
+					from(input, output);
+				}
 				else
 					throw new MissingResourceException("Cannot open, no file or streams specified");
 			return this;

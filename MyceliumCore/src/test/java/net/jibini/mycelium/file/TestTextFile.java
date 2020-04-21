@@ -15,8 +15,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import net.jibini.mycelium.file.TextFile;
-
 public class TestTextFile
 {
 	private void writeTestFile(File file) throws IOException
