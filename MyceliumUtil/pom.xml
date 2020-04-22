@@ -7,13 +7,18 @@
 		<artifactId>mycelium</artifactId>
 		<version>1.0.0a-SNAPSHOT</version>
 	</parent>
-	<artifactId>MyceliumCore</artifactId>
-
+	<artifactId>MyceliumUtil</artifactId>
+	
 	<dependencies>
 		<dependency>
-			<groupId>net.jibini</groupId>
-			<artifactId>MyceliumUtil</artifactId>
-			<version>1.0.0a-SNAPSHOT</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>1.7.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20190722</version>
 		</dependency>
 		
 		<dependency>

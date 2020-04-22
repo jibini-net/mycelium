@@ -15,7 +15,7 @@ import net.jibini.mycelium.error.RoutingException;
 import net.jibini.mycelium.resource.Checked;
 import net.jibini.mycelium.thread.NamedThread;
 
-public final class RequestSwitch implements Switch<RequestSwitch>
+public final class RequestSwitch
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -83,7 +83,6 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 	public RequestSwitch routeBy(String headerElement) { this.headerElement = headerElement; return this; }
 	
 	
-	@Override
 	public RequestSwitch attach(NetworkMember member)
 	{
 		attached.put(member.address(), member);
@@ -107,6 +106,5 @@ public final class RequestSwitch implements Switch<RequestSwitch>
 		return this;
 	}
 	
-	@Override
 	public NetworkMember defaultGateway() { return defaultGateway.value(); }
 }

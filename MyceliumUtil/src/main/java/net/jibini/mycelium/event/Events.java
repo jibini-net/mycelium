@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.mycelium.error.InteractionException;
+import net.jibini.mycelium.error.HandlerException;
 import net.jibini.mycelium.error.MissingResourceException;
 
 public class Events
@@ -54,7 +54,7 @@ public class Events
 						m.invoke(handler, event);
 					} catch (Throwable t)
 					{
-						throw new InteractionException("Failed to invoke event handler", t);
+						throw new HandlerException("Failed to invoke event handler", t);
 					}
 		}
 		

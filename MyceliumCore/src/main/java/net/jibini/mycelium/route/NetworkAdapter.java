@@ -11,11 +11,12 @@ import java.net.SocketException;
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.error.NetworkException;
+import net.jibini.mycelium.link.AbstractAddressed;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.resource.Checked;
 
-public final class NetworkAdapter extends AbstractNetworkMember<NetworkAdapter>
-		implements StitchLink
+public final class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
+		implements StitchLink, NetworkMember
 {
 	private Checked<Socket> socket = new Checked<Socket>()
 			.withName("Socket");

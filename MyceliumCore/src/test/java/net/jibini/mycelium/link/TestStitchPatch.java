@@ -17,7 +17,7 @@ public class TestStitchPatch
 		
 		assertEquals("Hello, world!", new StitchPatch()
 					.send(req)
-					.link().read()
+					.uplink().read()
 					.body().getString("value"));
 	}
 

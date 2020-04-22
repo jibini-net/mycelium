@@ -12,9 +12,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 
+import net.jibini.mycelium.link.Closeable;
 import net.jibini.mycelium.resource.Checked;
 
-public final class TextFile
+public final class TextFile implements Closeable
 {
 	private Checked<InputStream> in = new Checked<InputStream>()
 			.withName("Input Stream");
@@ -130,13 +131,21 @@ public final class TextFile
 	public synchronized TextFile openIfNot() throws FileNotFoundException { return openIfNot(true); }
 	
 	
-	public TextFile close() throws IOException
+	public TextFile close()
 	{
 		open = false;
 		if (in.has())
-			in.value().close();
+			try
+			{
+				in.value().close();
+			} catch (IOException ex)
+			{  }
 		if (out.has())
-			out.value().close();
+			try
+			{
+				out.value().close();
+			} catch (IOException ex)
+			{  }
 		return this;
 	}
 	
@@ -151,4 +160,7 @@ public final class TextFile
 		file.value().deleteOnExit();
 		return this;
 	}
+
+	@Override
+	public boolean isAlive() { return open; }
 }

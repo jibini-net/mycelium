@@ -53,5 +53,6 @@
 
 	<modules>
 		<module>MyceliumCore</module>
+		<module>MyceliumUtil</module>
 	</modules>
 </project>

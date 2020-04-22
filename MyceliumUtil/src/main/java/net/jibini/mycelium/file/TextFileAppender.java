@@ -37,16 +37,7 @@ public class TextFileAppender extends AppenderSkeleton
 	}
 
 	@Override
-	public void close()
-	{
-		try
-		{
-			file.close();
-		} catch (IOException ex)
-		{
-			throw new LoggingException("Failed to close text-file log", ex);
-		}
-	}
+	public void close() { file.close(); }
 
 	@Override
 	public boolean requiresLayout() { return true; }
