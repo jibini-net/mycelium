@@ -5,7 +5,7 @@ import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.json.JSONBindings;
 import net.jibini.mycelium.resource.Checked;
 
-public final class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, SpawnedConfigNode<K, P>>
+public class SpawnedConfigNode<K, P> extends AbstractConfigNode<K, P, SpawnedConfigNode<K, P>>
 {
 	private Checked<P> parent = new Checked<P>()
 			.withName("Parent Node");

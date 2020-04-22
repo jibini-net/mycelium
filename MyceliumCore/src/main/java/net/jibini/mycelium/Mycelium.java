@@ -2,7 +2,7 @@ package net.jibini.mycelium;
 
 import net.jibini.mycelium.thread.NamedThread;
 
-public final class Mycelium
+public class Mycelium
 {
 	public static final MyceliumSpore SPORE = new MyceliumSpore();
 	

@@ -2,7 +2,7 @@ package net.jibini.mycelium.thread;
 
 import net.jibini.mycelium.resource.Checked;
 
-public final class NamedThread
+public class NamedThread
 {
 	private Thread origin = new Thread();
 	private Checked<Throwable> thrown = new Checked<Throwable>()

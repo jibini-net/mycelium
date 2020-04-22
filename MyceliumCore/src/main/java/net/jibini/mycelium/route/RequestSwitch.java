@@ -15,7 +15,7 @@ import net.jibini.mycelium.error.RoutingException;
 import net.jibini.mycelium.resource.Checked;
 import net.jibini.mycelium.thread.NamedThread;
 
-public final class RequestSwitch
+public class RequestSwitch
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	

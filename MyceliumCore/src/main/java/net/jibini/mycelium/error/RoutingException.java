@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class RoutingException extends RuntimeException
+public class RoutingException extends RuntimeException
 {
 	public RoutingException(String message) { super(message); }
 	

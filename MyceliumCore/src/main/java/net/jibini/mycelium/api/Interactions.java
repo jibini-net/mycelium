@@ -4,7 +4,7 @@ import net.jibini.mycelium.error.InteractionException;
 import net.jibini.mycelium.event.Events;
 import net.jibini.mycelium.link.StitchLink;
 
-public final class Interactions
+public class Interactions
 {
 	private Events events = new Events();
 

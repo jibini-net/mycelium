@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class HandlerException extends RuntimeException
+public class HandlerException extends RuntimeException
 {
 	public HandlerException(String message) { super(message); }
 	

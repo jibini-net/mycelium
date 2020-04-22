@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class InteractionException extends RuntimeException
+public class InteractionException extends RuntimeException
 {
 	public InteractionException(String message) { super(message); }
 	

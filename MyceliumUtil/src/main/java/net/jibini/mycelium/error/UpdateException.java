@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class UpdateException extends RuntimeException
+public class UpdateException extends RuntimeException
 {
 	public UpdateException(String message) { super(message); }
 	

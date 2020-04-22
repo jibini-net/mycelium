@@ -2,7 +2,7 @@ package net.jibini.mycelium.map;
 
 import net.jibini.mycelium.resource.Checked;
 
-public final class KeyValuePair<K, V>
+public class KeyValuePair<K, V>
 {
 	private Checked<K> key = new Checked<K>()
 			.withName("Key");

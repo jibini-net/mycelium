@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class LoggingException extends RuntimeException
+public class LoggingException extends RuntimeException
 {
 	public LoggingException(String message) { super(message); }
 	

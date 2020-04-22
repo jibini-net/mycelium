@@ -5,7 +5,7 @@ import org.json.JSONObject;
 import net.jibini.mycelium.json.DecoratedJSONBindings;
 import net.jibini.mycelium.json.JSONObjectBindings;
 
-public final class InternalRequest extends DecoratedJSONBindings<String>
+public class InternalRequest extends DecoratedJSONBindings<String>
 		implements Request
 {
 	private JSONObjectBindings content = new JSONObjectBindings()

@@ -2,7 +2,7 @@ package net.jibini.mycelium;
 
 import net.jibini.mycelium.spore.SporeProfile;
 
-public final class MyceliumProfile implements SporeProfile
+public class MyceliumProfile implements SporeProfile
 {
 	@Override
 	public String serviceName()

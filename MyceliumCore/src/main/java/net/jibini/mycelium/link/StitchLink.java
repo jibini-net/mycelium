@@ -4,14 +4,6 @@ import net.jibini.mycelium.api.Request;
 
 public interface StitchLink extends Link<Request>
 {
-	StitchLink send(Request request);
-	
-	Request read();
-	
-	boolean isAlive();
-	
-	StitchLink close();
-	
 	public static StitchLink from(Link<Request> link)
 	{
 		return new StitchLink()

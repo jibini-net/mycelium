@@ -15,7 +15,7 @@ import net.jibini.mycelium.link.AbstractAddressed;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.resource.Checked;
 
-public final class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
+public class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
 		implements StitchLink, NetworkMember
 {
 	private Checked<Socket> socket = new Checked<Socket>()
@@ -55,7 +55,7 @@ public final class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
 	
 
 	@Override
-	public StitchLink send(Request request)
+	public NetworkAdapter send(Request request)
 	{
 		try
 		{
@@ -112,7 +112,7 @@ public final class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
 	}
 
 	@Override
-	public StitchLink close()
+	public NetworkAdapter close()
 	{
 		try
 		{

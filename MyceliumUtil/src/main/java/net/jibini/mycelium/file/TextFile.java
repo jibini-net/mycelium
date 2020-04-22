@@ -15,7 +15,7 @@ import java.io.OutputStreamWriter;
 import net.jibini.mycelium.link.Closeable;
 import net.jibini.mycelium.resource.Checked;
 
-public final class TextFile implements Closeable
+public class TextFile implements Closeable
 {
 	private Checked<InputStream> in = new Checked<InputStream>()
 			.withName("Input Stream");

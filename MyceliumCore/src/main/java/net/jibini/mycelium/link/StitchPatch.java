@@ -1,29 +1,46 @@
 package net.jibini.mycelium.link;
 
 import net.jibini.mycelium.api.Request;
+import net.jibini.mycelium.link.patch.LatchedPatch;
+import net.jibini.mycelium.link.patch.Patch;
+import net.jibini.mycelium.link.tube.Tube;
 import net.jibini.mycelium.route.NetworkMember;
 
-public final class StitchPatch extends AbstractPatch<Request, StitchPatch>
-		implements NetworkMember, StitchLink
+public class StitchPatch extends AbstractAddressed<StitchPatch>
+		implements NetworkMember, StitchLink, Patch<Request>
 {
-	private Tube<Request> up = new LatchedTube<Request>();
-	private Tube<Request> down = new LatchedTube<Request>();
+	private Patch<Request> patch = new LatchedPatch<Request>();
+
+	@Override
+	public StitchLink link() { return StitchLink.from(patch.uplink()); }
+
+	@Override
+	public StitchPatch send(Request value)
+	{
+		patch.send(value);
+		return this;
+	}
+
+	@Override
+	public Request read() { return patch.read(); }
 	
+
 	@Override
-	public Tube<Request> up()
+	public StitchPatch close()
 	{
-		return up;
+		patch.close();
+		return this;
 	}
 
 	@Override
-	public Tube<Request> down()
-	{
-		return down;
-	}
+	public boolean isAlive() { return patch.isAlive(); }
 
 	@Override
-	public StitchLink link()
-	{
-		return StitchLink.from(uplink());
-	}
+	public Link<Request> uplink() { return patch.uplink(); }
+
+	@Override
+	public Tube<Request> up() { return patch.up(); }
+
+	@Override
+	public Tube<Request> down() { return patch.down(); }
 }

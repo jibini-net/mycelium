@@ -18,7 +18,7 @@ import net.jibini.mycelium.route.NetworkServer;
 import net.jibini.mycelium.spore.Spore;
 import net.jibini.mycelium.spore.SporeProfile;
 
-public final class MyceliumSpore implements Spore
+public class MyceliumSpore implements Spore
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -135,12 +135,14 @@ public final class MyceliumSpore implements Spore
 	public StitchLink uplink() { return selfPatch; }
 	
 	
-	public void close()
+	public MyceliumSpore close()
 	{
 		log.info("Shutting down . . .");
 		isAlive = false;
 		selfPatch.close();
 		server.close();
+		
 		log.info("Good-bye!");
+		return this;
 	}
 }

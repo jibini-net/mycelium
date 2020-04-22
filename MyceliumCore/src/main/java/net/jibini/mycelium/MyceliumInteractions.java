@@ -8,7 +8,7 @@ import net.jibini.mycelium.api.Interaction;
 import net.jibini.mycelium.api.RequestEvent;
 import net.jibini.mycelium.event.Handles;
 
-public final class MyceliumInteractions
+public class MyceliumInteractions
 {
 	private static final MyceliumSpore SPORE = Mycelium.SPORE;
 	private static final Logger LOG = LoggerFactory.getLogger(MyceliumInteractions.class);

@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class NetworkException extends RuntimeException
+public class NetworkException extends RuntimeException
 {
 	public NetworkException(String message) { super(message); }
 	

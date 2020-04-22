@@ -9,8 +9,10 @@ import org.json.JSONObject;
 
 import net.jibini.mycelium.file.TextFile;
 import net.jibini.mycelium.json.JSONObjectBindings;
+import net.jibini.mycelium.link.Closeable;
 
-public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, ConfigFile>
+public class ConfigFile extends AbstractConfigNode<String, ConfigFile, ConfigFile>
+		implements Closeable
 {
 	private JSONObjectBindings dataMap = new JSONObjectBindings();
 	private TextFile origin = new TextFile();
@@ -52,7 +54,8 @@ public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, Con
 	
 	public ConfigFile deleteOnExit() { origin.deleteOnExit(); return this; }
 	
-	public ConfigFile close() throws IOException { origin.close(); return this; }
+	@Override
+	public ConfigFile close() { origin.close(); return this; }
 	
 	
 	@Override
@@ -62,4 +65,7 @@ public final class ConfigFile extends AbstractConfigNode<String, ConfigFile, Con
 	public JSONObjectBindings dataMap() { return dataMap; }
 	
 	public boolean isCached() { return cached; }
+
+	@Override
+	public boolean isAlive() { return origin.isAlive(); }
 }

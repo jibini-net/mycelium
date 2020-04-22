@@ -7,7 +7,7 @@ import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.map.KeyValueMap;
 import net.jibini.mycelium.map.KeyValuePair;
 
-public final class LinkedHashMap<K, V> implements KeyValueMap<K, V>
+public class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 {
 	private int linkCount = 0;
 	private int size = 0;

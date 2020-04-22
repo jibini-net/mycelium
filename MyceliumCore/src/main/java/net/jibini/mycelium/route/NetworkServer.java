@@ -10,9 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.jibini.mycelium.error.NetworkException;
+import net.jibini.mycelium.link.Closeable;
 import net.jibini.mycelium.thread.NamedThread;
 
-public final class NetworkServer
+public class NetworkServer implements Closeable
 {
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
@@ -75,6 +76,7 @@ public final class NetworkServer
 	public RequestSwitch router() { return targets; }
 	
 	
+	@Override
 	public NetworkServer close()
 	{
 		for (Socket sock : opened)
@@ -94,4 +96,7 @@ public final class NetworkServer
 			throw new NetworkException("Failed to close server socket", ex);
 		}
 	}
+
+	@Override
+	public boolean isAlive() { return !serverSocket.isClosed(); }
 }

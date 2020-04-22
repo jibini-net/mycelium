@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class InvalidOperationException extends RuntimeException
+public class InvalidOperationException extends RuntimeException
 {
 	public InvalidOperationException(String message) { super(message); }
 	

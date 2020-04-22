@@ -7,7 +7,7 @@ import net.jibini.mycelium.error.EndOfStackException;
 import net.jibini.mycelium.error.MissingResourceException;
 import net.jibini.mycelium.map.KeyValuePair;
 
-public final class LinkedElement<K, V>
+public class LinkedElement<K, V>
 {
 	private int index;
 

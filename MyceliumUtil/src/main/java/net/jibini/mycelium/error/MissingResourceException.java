@@ -1,6 +1,6 @@
 package net.jibini.mycelium.error;
 
-public final class MissingResourceException extends RuntimeException
+public class MissingResourceException extends RuntimeException
 {
 	public MissingResourceException(String message) { super(message); }
 	

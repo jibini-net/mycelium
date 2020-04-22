@@ -5,7 +5,7 @@ import java.util.Iterator;
 import net.jibini.mycelium.map.KeyValueMap;
 import net.jibini.mycelium.map.KeyValuePair;
 
-public final class LinkedArray<V> implements KeyValueMap<Integer, V>
+public class LinkedArray<V> implements KeyValueMap<Integer, V>
 {
 	LinkedHashMap<Integer, V> origin = new LinkedHashMap<Integer, V>()
 			.withMutableIndices();
