@@ -5,5 +5,4 @@ jdk: openjdk8
 notifications:
   email: false
 after_success:
-  - mvn -Pjacoco clean test jacoco:report
-  - mvn coveralls:report
+  - ./gradlew jacocoTestReport coveralls
