@@ -109,6 +109,7 @@ public class LinkedHashMap<K, V> implements KeyValueMap<K, V>
 		return e.chunkEnd(mutableIndices);
 	}
 	
+	@Override
 	public LinkedHashMap<K, V> append(V value)
 	{
 		if (mutableIndices)

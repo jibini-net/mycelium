@@ -131,6 +131,7 @@ public class TextFile implements Closeable
 	public synchronized TextFile openIfNot() throws FileNotFoundException { return openIfNot(true); }
 	
 	
+	@Override
 	public TextFile close()
 	{
 		open = false;

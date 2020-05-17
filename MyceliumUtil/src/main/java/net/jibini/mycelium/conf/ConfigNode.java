@@ -19,5 +19,6 @@ public interface ConfigNode<K, ParentType, THIS extends ConfigNode<K, ParentType
 	
 	String toString(int indentFactor);
 	
+	@Override
 	String toString();
 }

@@ -6,5 +6,6 @@ public interface Link<T> extends Closeable
 	
 	T read();
 	
+	@Override
 	Link<T> close();
 }
