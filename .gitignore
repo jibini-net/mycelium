@@ -13,8 +13,10 @@ buildNumber.properties
 .project
 .settings/
 
-*/config/*.json
+**/config/*.json
 /MyceliumCore/plugins/
 *.log
 *.temp
+
 /.gradle/
+**/build/
