@@ -44,19 +44,6 @@ subprojects
 			xml.enabled = true
 			csv.enabled = false
 		}
-	
-		afterEvaluate
-		{
-			classDirectories.setFrom(files(classDirectories.files.collect
-			{
-				fileTree(dir: it,
-				exclude: [
-							'net/jibini/mycelium/Mycelium*',
-							'net/jibini/mycelium/file/TextFileAppender*',
-							'net/jibini/mycelium/error/**/*'
-						])
-			}))
-		}
 	}
 }
 
@@ -84,6 +71,19 @@ task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport)\
 				{
 					it.exists()
 				}))
+	}
+	
+	afterEvaluate
+	{
+		classDirectories.setFrom(files(classDirectories.files.collect
+		{
+			fileTree(dir: it,
+			exclude: [
+						'net/jibini/mycelium/Mycelium*',
+						'net/jibini/mycelium/file/TextFileAppender*',
+						'net/jibini/mycelium/error/**/*'
+					])
+		}))
 	}
 }
 
