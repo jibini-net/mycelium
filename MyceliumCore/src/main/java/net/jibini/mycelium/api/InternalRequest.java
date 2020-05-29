@@ -12,7 +12,6 @@ public class InternalRequest extends DecoratedJSONBindings<String>
 			.insert("header", new JSONObject()
 					.put("route", new JSONObject()))
 			.insert("body", new JSONObject());
-//			.insert("response", new JSONObject());
 	
 	public InternalRequest from(JSONObjectBindings content)
 	{
@@ -36,8 +35,6 @@ public class InternalRequest extends DecoratedJSONBindings<String>
 	
 	public InternalRequest withBody(JSONObject body) { dataMap().insert("body", body); return this; }
 	
-//	public THIS withResponse(JSONObject response) { dataMap().insert("response", response); return this; }
-	
 	public InternalRequest withTarget(String target) { header().put("target", target); return this; }
 	
 	public InternalRequest withRequest(String request) { header().put("request", request); return this; }
@@ -47,8 +44,6 @@ public class InternalRequest extends DecoratedJSONBindings<String>
 	
 	@Override
 	public JSONObject body() { return dataMap().valueJSONObject("body"); }
-	
-//	public JSONObject response() { return dataMap().valueJSONObject("response"); }
 
 	@Override
 	public JSONObjectBindings dataMap() { return content; }
