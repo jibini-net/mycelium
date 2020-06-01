@@ -8,7 +8,8 @@ public class NamedThread
 	private Checked<Throwable> thrown = new Checked<Throwable>()
 			.withName("Thrown Exception");
 	
-	public NamedThread() { origin.setDaemon(false); }
+	public NamedThread()
+	{ origin.setDaemon(false); }
 	
 	
 	public NamedThread withRunnable(Runnable runnable)
@@ -25,18 +26,24 @@ public class NamedThread
 		return withName(name);
 	}
 	
-	public NamedThread asDaemon() { origin().setDaemon(true); return this; }
+	public NamedThread asDaemon()
+	{ origin().setDaemon(true); return this; }
 	
-	public NamedThread withName(String name) { origin().setName(name); return this; }
+	public NamedThread withName(String name)
+	{ origin().setName(name); return this; }
 	
 	
-	public NamedThread start() { origin().start(); return this; }
+	public NamedThread start()
+	{ origin().start(); return this; }
 	
-	public NamedThread interrupt() { origin().interrupt(); return this; }
+	public NamedThread interrupt()
+	{ origin().interrupt(); return this; }
 	
-	public boolean isAlive() { return origin().isAlive(); }
+	public boolean isAlive()
+	{ return origin().isAlive(); }
 	
-	public Thread origin() { return origin; }
+	public Thread origin()
+	{ return origin; }
 	
 	
 	public NamedThread checkException() throws Throwable

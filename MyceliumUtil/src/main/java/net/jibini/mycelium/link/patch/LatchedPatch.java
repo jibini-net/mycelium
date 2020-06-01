@@ -9,8 +9,10 @@ public class LatchedPatch<T> extends AbstractPatch<T, LatchedPatch<T>>
 	private Tube<T> down = new LatchedTube<T>();
 	
 	@Override
-	public Tube<T> up() { return up; }
+	public Tube<T> up()
+	{ return up; }
 
 	@Override
-	public Tube<T> down() { return down; }
+	public Tube<T> down()
+	{ return down; }
 }

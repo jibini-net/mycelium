@@ -51,7 +51,8 @@ public class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
 	}
 
 	@Override
-	public StitchLink link() { return this; }
+	public StitchLink link()
+	{ return this; }
 	
 
 	@Override
@@ -100,7 +101,8 @@ public class NetworkAdapter extends AbstractAddressed<NetworkAdapter>
 		}
 	}
 	
-	public NetworkAdapter embedInteraction() { this.embedInteraction = true; return this; }
+	public NetworkAdapter embedInteraction()
+	{ this.embedInteraction = true; return this; }
 	
 
 	@Override

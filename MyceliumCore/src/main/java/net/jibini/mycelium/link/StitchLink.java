@@ -10,19 +10,19 @@ public interface StitchLink extends Link<Request>
 				{
 					@Override
 					public StitchLink send(Request request)
-					{
-						link.send(request);
-						return this;
-					}
+					{ link.send(request); return this; }
 
 					@Override
-					public Request read() { return link.read(); }
+					public Request read()
+					{ return link.read(); }
 
 					@Override
-					public boolean isAlive() { return link.isAlive(); }
+					public boolean isAlive()
+					{ return link.isAlive(); }
 
 					@Override
-					public StitchLink close() { link.close(); return this; }
+					public StitchLink close()
+					{ link.close(); return this; }
 				};
 	}
 }

@@ -28,15 +28,11 @@ public class TestNetworkServerUplink
 	{
 		@Override
 		public Interaction spawn()
-		{
-			return new TestInteraction();
-		}
+		{ return new TestInteraction(); }
 		
 		@Handles("TestRequest")
 		public void testRequest(RequestEvent event)
-		{
-			received = event.request();
-		}
+		{ received = event.request(); }
 	}
 	
 	@Before
@@ -72,21 +68,15 @@ public class TestNetworkServerUplink
 			{
 				@Override
 				public String serviceName()
-				{
-					return "TestSpore";
-				}
+				{ return "TestSpore"; }
 
 				@Override
 				public String version()
-				{
-					return "1.0";
-				}
+				{ return "1.0"; }
 
 				@Override
 				public int protocolVersion()
-				{
-					return 1;
-				}
+				{ return 1; }
 			};
 	
 	@Test(timeout=2000)
@@ -96,9 +86,8 @@ public class TestNetworkServerUplink
 				{
 					@Override
 					public SporeProfile profile()
-					{
-						return testProfile;
-					}
+					{ return testProfile; }
+					
 
 					@Override
 					public void postUplink()
@@ -113,9 +102,7 @@ public class TestNetworkServerUplink
 
 					@Override
 					public void postServiceAvailable()
-					{
-						
-					}
+					{  }
 				}.start();
 			assertEquals("Endpoint", received.header().get("target"));
 	}

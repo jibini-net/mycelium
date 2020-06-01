@@ -24,5 +24,6 @@ public class Interactions
 		return this;
 	}
 	
-	public Interactions registerStartPoint(String requestName, Interaction spawned) { events.registerSpawnPoint(requestName, spawned); return this; }
+	public Interactions registerStartPoint(String requestName, Interaction spawned)
+	{ events.registerSpawnPoint(requestName, spawned); return this; }
 }

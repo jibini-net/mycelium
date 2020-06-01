@@ -16,7 +16,9 @@ public class MyceliumInteractions
 	public static class ServiceAvailable implements Interaction
 	{
 		@Override
-		public Interaction spawn() { return new ServiceAvailable(); }
+		public Interaction spawn()
+		{ return new ServiceAvailable(); }
+		
 		
 		@Handles("ServiceAvailable")
 		public void serviceAvailable(RequestEvent event)

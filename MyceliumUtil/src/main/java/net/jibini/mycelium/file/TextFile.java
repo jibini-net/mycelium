@@ -26,7 +26,11 @@ public class TextFile implements Closeable
 	
 	private boolean open = false;
 	
-	public TextFile from(InputStream in, OutputStream out) { return from(in).from(out); }
+	public TextFile from(File file)
+	{ this.file.value(file); return this; }
+	
+	public TextFile from(InputStream in, OutputStream out)
+	{ return from(in).to(out); }
 	
 	
 	public TextFile from(InputStream in)
@@ -36,21 +40,15 @@ public class TextFile implements Closeable
 		return this;
 	}
 	
-	public TextFile from(OutputStream out)
+	public TextFile to(OutputStream out)
 	{
 		this.open = true;
 		this.out.value(out);
 		return this;
 	}
 	
-	
-	public TextFile from(File file)
-	{
-		this.file.value(file);
-		return this;
-	}
-	
-	public TextFile at(String path) { return from(new File(path)); }
+	public TextFile at(String path)
+	{ return from(new File(path)); }
 	
 	
 	public TextFile createIfNotExist(String write) throws IOException
@@ -70,7 +68,8 @@ public class TextFile implements Closeable
 		return this;
 	}
 	
-	public TextFile createIfNotExist() throws IOException { return createIfNotExist(""); }
+	public TextFile createIfNotExist() throws IOException
+	{ return createIfNotExist(""); }
 	
 	
 	public BufferedReader createReader() throws FileNotFoundException
@@ -98,7 +97,8 @@ public class TextFile implements Closeable
 		return builder.toString();
 	}
 	
-	public String readRemaining() throws IOException { return readRemaining(false); }
+	public String readRemaining() throws IOException
+	{ return readRemaining(false); }
 	
 	
 	public TextFile append(String contents) throws IOException
@@ -128,7 +128,8 @@ public class TextFile implements Closeable
 			return this;
 	}
 	
-	public synchronized TextFile openIfNot() throws FileNotFoundException { return openIfNot(true); }
+	public synchronized TextFile openIfNot() throws FileNotFoundException
+	{ return openIfNot(true); }
 	
 	
 	@Override
@@ -151,17 +152,12 @@ public class TextFile implements Closeable
 	}
 	
 	public TextFile delete()
-	{
-		file.value().delete();
-		return this;
-	}
+	{ file.value().delete(); return this; }
 	
 	public TextFile deleteOnExit()
-	{
-		file.value().deleteOnExit();
-		return this;
-	}
+	{ file.value().deleteOnExit(); return this; }
 
 	@Override
-	public boolean isAlive() { return open; }
+	public boolean isAlive()
+	{ return open; }
 }

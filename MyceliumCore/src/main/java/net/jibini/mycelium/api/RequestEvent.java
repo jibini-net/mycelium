@@ -12,34 +12,31 @@ public class RequestEvent implements Event
 			.withName("Request Source");
 	
 	public RequestEvent from(Request request)
-	{
-		this.request.value(request);
-		return this;
-	}
+	{ this.request.value(request); return this; }
 	
 	public RequestEvent withSource(StitchLink source)
-	{
-		this.source.value(source);
-		return this;
-	}
+	{ this.source.value(source); return this; }
+	
 	
 	@Override
-	public String type() { return request.value().header().getString("request"); }
+	public String type()
+	{ return request.value().header().getString("request"); }
 
 	@Override
-	public String parentSpawnableName() { return request.value().header().getString("interaction"); }
+	public String parentSpawnableName()
+	{ return request.value().header().getString("interaction"); }
 	
 	
-	public StitchLink source() { return source.value(); }
+	public StitchLink source()
+	{ return source.value(); }
 	
-	public Request request() { return request.value(); }
+	public Request request()
+	{ return request.value(); }
 	
 	
 	public RequestEvent respond(Request response)
-	{
-		source().send(response);
-		return this;
-	}
+	{ source().send(response); return this; }
 	
-	public RequestEvent echo() { return respond(request()); }
+	public RequestEvent echo()
+	{ return respond(request()); }
 }

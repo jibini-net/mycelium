@@ -73,14 +73,13 @@ public class RequestSwitch
 	}
 	
 	public RequestSwitch withDefaultGateway(NetworkMember gateway)
-	{
-		this.defaultGateway.value(gateway);
-		return this;
-	}
+	{ this.defaultGateway.value(gateway); return this; }
 	
-	public RequestSwitch staticRoute(String target, JSONObject route) { this.targetRoutes.put(target, route); return this; }
+	public RequestSwitch staticRoute(String target, JSONObject route)
+	{ this.targetRoutes.put(target, route); return this; }
 	
-	public RequestSwitch routeBy(String headerElement) { this.headerElement = headerElement; return this; }
+	public RequestSwitch routeBy(String headerElement)
+	{ this.headerElement = headerElement; return this; }
 	
 	
 	public RequestSwitch attach(NetworkMember member)
@@ -106,5 +105,6 @@ public class RequestSwitch
 		return this;
 	}
 	
-	public NetworkMember defaultGateway() { return defaultGateway.value(); }
+	public NetworkMember defaultGateway()
+	{ return defaultGateway.value(); }
 }

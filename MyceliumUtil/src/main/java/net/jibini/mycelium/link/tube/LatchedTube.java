@@ -51,7 +51,8 @@ public class LatchedTube<T> implements Tube<T>
 	}
 
 	@Override
-	public boolean isAlive() { return alive; }
+	public boolean isAlive()
+	{ return alive; }
 
 	
 	@Override

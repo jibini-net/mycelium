@@ -1,24 +1,13 @@
 package net.jibini.mycelium.conf;
 
-import net.jibini.mycelium.map.VariedTypeMap;
-
-public interface ConfigNode<K, ParentType, THIS extends ConfigNode<K, ParentType, ?>>
-		extends VariedTypeMap<K>
+public interface ConfigNode<K>
 {
-	THIS value(K key, Object value);
+	ConfigNode<K> value(K key, Object value);
 	
-	THIS defaultValue(K key, Object value);
+	<T> T value(K key);
 	
-	THIS append(Object value);
 	
-	ConfigNode<String, THIS, ?> pushMap(K key);
+	MapConfigNode map(K key);
 	
-	ConfigNode<Integer, THIS, ?> pushArray(K key);
-	
-	ParentType pop();
-	
-	String toString(int indentFactor);
-	
-	@Override
-	String toString();
+	ArrayConfigNode array(K key);
 }

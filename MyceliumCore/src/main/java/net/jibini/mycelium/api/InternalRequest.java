@@ -2,49 +2,56 @@ package net.jibini.mycelium.api;
 
 import org.json.JSONObject;
 
-import net.jibini.mycelium.json.DecoratedJSONBindings;
-import net.jibini.mycelium.json.JSONObjectBindings;
-
-public class InternalRequest extends DecoratedJSONBindings<String>
-		implements Request
+public class InternalRequest implements Request
 {
-	private JSONObjectBindings content = new JSONObjectBindings()
-			.insert("header", new JSONObject()
-					.put("route", new JSONObject()))
-			.insert("body", new JSONObject());
+	private JSONObject data = new JSONObject()
+			.put("header", new JSONObject()
+					.put("route", new JSONObject())
+				)
+			.put("body", new JSONObject());
 	
-	public InternalRequest from(JSONObjectBindings content)
-	{
-		this.content = content;
-		return this;
-	}
+	public InternalRequest from(JSONObject data)
+	{ this.data = data; return this; }
 	
-	public InternalRequest from(JSONObject object)
-	{
-		return from(new JSONObjectBindings()
-				.from(object));
-	}
+	public InternalRequest from(String contents)
+	{ return from(new JSONObject(contents)); }
 	
-	public InternalRequest from(String contents) { return from(new JSONObject(contents)); }
+	public InternalRequest from(Request request)
+	{ return from(request.toString()); }
 	
-	public InternalRequest from(Request request) { return from(request.toString()); }
+	public InternalRequest withHeader(JSONObject header)
+	{ data.put("header", header); return this; }
 	
-	public InternalRequest withHeader(JSONObject header) { dataMap().insert("header", header); return this; }
+	public InternalRequest withHeader(String key, Object value)
+	{ header().put(key, value); return this; }
 	
-	public InternalRequest withHeader(String key, Object value) { header().put(key, value); return this; }
+	public InternalRequest withBody(JSONObject body)
+	{ data.put("body", body); return this; }
 	
-	public InternalRequest withBody(JSONObject body) { dataMap().insert("body", body); return this; }
+	public InternalRequest withTarget(String target)
+	{ header().put("target", target); return this; }
 	
-	public InternalRequest withTarget(String target) { header().put("target", target); return this; }
+	public InternalRequest withRequest(String request)
+	{ header().put("request", request); return this; }
 	
-	public InternalRequest withRequest(String request) { header().put("request", request); return this; }
-	
-	@Override
-	public JSONObject header() { return dataMap().valueJSONObject("header"); }
 	
 	@Override
-	public JSONObject body() { return dataMap().valueJSONObject("body"); }
+	public JSONObject header() { return data.getJSONObject("header"); }
+	
+	@Override
+	public JSONObject body() { return data.getJSONObject("body"); }
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T> T value(String key)
+	{ return (T)data.get(key); }
+
 
 	@Override
-	public JSONObjectBindings dataMap() { return content; }
+	public String toString()
+	{ return data.toString(); }
+	
+	@Override
+	public String toString(int indentFactor)
+	{ return data.toString(indentFactor); }
 }

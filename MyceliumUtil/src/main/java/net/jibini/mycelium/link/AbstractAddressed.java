@@ -21,7 +21,9 @@ public class AbstractAddressed<THIS> implements Addressed
 	}
 
 	@Override
-	public UUID uuid() { return uuid; }
+	public UUID uuid()
+	{ return uuid; }
 	
-	public THIS withName(String name) { address.value(name); return (THIS)this; }
+	public THIS withName(String name)
+	{ address.value(name); return (THIS)this; }
 }

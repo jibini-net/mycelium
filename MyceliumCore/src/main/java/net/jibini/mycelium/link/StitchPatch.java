@@ -12,35 +12,36 @@ public class StitchPatch extends AbstractAddressed<StitchPatch>
 	private Patch<Request> patch = new LatchedPatch<Request>();
 
 	@Override
-	public StitchLink link() { return StitchLink.from(patch.uplink()); }
+	public StitchLink link()
+	{ return StitchLink.from(patch.uplink()); }
 
 	@Override
 	public StitchPatch send(Request value)
-	{
-		patch.send(value);
-		return this;
-	}
+	{ patch.send(value); return this; }
 
 	@Override
-	public Request read() { return patch.read(); }
+	public Request read()
+	{ return patch.read(); }
 	
 
 	@Override
 	public StitchPatch close()
-	{
-		patch.close();
-		return this;
-	}
+	{ patch.close(); return this; }
 
 	@Override
-	public boolean isAlive() { return patch.isAlive(); }
+	public boolean isAlive()
+	{ return patch.isAlive(); }
+	
 
 	@Override
-	public Link<Request> uplink() { return patch.uplink(); }
+	public Link<Request> uplink()
+	{ return patch.uplink(); }
 
 	@Override
-	public Tube<Request> up() { return patch.up(); }
+	public Tube<Request> up()
+	{ return patch.up(); }
 
 	@Override
-	public Tube<Request> down() { return patch.down(); }
+	public Tube<Request> down()
+	{ return patch.down(); }
 }

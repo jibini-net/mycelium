@@ -34,20 +34,18 @@ public abstract class AbstractSpore implements Spore
 		if (!generalConfig.isCached())
 			try
 			{
-				generalConfig.load()
+				generalConfig.load();
 						
-						.pushMap("spore")
+				generalConfig.map("spore")
 							.defaultValue("node-name", profile().serviceName())
-							.defaultValue("interaction-timeout", 3600)
-						.pop()
+							.defaultValue("interaction-timeout", 3600);
 						
-						.pushMap("uplink")
+				generalConfig.map("uplink")
 							.defaultValue("address", "127.0.0.1")
 							.defaultValue("port", 25605)
-							.defaultValue("secret", "")
-						.pop()
+							.defaultValue("secret", "");
 						
-						.write()
+				generalConfig.write()
 						.close();
 			} catch (IOException ex)
 			{
@@ -61,8 +59,8 @@ public abstract class AbstractSpore implements Spore
 	{
 		try
 		{
-			String addressName = generalConfig().pushMap("uplink").valueString("address");
-			int port = generalConfig().pushMap("uplink").valueInt("port");
+			String addressName = generalConfig().map("uplink").<String>value("address");
+			int port = generalConfig().map("uplink").<Integer>value("port");
 			
 			log().info("Connecting to uplink '" + addressName + ':' + port + "' . . .");
 			Socket socket = new Socket(addressName, port);
@@ -81,7 +79,7 @@ public abstract class AbstractSpore implements Spore
 				.withTarget("Mycelium")
 				.withRequest("ServiceAvailable");
 		serviceAvailable.body()
-				.put("target", generalConfig().pushMap("spore").valueString("node-name"))
+				.put("target", generalConfig().map("spore").<String>value("node-name"))
 				.put("service", profile().serviceName());
 		uplink().send(serviceAvailable);
 	}
@@ -127,11 +125,14 @@ public abstract class AbstractSpore implements Spore
 	
 
 	@Override
-	public StitchLink uplink() { return uplink; }
+	public StitchLink uplink()
+	{ return uplink; }
 	
-	public Logger log() { return log; }
+	public Logger log()
+	{ return log; }
 	
-	public Interactions interactions() { return interactions; }
+	public Interactions interactions()
+	{ return interactions; }
 	
 	
 	public abstract SporeProfile profile();

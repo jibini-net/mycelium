@@ -18,11 +18,10 @@ public class UpdateLatch
 	}
 	
 	public void unlock()
-	{
-		object().notifyAll();
-	}
+	{ object().notifyAll(); }
 	
-	public Object object() { return updateLock; }
+	public Object object()
+	{ return updateLock; }
 	
 	
 	public UpdateLatch synchronize(Runnable run)

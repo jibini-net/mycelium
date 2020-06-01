@@ -12,16 +12,15 @@ public abstract class AbstractPatch<T, THIS extends Patch<T>> extends AbstractAd
 			{
 				@Override
 				public Link<T> send(T value)
-				{
-					down().push(value);
-					return this;
-				}
+				{ down().push(value); return this; }
 		
 				@Override
-				public T read() { return up().pull(); }
+				public T read()
+				{ return up().pull(); }
 
 				@Override
-				public boolean isAlive() { return up().isAlive() && down().isAlive(); }
+				public boolean isAlive()
+				{ return up().isAlive() && down().isAlive(); }
 				
 
 				@Override
@@ -43,17 +42,17 @@ public abstract class AbstractPatch<T, THIS extends Patch<T>> extends AbstractAd
 
 	@Override
 	public THIS send(T value)
-	{
-		up().push(value);
-		return (THIS)this;
-	}
+	{ up().push(value); return (THIS)this; }
 
 	@Override
-	public T read() { return down().pull(); }
+	public T read()
+	{ return down().pull(); }
 
 	@Override
-	public boolean isAlive() { return up().isAlive() && down().isAlive(); }
+	public boolean isAlive()
+	{ return up().isAlive() && down().isAlive(); }
 
 	@Override
-	public Link<T> uplink() { return exposed; }
+	public Link<T> uplink()
+	{ return exposed; }
 }

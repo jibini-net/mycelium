@@ -59,21 +59,23 @@ public class NetworkServer implements Closeable
 	}
 	
 	public NetworkServer withServerSocket(ServerSocket socket)
-	{
-		this.serverSocket = socket;
-		return this;
-	}
+	{ this.serverSocket = socket; return this; }
 	
-	public NetworkServer embedInteraction() { this.embedInteraction = true; return this; }
+	public NetworkServer embedInteraction()
+	{ this.embedInteraction = true; return this; }
 	
 	
-	public NetworkServer attach(NetworkMember member) { targets.attach(member); return this; }
+	public NetworkServer attach(NetworkMember member)
+	{ targets.attach(member); return this; }
 	
-	public NetworkServer withDefaultGateway(NetworkMember gateway) { targets.withDefaultGateway(gateway); return this; }
+	public NetworkServer withDefaultGateway(NetworkMember gateway)
+	{ targets.withDefaultGateway(gateway); return this; }
 	
-	public NetworkServer start() { acceptThread.start(); return this; }
+	public NetworkServer start()
+	{ acceptThread.start(); return this; }
 	
-	public RequestSwitch router() { return targets; }
+	public RequestSwitch router()
+	{ return targets; }
 	
 	
 	@Override
@@ -98,5 +100,6 @@ public class NetworkServer implements Closeable
 	}
 
 	@Override
-	public boolean isAlive() { return !serverSocket.isClosed(); }
+	public boolean isAlive()
+	{ return !serverSocket.isClosed(); }
 }

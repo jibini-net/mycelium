@@ -37,10 +37,12 @@ public class TextFileAppender extends AppenderSkeleton
 	}
 
 	@Override
-	public void close() { file.close(); }
+	public void close()
+	{ file.close(); }
 
 	@Override
-	public boolean requiresLayout() { return true; }
+	public boolean requiresLayout()
+	{ return true; }
 	
 
 	@Override

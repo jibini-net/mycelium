@@ -62,5 +62,6 @@ public class Events
 			throw new MissingResourceException("Unexpected event type for spawnable '" + event.type() + "'");
 	}
 	
-	public Events registerSpawnPoint(String eventType, Spawnable point) { spawnPoints.put(eventType, point); return this; }
+	public Events registerSpawnPoint(String eventType, Spawnable point)
+	{ spawnPoints.put(eventType, point); return this; }
 }

@@ -33,5 +33,6 @@ public class Checked<V>
 		return this;
 	}
 	
-	public boolean has() { return has; }
+	public boolean has()
+	{ return has; }
 }

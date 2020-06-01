@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +31,6 @@ public class MyceliumSpore implements Spore
 	private NetworkServer server = new NetworkServer()
 			.embedInteraction()
 			.attach(selfPatch);
-//			.withDefaultGateway(selfPatch);
 	private boolean isAlive = false;
 	
 	private Interactions interactions = new Interactions()
@@ -40,8 +40,8 @@ public class MyceliumSpore implements Spore
 	{
 		try
 		{
-			String addressName = generalConfig().pushMap("bind").valueString("address");
-			int port = generalConfig().pushMap("bind").valueInt("port");
+			String addressName = generalConfig().<JSONObject>value("bind").getString("address");
+			int port = generalConfig().<JSONObject>value("bind").getInt("port");
 			log.info("Starting spore server on '" + addressName + ':' + port + "' . . .");
 			
 			ServerSocket socket = new ServerSocket();
@@ -98,9 +98,11 @@ public class MyceliumSpore implements Spore
 		return this;
 	}
 
-	public SporeProfile profile() { return new MyceliumProfile(); }
+	public SporeProfile profile()
+	{ return new MyceliumProfile(); }
 	
-	public NetworkServer server() { return server; }
+	public NetworkServer server()
+	{ return server; }
 	
 
 	@Override
@@ -109,19 +111,17 @@ public class MyceliumSpore implements Spore
 		if (!generalConfig.isCached())
 			try
 			{
-				generalConfig.load()
+				generalConfig.load();
 						
-						.pushMap("spore")
-							.defaultValue("node-name", "Mycelium")
-						.pop()
+				generalConfig.map("spore")
+							.defaultValue("node-name", "Mycelium");
 						
-						.pushMap("bind")
+				generalConfig.map("bind")
 							.defaultValue("address", "0.0.0.0")
 							.defaultValue("port", 25605)
-							.defaultValue("secret", "")
-						.pop()
+							.defaultValue("secret", "");
 						
-						.write()
+				generalConfig.write()
 						.close();
 			} catch (IOException ex)
 			{
@@ -132,7 +132,8 @@ public class MyceliumSpore implements Spore
 	}
 
 	@Override
-	public StitchLink uplink() { return selfPatch; }
+	public StitchLink uplink()
+	{ return selfPatch; }
 	
 	
 	public MyceliumSpore close()

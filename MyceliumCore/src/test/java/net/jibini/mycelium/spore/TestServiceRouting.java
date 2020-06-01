@@ -22,21 +22,16 @@ public class TestServiceRouting
 	{
 		@Override
 		public Interaction spawn()
-		{
-			return new TestInteraction();
-		}
+		{ return new TestInteraction(); }
 		
 		@Handles("TestRequest")
 		public void testRequest(RequestEvent event)
-		{
-//			System.err.println(request);
-			event.echo();
-		}
+		{ event.echo(); }
+		
 		
 		@Handles("TestRequest2")
 		public void testRequest2(RequestEvent event)
 		{
-//			System.err.println(request);
 			event.request().body().put("value", "Foo Bar");
 			event.source().send(event.request());
 		}
@@ -55,21 +50,15 @@ public class TestServiceRouting
 			{
 				@Override
 				public String serviceName()
-				{
-					return "TestSpore";
-				}
+				{ return "TestSpore"; }
 
 				@Override
 				public String version()
-				{
-					return "1.0";
-				}
+				{ return "1.0"; }
 
 				@Override
 				public int protocolVersion()
-				{
-					return 1;
-				}
+				{ return 1; }
 			};
 
 	@Test(timeout=2500)
@@ -84,15 +73,12 @@ public class TestServiceRouting
 					{
 						@Override
 						public SporeProfile profile()
-						{
-							return testProfile;
-						}
+						{ return testProfile; }
 	
 						@Override
 						public void postUplink()
-						{
-							interactions().registerStartPoint("TestRequest", new TestInteraction());
-						}
+						{ interactions().registerStartPoint("TestRequest", new TestInteraction()); }
+						
 	
 						@Override
 						public void postServiceAvailable()

@@ -41,7 +41,7 @@ public class TestTextFile
 		file.deleteOnExit();
 		
 		new TextFile()
-			.from(new FileOutputStream(file))
+			.to(new FileOutputStream(file))
 			.append("Hello, world!")
 			.close();
 		readAndAssert(file);
@@ -203,7 +203,7 @@ public class TestTextFile
 	public void testNoInputStream() throws IOException
 	{
 		new TextFile()
-				.from(System.out)
+				.to(System.out)
 				.createReader();
 	}
 	

@@ -2,13 +2,14 @@ package net.jibini.mycelium.api;
 
 import org.json.JSONObject;
 
-import net.jibini.mycelium.map.VariedTypeMap;
-
-public interface Request extends VariedTypeMap<String>
+public interface Request
 {
 	JSONObject header();
 	
 	JSONObject body();
+	
+	<T> T value(String key);
+	
 	
 	String toString(int indentFactor);
 	
