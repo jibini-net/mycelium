@@ -21,6 +21,7 @@ import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.RequestEvent;
 import net.jibini.mycelium.event.Handles;
+import net.jibini.mycelium.hook.Hook;
 
 public class TestAbstractSporeUplink
 {
@@ -65,7 +66,7 @@ public class TestAbstractSporeUplink
 		}).start();
 	}
 	
-	private SporeProfile testProfile = new SporeProfile()
+	private static final SporeProfile testProfile = new SporeProfile()
 			{
 				@Override
 				public String serviceName()
@@ -75,36 +76,38 @@ public class TestAbstractSporeUplink
 				public String version()
 				{ return "1.0"; }
 
-				@Override
-				public int protocolVersion()
-				{ return 1; }
+//				@Override
+//				public int protocolVersion()
+//				{ return 1; }
 			};
+			
+	public static class TestSpore extends AbstractSpore
+	{
+		@Override
+		public SporeProfile profile()
+		{ return testProfile; }
+		
+
+		@Hook(Spore.HOOK_UPLINK)
+		public void postUplink()
+		{
+			interactions().registerStartPoint("TestRequest", new TestInteraction());
+			
+			uplink().send(new InternalRequest()
+					.withHeader("interaction", UUID.randomUUID())
+					.withTarget("Endpoint")
+					.withRequest("TestRequest"));
+		}
+
+		@Hook(Spore.HOOK_SERVICE_AVAILABLE)
+		public void postServiceAvailable()
+		{  }
+	}
 	
 	@Test(timeout=3000)
 	public void testUplinkEcho() throws InterruptedException
 	{
-		new AbstractSpore()
-				{
-					@Override
-					public SporeProfile profile()
-					{ return testProfile; }
-					
-
-					@Override
-					public void postUplink()
-					{
-						interactions().registerStartPoint("TestRequest", new TestInteraction());
-						
-						uplink().send(new InternalRequest()
-								.withHeader("interaction", UUID.randomUUID())
-								.withTarget("Endpoint")
-								.withRequest("TestRequest"));
-					}
-
-					@Override
-					public void postServiceAvailable()
-					{  }
-				}.start();
+		new TestSpore().start();
 		
 		assertEquals("Endpoint", received.header().get("target"));
 	}

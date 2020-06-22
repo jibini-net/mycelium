@@ -12,7 +12,7 @@ public class MyceliumProfile implements SporeProfile
 	public String version()
 	{ return "1.0.0a-SNAPSHOT"; }
 
-	@Override
-	public int protocolVersion()
-	{ return 1; }
+//	@Override
+//	public int protocolVersion()
+//	{ return 1; }
 }

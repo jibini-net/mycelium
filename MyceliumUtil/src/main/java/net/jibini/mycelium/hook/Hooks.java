@@ -45,27 +45,17 @@ public class Hooks
 	@SuppressWarnings("unchecked")
 	public <T> Hooks callHooks(String hook, MethodCall.MethodCallback<T> callback, Object ... args)
 	{
-		for (MethodCall.MethodCallable<?> callable : hooks.get(hook))
-			try
-			{
+		if (hooks.containsKey(hook))
+			for (MethodCall.MethodCallable<?> callable : hooks.get(hook))
 				((MethodCall.MethodCallable<T>)callable).run(callback, args);
-			} catch (Throwable t)
-			{
-				throw new MethodCallException("Failed to invoke hooked method", t);
-			}
 		return this;
 	}
 	
 	public Hooks callHooks(String hook, Object ... args)
 	{
-		for (MethodCall.MethodCallable<?> callable : hooks.get(hook))
-			try
-			{
+		if (hooks.containsKey(hook))
+			for (MethodCall.MethodCallable<?> callable : hooks.get(hook))
 				callable.run((result) -> { }, args);
-			} catch (Throwable t)
-			{
-				throw new MethodCallException("Failed to invoke hooked method", t);
-			}
 		return this;
 	}
 }

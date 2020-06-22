@@ -6,5 +6,5 @@ public interface SporeProfile
 	
 	String version();
 	
-	int protocolVersion();
+//	int protocolVersion();
 }

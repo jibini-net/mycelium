@@ -12,10 +12,10 @@ import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.Interactions;
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.conf.ConfigurationException;
-import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.link.StitchPatch;
-import net.jibini.mycelium.route.NetworkServer;
+import net.jibini.mycelium.network.NetworkException;
+import net.jibini.mycelium.network.NetworkServer;
 import net.jibini.mycelium.spore.Spore;
 import net.jibini.mycelium.spore.SporeProfile;
 

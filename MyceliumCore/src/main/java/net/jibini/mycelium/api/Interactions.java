@@ -1,6 +1,5 @@
 package net.jibini.mycelium.api;
 
-import net.jibini.mycelium.error.InteractionException;
 import net.jibini.mycelium.event.Events;
 import net.jibini.mycelium.link.StitchLink;
 

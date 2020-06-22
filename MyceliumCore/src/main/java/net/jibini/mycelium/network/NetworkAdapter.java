@@ -1,4 +1,4 @@
-package net.jibini.mycelium.route;
+package net.jibini.mycelium.network;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,7 +10,6 @@ import java.net.SocketException;
 
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.AbstractAddressed;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.resource.Checked;

@@ -11,9 +11,10 @@ import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.Interactions;
 import net.jibini.mycelium.conf.ConfigFile;
 import net.jibini.mycelium.conf.ConfigurationException;
-import net.jibini.mycelium.error.NetworkException;
+import net.jibini.mycelium.hook.Hooks;
 import net.jibini.mycelium.link.StitchLink;
-import net.jibini.mycelium.route.NetworkAdapter;
+import net.jibini.mycelium.network.NetworkAdapter;
+import net.jibini.mycelium.network.NetworkException;
 
 public abstract class AbstractSpore implements Spore
 {
@@ -27,6 +28,11 @@ public abstract class AbstractSpore implements Spore
 //			.routeBy("interaction")
 //			.withDefaultGateway(uplink);
 	private Interactions interactions = new Interactions();
+	
+	private Hooks hooks = new Hooks();
+	
+	public AbstractSpore()
+	{ registerHooks(this); }
 	
 	@Override
 	public ConfigFile generalConfig()
@@ -54,7 +60,7 @@ public abstract class AbstractSpore implements Spore
 		
 		return generalConfig;
 	}
-	
+
 	public void connectUplink()
 	{
 		try
@@ -71,6 +77,8 @@ public abstract class AbstractSpore implements Spore
 		{
 			throw new NetworkException("Failed to connect to uplink", ex);
 		}
+		
+		hooks.callHooks(Spore.HOOK_UPLINK);
 	}
 	
 	private void serviceAvailable()
@@ -82,6 +90,8 @@ public abstract class AbstractSpore implements Spore
 				.put("target", generalConfig().map("spore").<String>value("node-name"))
 				.put("service", profile().serviceName());
 		uplink().send(serviceAvailable);
+		
+		hooks.callHooks(Spore.HOOK_SERVICE_AVAILABLE);
 	}
 	
 	private void update()
@@ -97,6 +107,8 @@ public abstract class AbstractSpore implements Spore
 				log().warn("Could not read request from uplink", t);
 			return;
 		}
+		
+		hooks.callHooks(Spore.HOOK_REQUEST_RECEIVED, request);
 		
 		try
 		{
@@ -114,9 +126,7 @@ public abstract class AbstractSpore implements Spore
 		log().info("Starting spore " + profile().serviceName() + " (" + profile().version() + ") . . .");
 		
 		connectUplink();
-		postUplink();
 		serviceAvailable();
-		postServiceAvailable();
 		
 		while (uplink().isAlive())
 			update();
@@ -137,7 +147,6 @@ public abstract class AbstractSpore implements Spore
 	
 	public abstract SporeProfile profile();
 	
-	public abstract void postUplink();
-	
-	public abstract void postServiceAvailable();
+	public void registerHooks(Object hooks)
+	{ this.hooks.registerHooks(hooks); }
 }

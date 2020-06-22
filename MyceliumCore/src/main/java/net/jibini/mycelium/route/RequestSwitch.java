@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
-import net.jibini.mycelium.error.RoutingException;
+import net.jibini.mycelium.network.NetworkMember;
 import net.jibini.mycelium.resource.Checked;
 import net.jibini.mycelium.resource.MissingResourceException;
 import net.jibini.mycelium.thread.NamedThread;

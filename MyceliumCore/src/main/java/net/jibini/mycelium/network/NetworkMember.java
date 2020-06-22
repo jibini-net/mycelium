@@ -1,4 +1,4 @@
-package net.jibini.mycelium.route;
+package net.jibini.mycelium.network;
 
 import net.jibini.mycelium.link.Addressed;
 import net.jibini.mycelium.link.StitchLink;

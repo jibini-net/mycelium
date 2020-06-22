@@ -17,8 +17,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import net.jibini.mycelium.api.InternalRequest;
-import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.StitchPatch;
+import net.jibini.mycelium.network.NetworkAdapter;
+import net.jibini.mycelium.network.NetworkException;
 
 public class TestNetworkAdapter
 {

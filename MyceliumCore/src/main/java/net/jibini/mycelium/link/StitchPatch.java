@@ -4,7 +4,7 @@ import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.link.patch.LatchedPatch;
 import net.jibini.mycelium.link.patch.Patch;
 import net.jibini.mycelium.link.tube.Tube;
-import net.jibini.mycelium.route.NetworkMember;
+import net.jibini.mycelium.network.NetworkMember;
 
 public class StitchPatch extends AbstractAddressed<StitchPatch>
 		implements NetworkMember, StitchLink, Patch<Request>

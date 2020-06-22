@@ -15,8 +15,9 @@ import net.jibini.mycelium.api.InternalRequest;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.RequestEvent;
 import net.jibini.mycelium.event.Handles;
+import net.jibini.mycelium.hook.Hook;
 import net.jibini.mycelium.link.StitchPatch;
-import net.jibini.mycelium.route.NetworkServer;
+import net.jibini.mycelium.network.NetworkServer;
 
 public class TestNetworkServerUplink
 {
@@ -50,10 +51,10 @@ public class TestNetworkServerUplink
 				
 				NetworkServer server = new NetworkServer();
 				server
-					.attach(patch)
-					.embedInteraction()
-					.withServerSocket(socket)
-					.start();
+						.attach(patch)
+						.embedInteraction()
+						.withServerSocket(socket)
+						.start();
 				patch.send(patch.read());
 				
 				Thread.sleep(700);
@@ -64,7 +65,7 @@ public class TestNetworkServerUplink
 		}).start();
 	}
 	
-	private SporeProfile testProfile = new SporeProfile()
+	private static final SporeProfile testProfile = new SporeProfile()
 			{
 				@Override
 				public String serviceName()
@@ -74,37 +75,40 @@ public class TestNetworkServerUplink
 				public String version()
 				{ return "1.0"; }
 
-				@Override
-				public int protocolVersion()
-				{ return 1; }
+//				@Override
+//				public int protocolVersion()
+//				{ return 1; }
 			};
+			
+	public static class TestSpore extends AbstractSpore
+	{
+		@Override
+		public SporeProfile profile()
+		{ return testProfile; }
+		
+
+		@Hook(Spore.HOOK_UPLINK)
+		public void postUplink()
+		{
+			interactions().registerStartPoint("TestRequest", new TestInteraction());
+			
+			uplink().send(new InternalRequest()
+//					.withHeader("interaction", UUID.randomUUID())
+					.withTarget("Endpoint")
+					.withRequest("TestRequest"));
+		}
+
+		@Hook(Spore.HOOK_SERVICE_AVAILABLE)
+		public void postServiceAvailable()
+		{  }
+	}
 	
 	@Test(timeout=2000)
 	public void testUplinkEcho() throws InterruptedException
 	{
-		new AbstractSpore()
-				{
-					@Override
-					public SporeProfile profile()
-					{ return testProfile; }
-					
-
-					@Override
-					public void postUplink()
-					{
-						interactions().registerStartPoint("TestRequest", new TestInteraction());
-						
-						uplink().send(new InternalRequest()
-//								.withHeader("interaction", UUID.randomUUID())
-								.withTarget("Endpoint")
-								.withRequest("TestRequest"));
-					}
-
-					@Override
-					public void postServiceAvailable()
-					{  }
-				}.start();
-			assertEquals("Endpoint", received.header().get("target"));
+		new TestSpore().start();
+			
+		assertEquals("Endpoint", received.header().get("target"));
 	}
 	
 	@After

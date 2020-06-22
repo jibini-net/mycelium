@@ -1,4 +1,4 @@
-package net.jibini.mycelium.route;
+package net.jibini.mycelium.network;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -9,8 +9,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.Closeable;
+import net.jibini.mycelium.route.RequestSwitch;
 import net.jibini.mycelium.thread.NamedThread;
 
 public class NetworkServer implements Closeable
