@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import net.jibini.mycelium.api.Request;
 import net.jibini.mycelium.api.Interactions;
 import net.jibini.mycelium.conf.ConfigFile;
-import net.jibini.mycelium.error.ConfigurationException;
+import net.jibini.mycelium.conf.ConfigurationException;
 import net.jibini.mycelium.error.NetworkException;
 import net.jibini.mycelium.link.StitchLink;
 import net.jibini.mycelium.link.StitchPatch;

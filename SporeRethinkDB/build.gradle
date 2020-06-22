@@ -1,7 +1,0 @@
-dependencies
-{
-	implementation 'com.rethinkdb:rethinkdb-driver:2.3.3',
-			
-			project(':MyceliumUtil'),
-			project(':MyceliumCore')
-}

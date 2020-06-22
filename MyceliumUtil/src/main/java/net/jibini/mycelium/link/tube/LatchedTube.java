@@ -1,7 +1,7 @@
 package net.jibini.mycelium.link.tube;
 
-import net.jibini.mycelium.error.UpdateException;
 import net.jibini.mycelium.link.Closeable;
+import net.jibini.mycelium.thread.UpdateException;
 import net.jibini.mycelium.thread.UpdateLatch;
 
 public class LatchedTube<T> implements Tube<T>

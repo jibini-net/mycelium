@@ -1,7 +1,5 @@
 package net.jibini.mycelium.resource;
 
-import net.jibini.mycelium.error.MissingResourceException;
-
 public class Checked<V>
 {
 	private V value;

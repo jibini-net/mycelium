@@ -1,4 +1,4 @@
-package net.jibini.mycelium.error;
+package net.jibini.mycelium.event;
 
 public class HandlerException extends RuntimeException
 {

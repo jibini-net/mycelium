@@ -80,7 +80,7 @@ public class TestAbstractSporeUplink
 				{ return 1; }
 			};
 	
-	@Test(timeout=1500)
+	@Test(timeout=3000)
 	public void testUplinkEcho() throws InterruptedException
 	{
 		new AbstractSpore()
@@ -105,7 +105,8 @@ public class TestAbstractSporeUplink
 					public void postServiceAvailable()
 					{  }
 				}.start();
-			assertEquals("Endpoint", received.header().get("target"));
+		
+		assertEquals("Endpoint", received.header().get("target"));
 	}
 	
 	@After

@@ -13,10 +13,10 @@ allprojects
 	
 	repositories
 	{
-	    jcenter()
-	    
+		jcenter()
+		
 		mavenCentral()
-	    mavenLocal()
+		mavenLocal()
 	}
 	
 	dependencies

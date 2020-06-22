@@ -7,8 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.jibini.mycelium.error.HandlerException;
-import net.jibini.mycelium.error.MissingResourceException;
+import net.jibini.mycelium.resource.MissingResourceException;
 
 public class Events
 {
@@ -45,12 +44,12 @@ public class Events
 		for (Method m : methods)
 		{
 			Handles[] annotations = m.getAnnotationsByType(Handles.class);
+			
 			for (Handles h : annotations)
 				if (h.value().equals(event.type()))
 					try
 					{
 						found = true;
-						System.out.println(m.getParameterCount() + m.getParameterTypes()[0].getName());
 						m.invoke(handler, event);
 					} catch (Throwable t)
 					{

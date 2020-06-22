@@ -1,7 +1,5 @@
 package net.jibini.mycelium.thread;
 
-import net.jibini.mycelium.error.UpdateException;
-
 public class UpdateLatch
 {
 	private Object updateLock = new Object();
