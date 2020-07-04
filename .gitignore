@@ -18,6 +18,8 @@ buildNumber.properties
 *.log
 *.temp
 
-/.gradle/
+**/.gradle/
 **/build/
 **/bin/
+
+**/out/
