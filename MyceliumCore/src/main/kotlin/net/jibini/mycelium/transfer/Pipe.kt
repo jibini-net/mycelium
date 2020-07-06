@@ -1,6 +1,6 @@
 package net.jibini.mycelium.transfer
 
-import net.jibini.mycelium.transfer.impl.LatchedAsyncPipeImpl
+import net.jibini.mycelium.transfer.impl.AsyncPipeImpl
 import net.jibini.mycelium.transfer.impl.LatchedPipeImpl
 
 /**
@@ -21,7 +21,7 @@ interface Pipe<T>
 
     /**
      * Hangs until a value is ready to be received through the pipe; if the pipe is asynchronous, it is not recommended
-     * to use this method if any callbacks are [subscribed][AsyncPipe#subscribe]
+     * to use this method as all written values are consumed by [subscribed callbacks][AsyncPipe#subscribe]
      */
     fun pull() : T
 
@@ -31,7 +31,10 @@ interface Pipe<T>
         fun <T> create() = LatchedPipeImpl<T>()
 
         @JvmStatic
-        fun <T> createAsync() = LatchedAsyncPipeImpl<T>()
+        fun <T> createAsync(origin : Pipe<T>) = AsyncPipeImpl(origin)
+
+        @JvmStatic
+        fun <T> createAsync() = createAsync<T>(create())
     }
 }
 

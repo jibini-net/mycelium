@@ -5,6 +5,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import java.lang.IllegalStateException
 
 class TestDocumentProxy
 {
@@ -89,6 +90,23 @@ class TestDocumentProxy
 
         assertEquals("Foo, bar", document.subDocument().value())
     }
+
+    @Test(expected = IllegalStateException::class) fun documentProxyInvalidGetter()
+    {
+        DocumentProxy.createFromJSON<TestDocument>(JSONObject())
+                .invalid("Hello, world!", "Foo, bar")
+    }
+
+    @Test fun documentProxyCreateNewInstance()
+    {
+        val document = DocumentMessage(JSONObject())
+        document.build<TestDocument>().value("Hello, world!")
+
+        assertEquals("Hello, world!", document.build<TestDocument>().value())
+        assertEquals("Hello, world!", document.internal.getString("value"))
+
+        assertEquals("{\"value\":\"Hello, world!\"}", document.toString())
+    }
 }
 
 interface TestDocument
@@ -98,6 +116,8 @@ interface TestDocument
     fun value() : String
 
     fun value(value : String)
+
+    fun invalid(arg0 : String, arg1 : String) : String
 
     fun subDocuments() : List<TestSubDocument>
 

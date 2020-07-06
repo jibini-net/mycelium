@@ -10,13 +10,13 @@ class TestPatch
         val patch = Patch.create<String>()
         patch.push("Hello, world!")
 
-        Assert.assertEquals("Hello, world!", patch.uplink().pull())
+        Assert.assertEquals("Hello, world!", patch.uplink.pull())
     }
 
     @Test fun patchDownstreamSynchronous()
     {
         val patch = Patch.create<String>()
-        patch.uplink().push("Hello, world!")
+        patch.uplink.push("Hello, world!")
 
         Assert.assertEquals("Hello, world!", patch.pull())
     }

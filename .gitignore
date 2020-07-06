@@ -22,4 +22,5 @@ buildNumber.properties
 **/build/
 **/bin/
 
+**/.idea/
 **/out/

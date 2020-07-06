@@ -19,7 +19,7 @@ interface Router<T : Addressed>
     /**
      * If no attachment can be found for a message, it will be sent to this default location
      */
-    var defaultGateway : AsyncPipe<T>?
+    var defaultGateway : Pipe<T>?
 
     /**
      * Whether the return route should be cached in the message; allows messages to return to a sender

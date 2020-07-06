@@ -17,22 +17,18 @@ class TestPipe
 
     @Test fun pipeTransferAwaitSynchronous()
     {
+        var value : String? = null
+
         val pipe = Pipe.create<String>()
 
-        var valueA : String? = null
-        var valueB : String? = null
-
         val await = thread {
-            valueA = pipe.pull()
-            valueB = pipe.pull()
+            value = pipe.pull()
         }
 
         pipe.push("Hello, world!")
-        pipe.push("Foo, bar")
 
         await.join()
-        assertEquals("Hello, world!", valueA!!)
-        assertEquals("Foo, bar", valueB!!)
+        assertEquals("Hello, world!", value!!)
     }
 
     @Test fun pipeTransferSubscription()

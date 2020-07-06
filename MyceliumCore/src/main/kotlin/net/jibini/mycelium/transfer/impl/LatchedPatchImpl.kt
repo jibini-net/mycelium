@@ -7,11 +7,11 @@ class LatchedPatchImpl<T> : Patch<T>
 {
     private val internal = Pipe.create<T>()
 
-    override fun uplink() = SourcedPipeImpl(this::pull, internal::push)
+    override val uplink = SourcedPipeImpl(this::pull, internal::push)
 
     override fun push(value: T)
     {
-        uplink().push(value)
+        uplink.push(value)
     }
 
     override fun pull(): T = internal.pull()

@@ -2,13 +2,14 @@ package net.jibini.mycelium.transfer.impl
 
 import net.jibini.mycelium.transfer.Addressed
 import net.jibini.mycelium.transfer.AsyncPipe
+import net.jibini.mycelium.transfer.Pipe
 import net.jibini.mycelium.transfer.Router
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 class RouterImpl<T : Addressed>(override var routeBy : String) : Router<T>
 {
-    override var defaultGateway : AsyncPipe<T>? = null
+    override var defaultGateway : Pipe<T>? = null
     override var embedReturns : Boolean = false
 
     override val uuid : UUID = UUID.randomUUID()
