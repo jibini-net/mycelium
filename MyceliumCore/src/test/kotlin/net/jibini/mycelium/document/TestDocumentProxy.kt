@@ -4,6 +4,7 @@ import net.jibini.mycelium.document.impl.DocumentProxy
 import org.json.JSONArray
 import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.lang.IllegalStateException
 
@@ -105,7 +106,7 @@ class TestDocumentProxy
         assertEquals("Hello, world!", document.build<TestDocument>().value())
         assertEquals("Hello, world!", document.internal.getString("value"))
 
-        assertEquals("{\"value\":\"Hello, world!\"}", document.toString())
+        assertTrue(document.toString().contains("\"value\":\"Hello, world!\""))
     }
 }
 
