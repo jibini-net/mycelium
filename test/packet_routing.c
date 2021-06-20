@@ -10,24 +10,32 @@
 #include "uuid.h"
 #include "patch.h"
 
-void test_packet();
-void test_uuid();
-void test_uuid_table();
-void test_tube();
-void test_patch();
+int test_packet();
+int test_uuid();
+int test_uuid_table();
+int test_tube();
+int test_patch();
+
+#define TEST_BOUNDARY(append) printf("=================================%s\n", append)
+#define TEST(name, task, fail) TEST_BOUNDARY("");\
+    printf("Running test: '%s'\n---------------------------------\n", name);\
+    *fail += task();\
+    TEST_BOUNDARY("\n");
 
 int main(int args_c, char **args)
 {
-    test_packet();
-    test_uuid();
-    test_uuid_table();
-    test_tube();
-    test_patch();
+    int fail = 0;
 
-    return 0;
+    TEST("Packet put and retrieve", test_packet, &fail);
+    TEST("UUID generation and printing", test_uuid, &fail);
+    TEST("UUID hash table associations", test_uuid_table, &fail);
+    TEST("Tube send and receive", test_tube, &fail);
+    TEST("Patch upstream and downstream", test_patch, &fail);
+
+    return fail;
 }
 
-void test_packet()
+int test_packet()
 {
     // Create new packet
     pckt_t packet = create_pckt();
@@ -45,9 +53,11 @@ void test_packet()
     free(foo);
     free(bar);
     free_pckt(packet);
+
+    return 0;
 }
 
-void test_uuid()
+int test_uuid()
 {
     int i = 0;
     for (i; i < 4; i++)
@@ -57,13 +67,15 @@ void test_uuid()
 
         // Convert the UUID to hex string
         char *str = uuid_to_string(uuid, true);
-        printf("UUID (%02d): %s\n", i, str);
+        printf("UUID (%d): %s\n", i, str);
         // Free stringified UUID memory
         free(str);
     }
+
+    return 0;
 }
 
-void test_uuid_table()
+int test_uuid_table()
 {
     uuid_table_t table = create_uuid_table();
 
@@ -78,9 +90,11 @@ void test_uuid_table()
     printf("0 -> %d, 1 -> %d, 2 -> %d, 3 -> %d\n", (int)a, (int)b, (int)c, (int)n);
 
     free_uuid_table(table);
+
+    return 0;
 }
 
-void test_tube()
+int test_tube()
 {
     char *a_str = "A";
     char *b_str = "B";
@@ -97,9 +111,11 @@ void test_tube()
     printf("%s\n", (char *)tube_pull(tube));
 
     free_tube(tube);
+
+    return 0;
 }
 
-void test_patch()
+int test_patch()
 {
     // Create a patch
     patch_t patch = create_patch(32);
@@ -110,14 +126,16 @@ void test_patch()
     // Test sending things downstream
     char *test_str = "Hello, world!";
     endpt_push(upstream, test_str);
-    char *str = endpt_pull(downstream);
+    char *str = (char *)endpt_pull(downstream);
     printf("From patch endpoints: '%s'\n", str);
     // Test sending things upstream
     test_str = "Foo, bar";
     endpt_push(downstream, test_str);
-    str = endpt_pull(upstream);
+    str = (char *)endpt_pull(upstream);
     printf("From patch endpoints: '%s'\n", str);
     
-    // Free the patch (a)
+    // Free the patch
     free_patch(patch);
+
+    return 0;
 }

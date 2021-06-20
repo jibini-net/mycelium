@@ -2,6 +2,9 @@ cmake_minimum_required(VERSION 3.8)
 
 project("Mycelium")
 
+include(CTest)
+enable_testing()
+
 #
 # Use the latest supported standards for C and C++ syntax
 #
@@ -14,15 +17,34 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 #
-# Temporary test executable; will be a library later on
+# Library for spore development kit
 #
-add_executable(MyceliumCore
-    "src/mycelium.c"
-    
+add_library(MyceliumCore STATIC
+    "include/spore.h"
+    "src/spore.c"
+
+    "include/packet.h"
     "src/packet.c"
-    "src/uuid.c"
+    "include/patch.h"
     "src/patch.c"
+    "include/uuid.h"
+    "src/uuid.c"
 )
+
+#
+# Mycelium Spore runtime executable
+#
+add_executable(MyceliumSpore
+    "src/spore.c"
+)
+target_link_libraries(MyceliumSpore PRIVATE MyceliumCore)
+
+#
+# Tests (via several executables and tests)
+#
+add_executable(TestPacketRouting "test/packet_routing.c")
+target_link_libraries(TestPacketRouting PRIVATE MyceliumCore)
+add_test(TestPacketRouting TestPacketRouting)
 
 #
 # Link standard thread and syncrhonization libraries

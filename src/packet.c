@@ -43,7 +43,7 @@ pckt_data_t pckt_get(pckt_t packet, char *name, pckt_size_t *size)
 
 void pckt_put(pckt_t packet, char *name, pckt_data_t data, pckt_size_t size)
 {
-    packet->packet_data = (pckt_data_t *)realloc(packet->packet_data, packet->packet_header.packet_size + size);
+    packet->packet_data = (pckt_data_t)realloc(packet->packet_data, packet->packet_header.packet_size + size);
     memcpy(&packet->packet_data[packet->packet_header.packet_size], data, size);
     packet->packet_header.packet_size += size;
 
