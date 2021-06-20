@@ -18,8 +18,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 #
 add_executable(MyceliumCore
     "src/mycelium.c"
+    
     "src/packet.c"
     "src/uuid.c"
+    "src/patch.c"
 )
 
 #

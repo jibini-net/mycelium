@@ -8,11 +8,27 @@
 
 #include "packet.h"
 #include "uuid.h"
+#include "patch.h"
+
+void test_packet();
+void test_uuid();
+void test_uuid_table();
+void test_tube();
 
 int main(int args_c, char **args)
 {
+    test_packet();
+    test_uuid();
+    test_uuid_table();
+    test_tube();
+
+    return 0;
+}
+
+void test_packet()
+{
     // Create new packet
-    pckt_t *packet = create_pckt();
+    pckt_t packet = create_pckt();
     // Put test data as data partitions
     pckt_put(packet, "foo", "Hello, world!", sizeof("Hello, world!") - sizeof(""));
     printf("Packet size: %u\n", packet->packet_header.packet_size);
@@ -27,8 +43,10 @@ int main(int args_c, char **args)
     free(foo);
     free(bar);
     free_pckt(packet);
+}
 
-
+void test_uuid()
+{
     int i = 0;
     for (i; i < 4; i++)
     {
@@ -41,8 +59,10 @@ int main(int args_c, char **args)
         // Free stringified UUID memory
         free(str);
     }
-    
+}
 
+void test_uuid_table()
+{
     uuid_table_t table = create_uuid_table();
 
     table_put(table, 0, 1);
@@ -56,7 +76,23 @@ int main(int args_c, char **args)
     printf("0 -> %d, 1 -> %d, 2 -> %d, 3 -> %d\n", (int)a, (int)b, (int)c, (int)n);
 
     free_uuid_table(table);
+}
 
+void test_tube()
+{
+    char *a_str = "A";
+    char *b_str = "B";
+    char *c_str = "C";
 
-    return 0;
+    tube_t tube = create_tube(32);
+
+    tube_push(tube, a_str);
+    tube_push(tube, b_str);
+    tube_push(tube, c_str);
+
+    printf("%s\n", (char *)tube_pull(tube));
+    printf("%s\n", (char *)tube_pull(tube));
+    printf("%s\n", (char *)tube_pull(tube));
+
+    free_tube(tube);
 }

@@ -4,7 +4,7 @@
 typedef unsigned int pckt_size_t;
 typedef unsigned int pckt_hash_t;
 // Data range in memory type
-typedef char pckt_data_t;
+typedef char *pckt_data_t;
 
 // Packet header and hash data
 struct phdr_t
@@ -26,14 +26,14 @@ struct pckt_t
     // Packet's header data
     phdr_t packet_header;
     // Packet's body data
-    pckt_data_t *packet_data;
+    pckt_data_t packet_data;
 };
-typedef struct pckt_t pckt_t;
+typedef struct pckt_t *pckt_t;
 
 /**
  * @return Created empty packet with default initialized values.
  */
-pckt_t *create_pckt();
+pckt_t create_pckt();
 
 /**
  * Partitions the provided packet's body to a cropped range of its data.
@@ -44,7 +44,7 @@ pckt_t *create_pckt();
  * 
  * @return Partitioned data as a generic partition pointer type.
  */
-pckt_data_t *pckt_part(pckt_t *packet, int start, pckt_size_t size);
+pckt_data_t pckt_part(pckt_t packet, int start, pckt_size_t size);
 
 /**
  * Reads the provided packet's header to find and partition data associated with
@@ -57,7 +57,7 @@ pckt_data_t *pckt_part(pckt_t *packet, int start, pckt_size_t size);
  * 
  * @return Partitioned data as a generic partition pointer type.
  */
-pckt_data_t *pckt_get(pckt_t *packet, char *name, pckt_size_t *size);
+pckt_data_t pckt_get(pckt_t packet, char *name, pckt_size_t *size);
 
 /**
  * Adds the provided data to the packet's body and registers it in the packet's
@@ -67,7 +67,7 @@ pckt_data_t *pckt_get(pckt_t *packet, char *name, pckt_size_t *size);
  * @param name Name associated with the data in the packet.
  * @param size Size of the data provided as number of bytes.
  */
-void pckt_put(pckt_t *packet, char *name, pckt_data_t *data, pckt_size_t size);
+void pckt_put(pckt_t packet, char *name, pckt_data_t data, pckt_size_t size);
 
 /**
  * Calculates a hash value to verify or compare packets' contents.
@@ -76,9 +76,9 @@ void pckt_put(pckt_t *packet, char *name, pckt_data_t *data, pckt_size_t size);
  * 
  * @return Calculated hash bytes for comparison or tracking.
  */
-pckt_hash_t pckt_hash(pckt_t *packet);
+pckt_hash_t pckt_hash(pckt_t packet);
 
 /**
  * @param packet Packet whose contents and data will be freed.
  */
-void free_pckt(pckt_t *packet);
+void free_pckt(pckt_t packet);
