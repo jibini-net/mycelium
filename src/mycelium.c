@@ -14,6 +14,7 @@ void test_packet();
 void test_uuid();
 void test_uuid_table();
 void test_tube();
+void test_patch();
 
 int main(int args_c, char **args)
 {
@@ -21,6 +22,7 @@ int main(int args_c, char **args)
     test_uuid();
     test_uuid_table();
     test_tube();
+    test_patch();
 
     return 0;
 }
@@ -95,4 +97,27 @@ void test_tube()
     printf("%s\n", (char *)tube_pull(tube));
 
     free_tube(tube);
+}
+
+void test_patch()
+{
+    // Create a patch
+    patch_t patch = create_patch(32);
+    // Create both ends of the patch
+    endpt_t upstream = create_endpt(patch, UPSTREAM);
+    endpt_t downstream = create_endpt(patch, DOWNSTREAM);
+
+    // Test sending things downstream
+    char *test_str = "Hello, world!";
+    endpt_push(upstream, test_str);
+    char *str = endpt_pull(downstream);
+    printf("From patch endpoints: '%s'\n", str);
+    // Test sending things upstream
+    test_str = "Foo, bar";
+    endpt_push(downstream, test_str);
+    str = endpt_pull(upstream);
+    printf("From patch endpoints: '%s'\n", str);
+    
+    // Free the patch (a)
+    free_patch(patch);
 }

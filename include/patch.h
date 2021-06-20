@@ -54,3 +54,31 @@ void tube_push(tube_t tube, void *ptr);
  * @return Pulled pointer from the queue buffer.
  */
 void *tube_pull(tube_t tube);
+
+struct patch_t
+{
+    tube_t tube_a;
+    tube_t tube_b;
+};
+typedef struct patch_t *patch_t;
+
+patch_t create_patch(int buffer_size);
+
+void free_patch(patch_t patch);
+
+typedef int up_down_t;
+#define UPSTREAM 0
+#define DOWNSTREAM 1
+
+struct endpt_t
+{
+    patch_t patch;
+    up_down_t up_down;
+};
+typedef struct endpt_t endpt_t;
+
+endpt_t create_endpt(patch_t patch, up_down_t up_down);
+
+void *endpt_pull(endpt_t endpoint);
+
+void endpt_push(endpt_t endpoint, void *ptr);

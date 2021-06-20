@@ -53,3 +53,52 @@ void *tube_pull(tube_t tube)
 
     return result;
 }
+
+patch_t create_patch(int buffer_size)
+{
+    patch_t result = (patch_t)malloc(sizeof(struct patch_t));
+    result->tube_a = create_tube(buffer_size);
+    result->tube_b = create_tube(buffer_size);
+
+    return result;
+}
+
+void free_patch(patch_t patch)
+{
+    free_tube(patch->tube_a);
+    free_tube(patch->tube_b);
+
+    free(patch);
+}
+
+endpt_t create_endpt(patch_t patch, up_down_t up_down)
+{
+    endpt_t result;
+    result.patch = patch;
+    result.up_down = up_down;
+
+    return result;
+}
+
+void *endpt_pull(endpt_t endpoint)
+{
+    switch (endpoint.up_down)
+    {
+        case UPSTREAM:
+            return tube_pull(endpoint.patch->tube_a);
+        case DOWNSTREAM:
+            return tube_pull(endpoint.patch->tube_b);
+    }
+}
+
+void endpt_push(endpt_t endpoint, void *ptr)
+{
+    switch (endpoint.up_down)
+    {
+        case UPSTREAM:
+            tube_push(endpoint.patch->tube_b, ptr);
+            return;
+        case DOWNSTREAM:
+            tube_push(endpoint.patch->tube_a, ptr);
+    }
+}
