@@ -12,10 +12,6 @@
 /build/**
 /.vscode/**
 
-# GLFW/GLEW downloaded from their websites
-/glfw/**
-/glew/**
-
 # Any compiled libraries or executable files
 **/*.exe
 **/*.dll
