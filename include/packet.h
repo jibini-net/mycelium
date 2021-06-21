@@ -1,8 +1,11 @@
 #pragma once
 
+#include "uuid.h"
+
 // Numerical packet value types
 typedef unsigned int pckt_size_t;
 typedef unsigned int pckt_hash_t;
+typedef unsigned int pckt_addr_t;
 // Data range in memory type
 typedef char *pckt_data_t;
 
@@ -25,6 +28,7 @@ struct pckt_t
 {
     // Packet's header data
     phdr_t packet_header;
+    uuid_table_t manifest;
     // Packet's body data
     pckt_data_t packet_data;
 };

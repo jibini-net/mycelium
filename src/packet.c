@@ -8,6 +8,8 @@ pckt_t create_pckt()
 {
     pckt_t result = (pckt_t)malloc(sizeof(struct pckt_t));
 
+    result->manifest = create_uuid_table();
+
     // Magic number (sanity check)
     result->packet_header._secret_m = 'm';
     result->packet_header._secret_y = 'y';
@@ -16,6 +18,8 @@ pckt_t create_pckt()
     result->packet_header.packet_hash = 0;
     // Initially, the packet is empty
     result->packet_header.num_parts = 0;
+
+    return result;
 }
 
 pckt_data_t pckt_part(pckt_t packet, int start, pckt_size_t size)

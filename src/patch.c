@@ -54,7 +54,7 @@ void *tube_pull(tube_t tube)
     return result;
 }
 
-patch_t create_patch(int buffer_size)
+patch_t create_patch(size_t buffer_size)
 {
     patch_t result = (patch_t)malloc(sizeof(struct patch_t));
     result->tube_a = create_tube(buffer_size);

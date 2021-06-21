@@ -62,7 +62,7 @@ struct patch_t
 };
 typedef struct patch_t *patch_t;
 
-patch_t create_patch(int buffer_size);
+patch_t create_patch(size_t buffer_size);
 
 void free_patch(patch_t patch);
 

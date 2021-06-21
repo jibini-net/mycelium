@@ -9,12 +9,15 @@
 #include "packet.h"
 #include "uuid.h"
 #include "patch.h"
+#include "router.h"
 
 int test_packet();
 int test_uuid();
 int test_uuid_table();
+int test_hash_table();
 int test_tube();
 int test_patch();
+int test_router();
 
 #define TEST_BOUNDARY(append) printf("=================================%s\n", append)
 #define TEST(name, task, fail) TEST_BOUNDARY("");\
@@ -29,8 +32,10 @@ int main(int args_c, char **args)
     TEST("Packet put and retrieve", test_packet, &fail);
     TEST("UUID generation and printing", test_uuid, &fail);
     TEST("UUID hash table associations", test_uuid_table, &fail);
+    TEST("UUID hash table (named pointers)", test_hash_table, &fail);
     TEST("Tube send and receive", test_tube, &fail);
     TEST("Patch upstream and downstream", test_patch, &fail);
+    TEST("Router attachment and route", test_router, &fail);
 
     return fail;
 }
@@ -53,8 +58,6 @@ int test_packet()
     free(foo);
     free(bar);
     free_pckt(packet);
-
-    return 0;
 }
 
 int test_uuid()
@@ -71,8 +74,6 @@ int test_uuid()
         // Free stringified UUID memory
         free(str);
     }
-
-    return 0;
 }
 
 int test_uuid_table()
@@ -90,8 +91,22 @@ int test_uuid_table()
     printf("0 -> %d, 1 -> %d, 2 -> %d, 3 -> %d\n", (int)a, (int)b, (int)c, (int)n);
 
     free_uuid_table(table);
+}
 
-    return 0;
+int test_hash_table()
+{
+    uuid_table_t table = create_uuid_table();
+
+    hash_put(table, "a", "b");
+    hash_put(table, "b", "c");
+    hash_put(table, "c", "a");
+
+    char *a = (char *)hash_get(table, "a");
+    char *b = (char *)hash_get(table, "b");
+    char *c = (char *)hash_get(table, "c");
+    printf("a -> %s, b -> %s, c -> %s\n", a, b, c);
+
+    free_uuid_table(table);
 }
 
 int test_tube()
@@ -111,8 +126,6 @@ int test_tube()
     printf("%s\n", (char *)tube_pull(tube));
 
     free_tube(tube);
-
-    return 0;
 }
 
 int test_patch()
@@ -136,6 +149,20 @@ int test_patch()
     
     // Free the patch
     free_patch(patch);
+}
 
-    return 0;
+int test_router()
+{
+    // Create router and patch
+    router_t router = create_router();
+    patch_t patch = create_patch(32);
+    // Get both ends of patch
+    endpt_t upstream = create_endpt(patch, UPSTREAM);
+    endpt_t downstream = create_endpt(patch, DOWNSTREAM);
+    // Router should be considered upstream
+    uuid_t uuid = router_attach(router, upstream);
+
+    printf("Attached at '%s'\n", uuid_to_string(uuid, true));
+
+    free_router(router);
 }

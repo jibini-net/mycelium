@@ -58,6 +58,15 @@ void free_uuid_table(uuid_table_t table);
  */
 void table_put(uuid_table_t table, uuid_t key, uuid_t value);
 
+uuid_t uuid_hash(char *data, size_t length)
+{
+    uuid_t hash = (uuid_t)0;
+
+    return hash;
+}
+
+#define hash_put(table, key, value) table_put(table, uuid_hash(key, strlen(key)), (uuid_t)((long)value)) 
+
 /**
  * Retrieves the associated UUID value for the provided key.
  * 
@@ -67,3 +76,5 @@ void table_put(uuid_table_t table, uuid_t key, uuid_t value);
  * @return UUID value associated with the provided key UUID.
  */
 uuid_t table_get(uuid_table_t table, uuid_t key);
+
+#define hash_get(table, key) (void *)((long)table_get(table, uuid_hash(key, strlen(key)))) 
