@@ -45,10 +45,22 @@ int test_packet()
     // Create new packet
     pckt_t packet = create_pckt();
     // Put test data as data partitions
-    pckt_put(packet, "foo", "Hello, world!", sizeof("Hello, world!") - sizeof(""));
-    printf("Packet size: %u\n", packet->packet_header.packet_size);
-    pckt_put(packet, "bar", "Bin, baz", sizeof("Bin, baz") - sizeof(""));
-    printf("Packet size: %u\n", packet->packet_header.packet_size);
+    printf("Packet body size: %u (hash = %u)\n", packet->header.body_size, packet->header.body_hash);
+    pckt_put(packet, "foo", "Hello, world!", sizeof("Hello, world!"));
+    printf("Packet body size: %u (hash = %u)\n", packet->header.body_size, packet->header.body_hash);
+    pckt_put(packet, "bar", "Bin, baz", sizeof("Bin, baz"));
+    printf("Packet body size: %u (hash = %u)\n", packet->header.body_size, packet->header.body_hash);
+    pckt_put(packet, "bin", "Fail case", sizeof("Fail case"));
+    printf("Packet body size: %u (hash = %u)\n", packet->header.body_size, packet->header.body_hash);
+
+    int i = 0;
+    for (i; i < 4; i++)
+    {
+        char c = 'a' + (char)i;
+        pckt_put(packet, strdup(&c), "Value", sizeof("Value"));\
+
+        printf("Packet body size: %u (hash = %u)\n", packet->header.body_size, packet->header.body_hash);
+    }
 
     // Retrieve and print partitions
     char *foo = pckt_get(packet, "foo", NULL);
@@ -78,7 +90,7 @@ int test_uuid()
 
 int test_uuid_table()
 {
-    uuid_table_t table = create_uuid_table();
+    table_t table = create_table();
 
     table_put(table, 0, 1);
     table_put(table, 1, 2);
@@ -90,23 +102,37 @@ int test_uuid_table()
     uuid_t n = table_get(table, 3);
     printf("0 -> %d, 1 -> %d, 2 -> %d, 3 -> %d\n", (int)a, (int)b, (int)c, (int)n);
 
-    free_uuid_table(table);
+    free_table(table);
 }
 
 int test_hash_table()
 {
-    uuid_table_t table = create_uuid_table();
+    table_t table = create_table();
 
-    hash_put(table, "a", "b");
-    hash_put(table, "b", "c");
-    hash_put(table, "c", "a");
+    hash_put(table, "a", "b", NULL);
+    hash_put(table, "b", "c", NULL);
+    hash_put(table, "c", "a", NULL);
 
-    char *a = (char *)hash_get(table, "a");
-    char *b = (char *)hash_get(table, "b");
-    char *c = (char *)hash_get(table, "c");
+    char *a, *b, *c;
+    hash_get(table, "a", (void **)&a, NULL);
+    hash_get(table, "b", (void **)&b, NULL);
+    hash_get(table, "c", (void **)&c, NULL);
     printf("a -> %s, b -> %s, c -> %s\n", a, b, c);
 
-    free_uuid_table(table);
+    char *key_a = "the quick brown fox jumps over the lazy dog A";
+    char *key_b = "the quick brown fox jumps over the lazy dog B";
+    char *key_c = "the quick brown fox jumps over the lazy dog C";
+    hash_put(table, key_a, "B", NULL);
+    hash_put(table, key_b, "C", NULL);
+    hash_put(table, key_c, "A", NULL);
+
+    char *val_a, *val_b, *val_c;
+    hash_get(table, key_a, (void **)&val_a, NULL);
+    hash_get(table, key_b, (void **)&val_b, NULL);
+    hash_get(table, key_c, (void **)&val_c, NULL);
+    printf("A -> %s, B -> %s, C -> %s\n", val_a, val_b, val_c);
+
+    free_table(table);
 }
 
 int test_tube()

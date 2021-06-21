@@ -8,8 +8,8 @@ struct router_t
 {
     uuid_t uuid;
 
-    uuid_table_t route_table;
-    uuid_table_t attachments;
+    table_t route_table;
+    table_t attachments;
 };
 typedef struct router_t *router_t;
 

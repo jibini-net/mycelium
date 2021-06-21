@@ -26,7 +26,7 @@ uuid_t create_uuid();
 char *uuid_to_string(uuid_t uuid, bool hyphens);
 
 // Single key-value association linked node
-struct uuid_assoc_t
+struct assoc_t
 {
     // Key UUID with which the value is associated
     uuid_t key;
@@ -34,20 +34,20 @@ struct uuid_assoc_t
     uuid_t value;
 
     // Next association key-value pair
-    struct uuid_assoc_t *next;
+    struct assoc_t *next;
 };
 // A hash-table structure with associations of UUIDs with other UUIDs
-typedef struct uuid_assoc_t *uuid_table_t;
+typedef struct assoc_t *table_t;
 
 /**
  * @return Dynamically allocated empty association hash table.
  */
-uuid_table_t create_uuid_table();
+table_t create_table();
 
 /**
  * @return Deep frees the linked-lists within the provided table.
  */
-void free_uuid_table(uuid_table_t table);
+void free_table(table_t table);
 
 /**
  * Places a hashed association between the key and value UUID in the table.
@@ -56,16 +56,18 @@ void free_uuid_table(uuid_table_t table);
  * @param key UUID key associated with the provided value.
  * @param value UUID value associated with the provided key.
  */
-void table_put(uuid_table_t table, uuid_t key, uuid_t value);
+void table_put(table_t table, uuid_t key, uuid_t value);
 
-uuid_t uuid_hash(char *data, size_t length)
-{
-    uuid_t hash = (uuid_t)0;
+/**
+ * @param data String from which to generate a hash.
+ * @return A likely non-unique hash (always check that strings equal).
+ */
+uuid_t _quick_str_hash(char *data);
 
-    return hash;
-}
-
-#define hash_put(table, key, value) table_put(table, uuid_hash(key, strlen(key)), (uuid_t)((long)value)) 
+// Allows storage of strings and pointers as UUIDs
+#define _ptr_to_uuid(a, b) ((uuid_t)((long)b) << 64) | (uuid_t)((long)a)
+#define _uuid_to_ptr_a(uuid) (void *)((long)uuid)
+#define _uuid_to_ptr_b(uuid) (void *)((long)(uuid >> 64))
 
 /**
  * Retrieves the associated UUID value for the provided key.
@@ -75,6 +77,27 @@ uuid_t uuid_hash(char *data, size_t length)
  * 
  * @return UUID value associated with the provided key UUID.
  */
-uuid_t table_get(uuid_table_t table, uuid_t key);
+uuid_t table_get(table_t table, uuid_t key);
 
-#define hash_get(table, key) (void *)((long)table_get(table, uuid_hash(key, strlen(key)))) 
+/**
+ * Places the provided pointer values in the map in association with the
+ * provided string name; a hash table can hold associations between one name and
+ * two pointers.
+ * 
+ * @param table Table in which to add the association.
+ * @param key String key of key-value pair.
+ * @param a First pointer value of key-value pair.
+ * @param b Second pointer value of key-value pair.
+ */
+void hash_put(table_t table, char *key, void *a, void *b);
+
+/**
+ * Finds a pointer in the provided map associated with the provided key. Pointer
+ * values will be stored in the referenced pointers (a and b).
+ * 
+ * @param table Table in which to find the association.
+ * @param key String key of key-value pair.
+ * @param a First pointer value of the requested key-value pair.
+ * @param b Second pointer value of the requested key-value pair.
+ */
+void hash_get(table_t table, char *key, void **a, void **b);

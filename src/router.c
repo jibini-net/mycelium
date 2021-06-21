@@ -7,16 +7,16 @@ router_t create_router()
     router_t result = (router_t)malloc(sizeof(struct router_t));
     result->uuid = create_uuid();
 
-    result->route_table = create_uuid_table();
-    result->attachments = create_uuid_table();
+    result->route_table = create_table();
+    result->attachments = create_table();
 
     return result;
 }
 
 void free_router(router_t router)
 {
-    free_uuid_table(router->route_table);
-    free_uuid_table(router->attachments);
+    free_table(router->route_table);
+    free_table(router->attachments);
 
     free(router);
 }

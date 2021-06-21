@@ -1,6 +1,8 @@
 #include "uuid.h"
 
 #include <stdlib.h>
+#include <string.h>
+
 #include <sys/time.h>
 
 // Useful character array for decimal to hex conversion
@@ -68,10 +70,10 @@ char *uuid_to_string(uuid_t uuid, bool hyphens)
     return result;
 }
 
-uuid_table_t create_uuid_table()
+table_t create_table()
 {
     // Dynamically allocate array of associations
-    uuid_table_t result = (uuid_table_t)malloc(sizeof(struct uuid_assoc_t) * HASH_TABLE_SIZE);
+    table_t result = (table_t)malloc(sizeof(struct assoc_t) * HASH_TABLE_SIZE);
     // Make sure all are null-terminated chains
     int i = 0;
     for (i; i < HASH_TABLE_SIZE; i++)
@@ -80,17 +82,17 @@ uuid_table_t create_uuid_table()
     return result;
 }
 
-void free_uuid_table(uuid_table_t table)
+void free_table(table_t table)
 {
     int i = 0;
     for (i; i < HASH_TABLE_SIZE; i++)
     {
-        struct uuid_assoc_t *temp = table[i].next;
+        struct assoc_t *temp = table[i].next;
 
         while (temp != NULL)
         {
             // Maintain reference for deletion
-            struct uuid_assoc_t *d = temp;
+            struct assoc_t *d = temp;
             temp = temp->next;
             // Deletion
             free(d);
@@ -101,13 +103,13 @@ void free_uuid_table(uuid_table_t table)
     free(table);
 }
 
-void table_put(uuid_table_t table, uuid_t key, uuid_t value)
+void table_put(table_t table, uuid_t key, uuid_t value)
 {
     unsigned int hash = key % HASH_TABLE_SIZE;
     // Allocate new node
-    struct uuid_assoc_t *created = (struct uuid_assoc_t *)malloc(sizeof(struct uuid_assoc_t));
+    struct assoc_t *created = (struct assoc_t *)malloc(sizeof(struct assoc_t));
     // Grab hash chain
-    struct uuid_assoc_t *chain = &table[hash];
+    struct assoc_t *chain = &table[hash];
 
     // Insert at start of chain (effectively overwrites existing values)
     created->next = chain->next;
@@ -117,10 +119,10 @@ void table_put(uuid_table_t table, uuid_t key, uuid_t value)
     chain->next = created;
 }
 
-uuid_t table_get(uuid_table_t table, uuid_t key)
+uuid_t table_get(table_t table, uuid_t key)
 {
     unsigned int hash = key % HASH_TABLE_SIZE;
-    struct uuid_assoc_t *temp = &table[hash];
+    struct assoc_t *temp = &table[hash];
 
     while (temp->next != NULL)
     {
@@ -130,4 +132,55 @@ uuid_t table_get(uuid_table_t table, uuid_t key)
     }
 
     return (uuid_t)0;
+}
+
+uuid_t _quick_str_hash(char *data)
+{
+    uuid_t hash = (uuid_t)0;
+    int i = 0, len = strlen(data);
+
+    for (i; i < 16 && i < len; i++)
+    {
+        hash <<= 8;
+        hash |= data[i];
+    }
+
+    return hash;
+}
+
+void hash_put(table_t table, char *key, void *a, void *b)
+{
+    unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
+    // Allocate new node
+    struct assoc_t *created = (struct assoc_t *)malloc(sizeof(struct assoc_t));
+    // Grab hash chain
+    struct assoc_t *chain = &table[hash];
+
+    // Insert at start of chain (effectively overwrites existing values)
+    created->next = chain->next;
+    created->key = _ptr_to_uuid(strdup(key), NULL);
+    created->value = _ptr_to_uuid(a, b);
+    // Modify chain to point to inserted link
+    chain->next = created;
+}
+
+void hash_get(table_t table, char *key, void **a, void **b)
+{
+    unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
+    struct assoc_t *temp = &table[hash];
+
+    while (temp->next != NULL)
+    {
+        temp = temp->next;
+        if (strcmp(_uuid_to_ptr_a(temp->key), key) == 0)
+        {
+            if (a != NULL) *a = _uuid_to_ptr_a(temp->value);
+            if (b != NULL) *b = _uuid_to_ptr_b(temp->value);
+            
+            return;
+        }
+    }
+
+    *a = NULL;
+    *b = NULL;
 }
