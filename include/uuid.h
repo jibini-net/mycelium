@@ -6,6 +6,8 @@
 
 // Standard UUIDs are stored as 128-bit unsigned integers
 typedef __uint128_t uuid_t;
+// Consumer type for iterating through tables
+typedef void (*table_it_fun)(uuid_t, uuid_t);
 
 #define HASH_TABLE_SIZE 1999
 
@@ -101,3 +103,11 @@ void hash_put(table_t table, char *key, void *a, void *b);
  * @param b Second pointer value of the requested key-value pair.
  */
 void hash_get(table_t table, char *key, void **a, void **b);
+
+/**
+ * Iterates over the table and calls the provided bi-consumer function.
+ * 
+ * @param table Table over which to iterate.
+ * @param function Bi-consumer function called for each iteration.
+ */
+void table_it(table_t table, table_it_fun function);

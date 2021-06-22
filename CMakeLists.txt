@@ -41,6 +41,8 @@ target_link_libraries(MyceliumSpore PRIVATE MyceliumCore)
 #
 # Tests (via several executables for debugging)
 #
+add_executable(TestPacketData "test/packet_data.c")
+target_link_libraries(TestPacketData PRIVATE MyceliumCore)
 add_executable(TestPacketRouting "test/packet_routing.c")
 target_link_libraries(TestPacketRouting PRIVATE MyceliumCore)
 

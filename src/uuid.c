@@ -184,3 +184,18 @@ void hash_get(table_t table, char *key, void **a, void **b)
     *a = NULL;
     *b = NULL;
 }
+
+void table_it(table_t table, table_it_fun function)
+{
+    int i = 0;
+    for (i; i < HASH_TABLE_SIZE; i++)
+    {
+        struct assoc_t *temp = &table[i];
+
+        while (temp->next != NULL)
+        {
+            temp = temp->next;
+            function(temp->key, temp->value);
+        }
+    }
+}

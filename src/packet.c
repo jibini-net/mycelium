@@ -19,6 +19,9 @@ pckt_t create_pckt()
     // Initially, the packet is empty
     result->header.num_parts = 0;
 
+    table_t table = create_table();
+    pckt_put(result, "route", (data_t)&table, sizeof (void *));
+
     return result;
 }
 
@@ -29,6 +32,13 @@ pckt_t parse_packet(data_t data)
     //TODO
 
     return result;
+}
+
+data_t pckt_encode(pckt_t packet)
+{
+    //TODO
+
+    return NULL;
 }
 
 data_t pckt_part(pckt_t packet, int start, length_t size)

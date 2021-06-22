@@ -49,6 +49,15 @@ pckt_t create_pckt();
 pckt_t parse_packet(data_t data);
 
 /**
+ * Encodes the provided packet to a contiguous data range.
+ * 
+ * @param packet Packet whose data to encode.
+ * 
+ * @return Allocated space in memory containing the packet data.
+ */
+data_t pckt_encode(pckt_t packet);
+
+/**
  * Partitions the provided packet's body to a cropped range of its data.
  * 
  * @param packet Pointer to the packet whose data to partition.

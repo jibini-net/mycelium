@@ -54,6 +54,15 @@ void *tube_pull(tube_t tube)
     return result;
 }
 
+bool tube_peek(tube_t tube)
+{
+    sem_wait(&tube->mutex);
+    bool empty = tube->index_out == tube->index_in;
+    sem_post(&tube->mutex);
+
+    return !empty;
+}
+
 patch_t create_patch(size_t buffer_size)
 {
     patch_t result = (patch_t)malloc(sizeof(struct patch_t));
@@ -100,5 +109,16 @@ void endpt_push(endpt_t endpoint, void *ptr)
             return;
         case DOWNSTREAM:
             tube_push(endpoint.patch->tube_a, ptr);
+    }
+}
+
+bool endpt_peek(endpt_t endpoint)
+{
+    switch (endpoint.up_down)
+    {
+        case UPSTREAM:
+            return tube_peek(endpoint.patch->tube_a);
+        case DOWNSTREAM:
+            return tube_peek(endpoint.patch->tube_b);
     }
 }

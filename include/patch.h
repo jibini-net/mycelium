@@ -55,6 +55,8 @@ void tube_push(tube_t tube, void *ptr);
  */
 void *tube_pull(tube_t tube);
 
+bool tube_peek(tube_t tube);
+
 struct patch_t
 {
     tube_t tube_a;
@@ -82,3 +84,5 @@ endpt_t create_endpt(patch_t patch, up_down_t up_down);
 void *endpt_pull(endpt_t endpoint);
 
 void endpt_push(endpt_t endpoint, void *ptr);
+
+bool endpt_peek(endpt_t endpoint);
