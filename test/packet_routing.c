@@ -38,8 +38,8 @@ int test_router_send()
 
     printf("Sending a packet to '%s'\n", uuid_to_string(id, true));
     pckt_t packet = create_pckt();
-    pckt_put(packet, "target", (data_t)&id, sizeof(uuid_t));
-    pckt_put(packet, "message", "Hello, world!", sizeof("Hello, world!"));
+    pckt_put(packet, "target", (void *)&id);
+    pckt_put(packet, "message", "Hello, world!");
     endpt_push(down_b, packet);
 
     pckt_t pull = (pckt_t)endpt_pull(down_a);

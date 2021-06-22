@@ -70,6 +70,7 @@ void free_router(router_t router)
 
     free_table(router->route_table);
     free_table(router->attachments);
+    
     free(router);
 }
 
