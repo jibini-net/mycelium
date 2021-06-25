@@ -13,7 +13,7 @@
  */
 struct router_t
 {
-    // Each router has a unique identifier
+    // Each router has a unique identifier (return routing)
     uuid_t uuid;
     // Remember where to route packets for certain addresses
     table_t route_table;
@@ -24,17 +24,17 @@ struct router_t
     bool alive;
     thrd_t thread;
 };
-typedef struct router_t *router_t;
+typedef struct router_t router_t;
 
 /**
- * @return Created and started router handle.
+ * @param router Router to create and start.
  */
-router_t create_router();
+void create_router(router_t *router);
 
 /**
  * @param router Router to stop and free its memory.
  */
-void free_router(router_t router);
+void free_router(router_t *router);
 
 /**
  * Attaches an endpoint to the provided router. Data pulled from the provided
@@ -47,4 +47,4 @@ void free_router(router_t router);
  *      Elements send to this address over the Mycelium network will be routed
  *      to and received by the entity which attaches the parameter endpoint.
  */
-uuid_t router_attach(router_t router, endpt_t endpoint);
+uuid_t router_attach(router_t *router, endpt_t endpoint);

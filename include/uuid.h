@@ -15,7 +15,7 @@ typedef void (*table_it_fun)(uuid_t, uuid_t);
  * @return Randomized and unique identifier (within the bounds of a
  *      cryptographically secure random generator).
  */
-uuid_t create_uuid();
+uuid_t random_uuid();
 
 /**
  * Converts the provided UUID to a hexidecimal string representation.
@@ -38,18 +38,24 @@ struct assoc_t
     // Next association key-value pair
     struct assoc_t *next;
 };
+typedef struct assoc_t assoc_t;
+
 // A hash-table structure with associations of UUIDs with other UUIDs
-typedef struct assoc_t *table_t;
+struct table_t
+{
+    assoc_t data[HASH_TABLE_SIZE];
+};
+typedef struct table_t table_t;
 
 /**
- * @return Dynamically allocated empty association hash table.
+ * @param table Table which will be created with empty associations.
  */
-table_t create_table();
+void create_table(table_t *table);
 
 /**
  * @return Deep frees the linked-lists within the provided table.
  */
-void free_table(table_t table);
+void free_table(table_t*table);
 
 /**
  * Places a hashed association between the key and value UUID in the table.
@@ -58,7 +64,7 @@ void free_table(table_t table);
  * @param key UUID key associated with the provided value.
  * @param value UUID value associated with the provided key.
  */
-void table_put(table_t table, uuid_t key, uuid_t value);
+void table_put(table_t *table, uuid_t key, uuid_t value);
 
 /**
  * @param data String from which to generate a hash.
@@ -79,7 +85,7 @@ uuid_t _quick_str_hash(char *data);
  * 
  * @return UUID value associated with the provided key UUID.
  */
-uuid_t table_get(table_t table, uuid_t key);
+uuid_t table_get(table_t *table, uuid_t key);
 
 /**
  * Places the provided pointer values in the map in association with the
@@ -91,7 +97,7 @@ uuid_t table_get(table_t table, uuid_t key);
  * @param a First pointer value of key-value pair.
  * @param b Second pointer value of key-value pair.
  */
-void hash_put(table_t table, char *key, void *a, void *b);
+void hash_put(table_t *table, char *key, void *a, void *b);
 
 /**
  * Finds a pointer in the provided map associated with the provided key. Pointer
@@ -102,7 +108,7 @@ void hash_put(table_t table, char *key, void *a, void *b);
  * @param a First pointer value of the requested key-value pair.
  * @param b Second pointer value of the requested key-value pair.
  */
-void hash_get(table_t table, char *key, void **a, void **b);
+void hash_get(table_t *table, char *key, void **a, void **b);
 
 /**
  * Iterates over the table and calls the provided bi-consumer function.
@@ -110,4 +116,4 @@ void hash_get(table_t table, char *key, void **a, void **b);
  * @param table Table over which to iterate.
  * @param function Bi-consumer function called for each iteration.
  */
-void table_it(table_t table, table_it_fun function);
+void table_it(table_t *table, table_it_fun function);

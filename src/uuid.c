@@ -11,7 +11,7 @@
 // Global static value as random is only seeded once per run
 bool seeded = false;
 
-uuid_t create_uuid()
+uuid_t random_uuid()
 {
     uuid_t result = 0;
 
@@ -70,24 +70,20 @@ char *uuid_to_string(uuid_t uuid, bool hyphens)
     return result;
 }
 
-table_t create_table()
+void create_table(table_t *table)
 {
-    // Dynamically allocate array of associations
-    table_t result = (table_t)malloc(sizeof(struct assoc_t) * HASH_TABLE_SIZE);
     // Make sure all are null-terminated chains
     int i = 0;
     for (i; i < HASH_TABLE_SIZE; i++)
-        result[i].next = NULL;
-
-    return result;
+        table->data[i].next = NULL;
 }
 
-void free_table(table_t table)
+void free_table(table_t *table)
 {
     int i = 0;
     for (i; i < HASH_TABLE_SIZE; i++)
     {
-        struct assoc_t *temp = table[i].next;
+        struct assoc_t *temp = table->data[i].next;
 
         while (temp != NULL)
         {
@@ -98,18 +94,15 @@ void free_table(table_t table)
             free(d);
         }
     }
-
-    // Free table's association array
-    free(table);
 }
 
-void table_put(table_t table, uuid_t key, uuid_t value)
+void table_put(table_t *table, uuid_t key, uuid_t value)
 {
     unsigned int hash = key % HASH_TABLE_SIZE;
     // Allocate new node
     struct assoc_t *created = (struct assoc_t *)malloc(sizeof(struct assoc_t));
     // Grab hash chain
-    struct assoc_t *chain = &table[hash];
+    struct assoc_t *chain = &table->data[hash];
 
     // Insert at start of chain (effectively overwrites existing values)
     created->next = chain->next;
@@ -119,10 +112,10 @@ void table_put(table_t table, uuid_t key, uuid_t value)
     chain->next = created;
 }
 
-uuid_t table_get(table_t table, uuid_t key)
+uuid_t table_get(table_t *table, uuid_t key)
 {
     unsigned int hash = key % HASH_TABLE_SIZE;
-    struct assoc_t *temp = &table[hash];
+    struct assoc_t *temp = &table->data[hash];
 
     while (temp->next != NULL)
     {
@@ -148,13 +141,13 @@ uuid_t _quick_str_hash(char *data)
     return hash;
 }
 
-void hash_put(table_t table, char *key, void *a, void *b)
+void hash_put(table_t *table, char *key, void *a, void *b)
 {
     unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
     // Allocate new node
     struct assoc_t *created = (struct assoc_t *)malloc(sizeof(struct assoc_t));
     // Grab hash chain
-    struct assoc_t *chain = &table[hash];
+    struct assoc_t *chain = &table->data[hash];
 
     // Insert at start of chain (effectively overwrites existing values)
     created->next = chain->next;
@@ -164,14 +157,16 @@ void hash_put(table_t table, char *key, void *a, void *b)
     chain->next = created;
 }
 
-void hash_get(table_t table, char *key, void **a, void **b)
+void hash_get(table_t *table, char *key, void **a, void **b)
 {
     unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
-    struct assoc_t *temp = &table[hash];
+    struct assoc_t *temp = &table->data[hash];
 
+    int i = 0;
     while (temp->next != NULL)
     {
         temp = temp->next;
+        
         if (strcmp(_uuid_to_ptr_a(temp->key), key) == 0)
         {
             if (a != NULL) *a = _uuid_to_ptr_a(temp->value);
@@ -181,16 +176,16 @@ void hash_get(table_t table, char *key, void **a, void **b)
         }
     }
 
-    *a = NULL;
-    *b = NULL;
+    if (a != NULL) *a = NULL;
+    if (b != NULL) *b = NULL;
 }
 
-void table_it(table_t table, table_it_fun function)
+void table_it(table_t *table, table_it_fun function)
 {
     int i = 0;
     for (i; i < HASH_TABLE_SIZE; i++)
     {
-        struct assoc_t *temp = &table[i];
+        struct assoc_t *temp = &table->data[i];
 
         while (temp->next != NULL)
         {

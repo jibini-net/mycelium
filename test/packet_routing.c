@@ -26,30 +26,43 @@ int main(int args_c, char **args)
 
 int test_router_send()
 {
-    router_t router = create_router();
-    patch_t a = create_patch(32);
-    endpt_t up_a = create_endpt(a, UPSTREAM);
-    endpt_t down_a = create_endpt(a, DOWNSTREAM);
-    patch_t b = create_patch(32);
-    endpt_t up_b = create_endpt(b, UPSTREAM);
-    endpt_t down_b = create_endpt(b, DOWNSTREAM);
-    uuid_t id = router_attach(router, up_a);
-    router_attach(router, up_b);
+    // Allocate space for router and patches
+    router_t router;
+    patch_t a, b;
+    // Initialize router and patches
+    create_router(&router);
+    create_patch(&a, 32);
+    create_patch(&b, 32);
+    // Create duplex endpoints for both patches
+    endpt_t up_a = patch_endpt(&a, UPSTREAM);
+    endpt_t down_a = patch_endpt(&a, DOWNSTREAM);
+    endpt_t up_b = patch_endpt(&b, UPSTREAM);
+    endpt_t down_b = patch_endpt(&b, DOWNSTREAM);
+    // Attach upstreams of patches to router
+    uuid_t id = router_attach(&router, up_a);
+    router_attach(&router, up_b);
 
+    // Allocate and create new packet
+    pckt_t packet;
+    create_pckt(&packet);
+    // Create packet data (target to patch A)
     printf("Sending a packet to '%s'\n", uuid_to_string(id, true));
-    pckt_t packet = create_pckt();
-    pckt_put(packet, "target", (void *)&id);
-    pckt_put(packet, "message", "Hello, world!");
-    endpt_push(down_b, packet);
+    pckt_put(&packet, "target", (void *)&id);
+    pckt_put(&packet, "message", strdup("Hello, world!"));
+    // Send data to patch A via router
+    endpt_push(down_b, (data_t)&packet);
 
-    pckt_t pull = (pckt_t)endpt_pull(down_a);
+    // Pull the packet from A downstream from router
+    pckt_t *pull = (pckt_t *)endpt_pull(down_a);
+    // Get message sent from B
     char *message = pckt_get(pull, "message", NULL);
     printf("Pulled something down: '%s'\n", message);
 
-    free_pckt(packet);
-    free_patch(a);
-    free_patch(b);
-    free_router(router);
+    // Free packet, patches, and router
+    free_pckt(&packet);
+    free_patch(&a);
+    free_patch(&b);
+    free_router(&router);
 
     return 0;
 }

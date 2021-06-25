@@ -1,41 +1,34 @@
 #include "patch.h"
 
-tube_t create_tube(size_t buffer_size)
+void create_tube(tube_t *tube, size_t buffer_size)
 {
-    tube_t result = (tube_t)malloc(sizeof(struct tube_t));
-
     // Create the tube's synchronization primitives
-    sem_init(&result->open_slots, 0, buffer_size);
-    sem_init(&result->available, 0, 0);
-    sem_init(&result->mutex, 0, 1);
+    sem_init(&tube->open_slots, 0, buffer_size);
+    sem_init(&tube->available, 0, 0);
+    sem_init(&tube->mutex, 0, 1);
     // Initialize the indices to start at zero
-    result->index_in = 0;
-    result->index_out = 0;
+    tube->index_in = 0;
+    tube->index_out = 0;
     // Allocate the buffer itself and record the size
-    result->buffer = (void **)malloc(sizeof(void *) * buffer_size);
-    result->buffer_size = buffer_size;
+    tube->buffer = (data_t *)malloc(sizeof(data_t) * buffer_size);
+    tube->buffer_size = buffer_size;
 }
 
-void free_tube(tube_t tube)
+void free_tube(tube_t *tube)
 {
     // Free semaphores
     sem_destroy(&tube->open_slots);
     sem_destroy(&tube->available);
     sem_destroy(&tube->mutex);
-
-    // Deep free
-    free(tube->buffer);
-    // Free buffer
-    free(tube);
 }
 
-void tube_push(tube_t tube, void *ptr)
+void tube_push(tube_t *tube, data_t data)
 {
     // Wait for open slots and mutual exclusion
     sem_wait(&tube->open_slots);
     sem_wait(&tube->mutex);
     // Place new element in buffer
-    tube->buffer[tube->index_in++] = ptr;
+    tube->buffer[tube->index_in++] = data;
     tube->index_in %= tube->buffer_size;
 
     sem_post(&tube->mutex);
@@ -43,7 +36,7 @@ void tube_push(tube_t tube, void *ptr)
     sem_post(&tube->available);
 }
 
-void *tube_pull(tube_t tube)
+data_t tube_pull(tube_t *tube)
 {
     // Wait for pushed elements and mutual exclusion
     sem_wait(&tube->available);
@@ -61,7 +54,7 @@ void *tube_pull(tube_t tube)
     return result;
 }
 
-bool tube_peek(tube_t tube)
+bool tube_peek(tube_t *tube)
 {
     // Wait for mutual exclusion
     sem_wait(&tube->mutex);
@@ -72,24 +65,19 @@ bool tube_peek(tube_t tube)
     return !empty;
 }
 
-patch_t create_patch(size_t buffer_size)
+void create_patch(patch_t *patch, size_t buffer_size)
 {
-    patch_t result = (patch_t)malloc(sizeof(struct patch_t));
-    result->tube_a = create_tube(buffer_size);
-    result->tube_b = create_tube(buffer_size);
-
-    return result;
+    create_tube(&patch->tube_a, buffer_size);
+    create_tube(&patch->tube_b, buffer_size);
 }
 
-void free_patch(patch_t patch)
+void free_patch(patch_t *patch)
 {
-    free_tube(patch->tube_a);
-    free_tube(patch->tube_b);
-
-    free(patch);
+    free_tube(&patch->tube_a);
+    free_tube(&patch->tube_b);
 }
 
-endpt_t create_endpt(patch_t patch, up_down_t up_down)
+endpt_t patch_endpt(patch_t *patch, up_down_t up_down)
 {
     endpt_t result;
     result.patch = patch;
@@ -98,26 +86,26 @@ endpt_t create_endpt(patch_t patch, up_down_t up_down)
     return result;
 }
 
-void *endpt_pull(endpt_t endpoint)
+data_t endpt_pull(endpt_t endpoint)
 {
     switch (endpoint.up_down)
     {
         case UPSTREAM:
-            return tube_pull(endpoint.patch->tube_a);
+            return tube_pull(&endpoint.patch->tube_a);
         case DOWNSTREAM:
-            return tube_pull(endpoint.patch->tube_b);
+            return tube_pull(&endpoint.patch->tube_b);
     }
 }
 
-void endpt_push(endpt_t endpoint, void *ptr)
+void endpt_push(endpt_t endpoint, data_t data)
 {
     switch (endpoint.up_down)
     {
         case UPSTREAM:
-            tube_push(endpoint.patch->tube_b, ptr);
+            tube_push(&endpoint.patch->tube_b, data);
             return;
         case DOWNSTREAM:
-            tube_push(endpoint.patch->tube_a, ptr);
+            tube_push(&endpoint.patch->tube_a, data);
     }
 }
 
@@ -126,8 +114,8 @@ bool endpt_peek(endpt_t endpoint)
     switch (endpoint.up_down)
     {
         case UPSTREAM:
-            return tube_peek(endpoint.patch->tube_a);
+            return tube_peek(&endpoint.patch->tube_a);
         case DOWNSTREAM:
-            return tube_peek(endpoint.patch->tube_b);
+            return tube_peek(&endpoint.patch->tube_b);
     }
 }
