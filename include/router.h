@@ -23,6 +23,9 @@ struct router_t
     // Whether the router is alive and its thread handle
     bool alive;
     thrd_t thread;
+
+    // Which of the attachments is considered this node's parent
+    uuid_t upstream;
 };
 typedef struct router_t router_t;
 
