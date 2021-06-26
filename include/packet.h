@@ -2,12 +2,11 @@
 
 #include "uuid.h"
 
-// Numerical packet value types
+// Called length as there is already a size
 typedef unsigned int length_t;
+// Numerical packet value types
 typedef unsigned int hash_t;
 typedef unsigned int addr_t;
-// Data range in memory type
-typedef char *data_t;
 
 // Packet header and hash data
 struct phdr_t
@@ -44,7 +43,7 @@ void create_pckt(pckt_t *packet);
  * @param packet Packet to fill with the provided data in memory.
  * @param data Data range containing the packet header and body.
  */
-void parse_packet(pckt_t *packet, data_t data);
+void parse_packet(pckt_t *packet, char *data);
 
 /**
  * Encodes the provided packet to a contiguous data range.
@@ -54,7 +53,7 @@ void parse_packet(pckt_t *packet, data_t data);
  * 
  * @return Allocated space in memory containing the packet data.
  */
-data_t pckt_encode(pckt_t *packet, length_t *size);
+char *pckt_encode(pckt_t *packet, length_t *size);
 
 /**
  * Reads the provided packet's header to find and partition data associated with
@@ -88,7 +87,7 @@ void pckt_put(pckt_t *packet, char *name, void *data);
  * 
  * @return Calculated hash bytes for comparison or tracking.
  */
-hash_t pckt_hash(pckt_t *packet, data_t data, length_t size);
+hash_t pckt_hash(pckt_t *packet, char *data, length_t size);
 
 /**
  * @param packet Packet whose contents and data will be freed.

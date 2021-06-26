@@ -26,7 +26,7 @@ bool _send_packet(uuid_t to)
     table_put(&_r_packet->manifest, _r_router->uuid, _r_recipient);
     endpt_t endpoint = *(endpt_t *)((long)e_to);
     // Push through endpoint (to peer router attachment)
-    endpt_push(endpoint, (data_t)_r_packet);
+    endpt_push(endpoint, _r_packet);
 
     return true;
 }

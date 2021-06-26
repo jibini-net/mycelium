@@ -22,7 +22,7 @@ struct tube_t
     volatile int index_in;
     volatile int index_out;
     // Buffer memory and its size (for wrapping)
-    data_t *buffer;
+    void **buffer;
     length_t buffer_size;
 };
 typedef struct tube_t tube_t;
@@ -45,7 +45,7 @@ void free_tube(tube_t *tube);
  * @param tube Tube through which data will be pushed.
  * @param data Pointer to push through the tube.
  */
-void tube_push(tube_t *tube, data_t data);
+void tube_push(tube_t *tube, void *data);
 
 /**
  * Waits for and pulls a pointer from the queue buffer once one is available.
@@ -54,7 +54,7 @@ void tube_push(tube_t *tube, data_t data);
  * 
  * @return Pulled pointer from the queue buffer.
  */
-data_t tube_pull(tube_t *tube);
+void *tube_pull(tube_t *tube);
 
 /**
  * @param tube Tube to check for pushed elements.
@@ -113,7 +113,7 @@ endpt_t patch_endpt(patch_t *patch, up_down_t up_down);
  * 
  * @return Received pointer from the provided endpoint.
  */
-data_t endpt_pull(endpt_t endpoint);
+void *endpt_pull(endpt_t endpoint);
 
 /**
  * Sends a provided pointer through an endpoint.
@@ -121,7 +121,7 @@ data_t endpt_pull(endpt_t endpoint);
  * @param endpoint Endpoint through which to push the data.
  * @param data Pointer to push through the endpoint.
  */
-void endpt_push(endpt_t endpoint, data_t data);
+void endpt_push(endpt_t endpoint, void *data);
 
 /**
  * @param endpoint Endpoint to check for pushed elements.

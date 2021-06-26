@@ -16,10 +16,10 @@ void create_pckt(pckt_t *packet)
 
     table_t table;
     create_table(&table);
-    pckt_put(packet, "route", (void *)&table);
+    pckt_put(packet, "route", &table);
 }
 
-void parse_packet(pckt_t *packet, data_t data)
+void parse_packet(pckt_t *packet, char *data)
 {
     // Parse the packet header
     create_pckt(packet);
@@ -39,21 +39,21 @@ void parse_packet(pckt_t *packet, data_t data)
     //TODO
 }
 
-data_t pckt_encode(pckt_t *packet, length_t *size)
+char *pckt_encode(pckt_t *packet, length_t *size)
 {
     //TODO
     
     //pckt_hash(packet, data, size);
     //packet->header.body_size = ;
     *size = (length_t)sizeof(phdr_t) + packet->header.body_size;
-    data_t buffer = (data_t)malloc(*size);
+    char *buffer = (char *)malloc(*size);
 
     return buffer;
 }
 
 void *pckt_get(pckt_t *packet, char *name, length_t *size)
 {
-    data_t data;
+    void *data;
     hash_get(&packet->manifest, name, (void **)&data, NULL);
 
     return data;
@@ -67,7 +67,7 @@ void pckt_put(pckt_t *packet, char *name, void *data)
 
 #define POLY 0x82f63b78
 
-hash_t crc32c(hash_t crc, data_t data, length_t size)
+hash_t crc32c(hash_t crc, char *data, length_t size)
 {
     int k;
     crc = ~crc;
@@ -82,7 +82,7 @@ hash_t crc32c(hash_t crc, data_t data, length_t size)
     return ~crc;
 }
 
-hash_t pckt_hash(pckt_t *packet, data_t data, length_t size)
+hash_t pckt_hash(pckt_t *packet, char *data, length_t size)
 {
     packet->header.body_hash = crc32c(0, data, size);
 

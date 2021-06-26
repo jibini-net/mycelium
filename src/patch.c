@@ -10,7 +10,7 @@ void create_tube(tube_t *tube, size_t buffer_size)
     tube->index_in = 0;
     tube->index_out = 0;
     // Allocate the buffer itself and record the size
-    tube->buffer = (data_t *)malloc(sizeof(data_t) * buffer_size);
+    tube->buffer = (void **)malloc(sizeof(void *) * buffer_size);
     tube->buffer_size = buffer_size;
 }
 
@@ -22,7 +22,7 @@ void free_tube(tube_t *tube)
     sem_destroy(&tube->mutex);
 }
 
-void tube_push(tube_t *tube, data_t data)
+void tube_push(tube_t *tube, void *data)
 {
     // Wait for open slots and mutual exclusion
     sem_wait(&tube->open_slots);
@@ -36,7 +36,7 @@ void tube_push(tube_t *tube, data_t data)
     sem_post(&tube->available);
 }
 
-data_t tube_pull(tube_t *tube)
+void *tube_pull(tube_t *tube)
 {
     // Wait for pushed elements and mutual exclusion
     sem_wait(&tube->available);
@@ -86,7 +86,7 @@ endpt_t patch_endpt(patch_t *patch, up_down_t up_down)
     return result;
 }
 
-data_t endpt_pull(endpt_t endpoint)
+void *endpt_pull(endpt_t endpoint)
 {
     switch (endpoint.up_down)
     {
@@ -97,7 +97,7 @@ data_t endpt_pull(endpt_t endpoint)
     }
 }
 
-void endpt_push(endpt_t endpoint, data_t data)
+void endpt_push(endpt_t endpoint, void *data)
 {
     switch (endpoint.up_down)
     {

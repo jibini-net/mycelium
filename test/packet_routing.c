@@ -75,7 +75,7 @@ int test_router_send()
     pckt_put(&packet, "target", (void *)&attach_a);
     pckt_put(&packet, "message", strdup("Hello, world!"));
     // Send data to patch A via router
-    endpt_push(down_b, (data_t)&packet);
+    endpt_push(down_b, &packet);
 
     // Pull the packet from A downstream from router
     pckt_t *pull = (pckt_t *)endpt_pull(down_a);
@@ -113,7 +113,7 @@ int test_router_return()
     pckt_put(&packet, "target", (void *)&attach_a);
     pckt_put(&packet, "message", strdup("Hello, world!"));
     // Send data to patch A via router
-    endpt_push(down_b, (data_t)&packet);
+    endpt_push(down_b, &packet);
 
     // Pull the packet from A downstream from router
     pckt_t *pull = (pckt_t *)endpt_pull(down_b);
@@ -152,7 +152,7 @@ int test_router_table()
     pckt_put(&packet, "target", (void *)&undeliverable);
     pckt_put(&packet, "message", strdup("Hello, world!"));
     // Send data to patch A via router
-    endpt_push(down_b, (data_t)&packet);
+    endpt_push(down_b, &packet);
 
     // Pull the packet from A downstream from router
     pckt_t *pull = (pckt_t *)endpt_pull(down_a);
@@ -191,7 +191,7 @@ int test_router_upstream()
     pckt_put(&packet, "target", (void *)&undeliverable);
     pckt_put(&packet, "message", strdup("Hello, world!"));
     // Send data to patch A via router
-    endpt_push(down_b, (data_t)&packet);
+    endpt_push(down_b, &packet);
 
     // Pull the packet from A downstream from router
     pckt_t *pull = (pckt_t *)endpt_pull(down_a);
