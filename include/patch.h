@@ -23,7 +23,7 @@ struct tube_t
     volatile int index_out;
     // Buffer memory and its size (for wrapping)
     void **buffer;
-    length_t buffer_size;
+    size_t buffer_size;
 };
 typedef struct tube_t tube_t;
 

@@ -72,8 +72,8 @@ int test_router_send()
 
     // Create packet data (target to patch A)
     printf("Sending a packet to '%s'\n", uuid_to_string(attach_a, true));
-    pckt_put(&packet, "target", (void *)&attach_a);
-    pckt_put(&packet, "message", strdup("Hello, world!"));
+    pckt_put(&packet, "target", (void *)&attach_a, sizeof(uuid_t));
+    pckt_put(&packet, "message", strdup("Hello, world!"), sizeof("Hello, world!"));
     // Send data to patch A via router
     endpt_push(down_b, &packet);
 
@@ -110,8 +110,8 @@ int test_router_return()
 
     // Create packet data (target to patch A)
     printf("Sending a returnable packet to '%s'\n", uuid_to_string(attach_a, true));
-    pckt_put(&packet, "target", (void *)&attach_a);
-    pckt_put(&packet, "message", strdup("Hello, world!"));
+    pckt_put(&packet, "target", (void *)&attach_a, sizeof(uuid_t));
+    pckt_put(&packet, "message", strdup("Hello, world!"), sizeof("Hello, world!"));
     // Send data to patch A via router
     endpt_push(down_b, &packet);
 
@@ -149,8 +149,8 @@ int test_router_table()
 
     // Create packet data (target to patch A)
     printf("Sending a non-peer target packet to '%s'\n", uuid_to_string(undeliverable, true));
-    pckt_put(&packet, "target", (void *)&undeliverable);
-    pckt_put(&packet, "message", strdup("Hello, world!"));
+    pckt_put(&packet, "target", (void *)&undeliverable, sizeof(uuid_t));
+    pckt_put(&packet, "message", strdup("Hello, world!"), sizeof("Hello, world!"));
     // Send data to patch A via router
     endpt_push(down_b, &packet);
 
@@ -188,8 +188,8 @@ int test_router_upstream()
 
     uuid_t undeliverable = random_uuid();
     printf("Sending packet to unknown address '%s'\n", uuid_to_string(undeliverable, true));
-    pckt_put(&packet, "target", (void *)&undeliverable);
-    pckt_put(&packet, "message", strdup("Hello, world!"));
+    pckt_put(&packet, "target", (void *)&undeliverable, sizeof(uuid_t));
+    pckt_put(&packet, "message", strdup("Hello, world!"), sizeof("Hello, world!"));
     // Send data to patch A via router
     endpt_push(down_b, &packet);
 
