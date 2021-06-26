@@ -47,18 +47,18 @@ int test_packet()
     create_pckt(&packet);
     // Put test data as data partitions
     printf("Packet body size: %lu (hash = %u)\n", packet.header.body_size, packet.header.body_hash);
-    pckt_put(&packet, "foo", strdup("Hello, world!"), sizeof("Hello, world!"));
+    pckt_put(&packet, "foo", "Hello, world!", sizeof("Hello, world!"));
     printf("Packet body size: %lu (hash = %u)\n", packet.header.body_size, packet.header.body_hash);
-    pckt_put(&packet, "bar", strdup("Bin, baz"), sizeof("Bin, baz"));
+    pckt_put(&packet, "bar", "Bin, baz", sizeof("Bin, baz"));
     printf("Packet body size: %lu (hash = %u)\n", packet.header.body_size, packet.header.body_hash);
-    pckt_put(&packet, "bin", strdup("Fail case"), sizeof("Fail case"));
+    pckt_put(&packet, "bin", "Fail case", sizeof("Fail case"));
     printf("Packet body size: %lu (hash = %u)\n", packet.header.body_size, packet.header.body_hash);
 
     int i = 0;
     for (i; i < 4; i++)
     {
-        char c = 'a' + (char)i;
-        pckt_put(&packet, strdup(&c), strdup("Value"), sizeof("Value"));
+        const char c = 'a' + (char)i;
+        pckt_put(&packet, &c, "Value", sizeof("Value"));
 
         printf("Packet body size: %lu (hash = %u)\n", packet.header.body_size, packet.header.body_hash);
     }

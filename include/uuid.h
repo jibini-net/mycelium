@@ -97,7 +97,7 @@ uuid_t table_get(table_t *table, uuid_t key);
  * @param a First pointer value of key-value pair.
  * @param b Second pointer value of key-value pair.
  */
-void hash_put(table_t *table, char *key, void *a, void *b);
+void hash_put(table_t *table, const char *key, void *a, void *b);
 
 /**
  * Finds a pointer in the provided map associated with the provided key. Pointer

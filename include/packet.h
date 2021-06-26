@@ -2,6 +2,8 @@
 
 #include "uuid.h"
 
+#define ROUTE_ROW_SIZE (sizeof(uuid_t) * 2)
+
 // Numerical packet value types
 typedef unsigned int hash_t;
 typedef unsigned int addr_t;
@@ -27,6 +29,9 @@ struct pckt_t
     phdr_t header;
     // Manifest hash table for parts
     table_t manifest;
+    // Route table and count of entries
+    table_t route;
+    unsigned int route_c;
     // Dynamically allocated block of body memory
     char *body;
 };
@@ -59,7 +64,7 @@ void *pckt_get(pckt_t *packet, char *name, size_t *size);
  * @param data Pointer to place in the packet as a named part.
  * @param size Size of the data range which is being added.
  */
-void pckt_put(pckt_t *packet, char *name, char *data, size_t size);
+void pckt_put(pckt_t *packet, const char *name, char *data, size_t size);
 
 /**
  * Calculates a hash value to verify or compare packets' contents.
@@ -74,3 +79,8 @@ hash_t pckt_hash(pckt_t *packet);
  * @param packet Packet whose contents and data will be freed.
  */
 void free_pckt(pckt_t *packet);
+
+/**
+ * @param packet Packet whose route will be registered in the manifest.
+ */
+void pckt_embed_rt(pckt_t *packet);

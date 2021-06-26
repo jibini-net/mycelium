@@ -7,6 +7,12 @@
 #include "uuid.h"
 #include "patch.h"
 
+#ifndef REFRESH_WAIT_NANO
+#define REFRESH_WAIT_NANO 1000000
+#endif
+
+#define ROUTER_BUFFER_SIZE 128
+
 /**
  * An active process which accepts packets and routes them to attached
  * addressed endpoints.

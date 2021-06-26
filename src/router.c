@@ -7,9 +7,6 @@
 
 #include "packet.h"
 
-#define REFRESH_WAIT_NANO 4000000
-#define ROUTER_BUFFER_SIZE 64
-
 thread_local router_t *_r_router = NULL;
 thread_local pckt_t *_r_packet = NULL;
 thread_local uuid_t _r_recipient = 0;
@@ -23,9 +20,10 @@ bool _send_packet(uuid_t to)
     if (e_to == 0) return false;
     
     // Leave routing breadcrumb
-    table_put(&_r_packet->manifest, _r_router->uuid, _r_recipient);
-    endpt_t endpoint = *(endpt_t *)((long)e_to);
+    table_put(&_r_packet->route, _r_router->uuid, _r_recipient);
+    _r_packet->route_c++;
     // Push through endpoint (to peer router attachment)
+    endpt_t endpoint = *(endpt_t *)((long)e_to);
     endpt_push(endpoint, _r_packet);
 
     return true;
@@ -35,7 +33,7 @@ bool _send_packet(uuid_t to)
 bool _route_packet1()
 {
     // Check manifest for routing 
-    uuid_t to = table_get(&_r_packet->manifest, _r_router->uuid);
+    uuid_t to = table_get(&_r_packet->route, _r_router->uuid);
     // Try to send return routing
     return _send_packet(to);
 }
@@ -117,9 +115,11 @@ void _router_thrd(router_t *router)
         struct timespec t;
         t.tv_sec = 0;
         t.tv_nsec = REFRESH_WAIT_NANO;
-        // Sleep until next refresh cycle (~250 Hz)
+        // Sleep until next refresh cycle (~1 kHz)
         nanosleep(&t, &t);
     }
+
+    thrd_exit(thrd_success);
 }
 
 void create_router(router_t *router)
@@ -136,11 +136,18 @@ void create_router(router_t *router)
     router->upstream = 0;
 }
 
+void _free_router_assoc_table(uuid_t uuid, uuid_t endpt_ptr)
+{
+    free((void *)((long)endpt_ptr));
+}
+
 void free_router(router_t *router)
 {
     // Wait for the routing thread to finish
     router->alive = false;
     thrd_join(router->thread, NULL);
+    // Free copies of attachment endpoints
+    table_it(&router->attachments, (table_it_fun)_free_router_assoc_table);
 
     free_table(&router->route_table);
     free_table(&router->attachments);

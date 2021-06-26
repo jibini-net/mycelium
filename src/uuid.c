@@ -141,7 +141,7 @@ uuid_t _quick_str_hash(char *data)
     return hash;
 }
 
-void hash_put(table_t *table, char *key, void *a, void *b)
+void hash_put(table_t *table, const char *key, void *a, void *b)
 {
     unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
     // Allocate new node
@@ -151,7 +151,7 @@ void hash_put(table_t *table, char *key, void *a, void *b)
 
     // Insert at start of chain (effectively overwrites existing values)
     created->next = chain->next;
-    created->key = _ptr_to_uuid(strdup(key), NULL);
+    created->key = _ptr_to_uuid(key, NULL);
     created->value = _ptr_to_uuid(a, b);
     // Modify chain to point to inserted link
     chain->next = created;

@@ -20,6 +20,8 @@ void free_tube(tube_t *tube)
     sem_destroy(&tube->open_slots);
     sem_destroy(&tube->available);
     sem_destroy(&tube->mutex);
+    // Deep free buffers
+    free(tube->buffer);
 }
 
 void tube_push(tube_t *tube, void *data)
