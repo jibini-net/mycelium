@@ -84,3 +84,8 @@ void free_pckt(pckt_t *packet);
  * @param packet Packet whose route will be registered in the manifest.
  */
 void pckt_embed_rt(pckt_t *packet);
+
+/**
+ * @param packet Packet whose route will be loaded from the manifest.
+ */
+void pckt_load_rt(pckt_t *packet);

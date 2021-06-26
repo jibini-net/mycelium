@@ -112,3 +112,17 @@ void pckt_embed_rt(pckt_t *packet)
     
     free(_pckt_rt_buff);
 }
+
+void pckt_load_rt(pckt_t *packet)
+{
+    // Read route table and get size
+    size_t rt_size;
+    uuid_t *route = pckt_get(packet, "route", &rt_size);
+    // Calculate number of rows
+    packet->route_c = rt_size / ROUTE_ROW_SIZE;
+
+    // Iterate through all rows in table
+    int i = 0;
+    for (i; i < packet->route_c; i += 1)
+        table_put(&packet->route, route[i * 2], route[i * 2 + 1]);
+}

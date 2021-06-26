@@ -8,7 +8,7 @@
 #include "patch.h"
 
 #ifndef REFRESH_WAIT_NANO
-#define REFRESH_WAIT_NANO 1000000
+#define REFRESH_WAIT_NANO 500000
 #endif
 
 #define ROUTER_BUFFER_SIZE 128

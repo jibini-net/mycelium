@@ -115,7 +115,7 @@ void _router_thrd(router_t *router)
         struct timespec t;
         t.tv_sec = 0;
         t.tv_nsec = REFRESH_WAIT_NANO;
-        // Sleep until next refresh cycle (~1 kHz)
+        // Sleep until next refresh cycle (~2 kHz)
         nanosleep(&t, &t);
     }
 

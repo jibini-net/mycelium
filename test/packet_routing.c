@@ -9,6 +9,7 @@
 
 int test_router_send();
 int test_router_embed_rt();
+int test_router_load_rt();
 int test_router_memory_reg();
 int test_router_return();
 int test_router_table();
@@ -26,6 +27,7 @@ int main(int args_c, char **args)
 
     TEST("Router packet send (sanity check)", test_router_send, &fail);
     TEST("Router packet embedded route test", test_router_embed_rt, &fail);
+    TEST("Router packet loaded route test", test_router_load_rt, &fail);
     TEST("Router memory regression under load test", test_router_memory_reg, &fail);
     TEST("Router packet return routing", test_router_return, &fail);
     TEST("Router packet with routing table", test_router_table, &fail);
@@ -56,6 +58,7 @@ void _init_router_test(router_t *router,
     printf("Test router is running at ~%d Hz\n", 1000000000 / REFRESH_WAIT_NANO);
     printf("Test attachment 'A' is at '%s'\n", uuid_to_string(*attach_a, true));
     printf("Test attachment 'B' is at '%s'\n", uuid_to_string(*attach_b, true));
+    printf("Test router node UUID is '%s'\n", uuid_to_string(router->uuid, true));
 }
 
 char *_test_router_send_base(router_t *router,
@@ -134,17 +137,72 @@ int test_router_embed_rt()
     printf("Pulled something down: '%s'\n", message);
 
     pckt_embed_rt(&packet);
-    // Read 
+    // Read route table and get size
     size_t rt_size;
     uuid_t *route = pckt_get(&packet, "route", &rt_size);
+    // Calculate number of rows
     unsigned int rt_c = rt_size / ROUTE_ROW_SIZE;
 
+    // Iterate through all rows in table
     int i = 0;
     for (i; i < rt_c; i += 1)
     {
         printf("'%s' -> '%s'\n", uuid_to_string(route[i * 2], true),
             uuid_to_string(route[i * 2 + 1], true));
     }
+
+    // Free packet, patches, and router
+    free_pckt(&packet);
+    free_patch(&a);
+    free_patch(&b);
+    free_router(&router);
+}
+
+void _load_rt_it_fun(uuid_t router, uuid_t to)
+{
+    printf("'%s' -> '%s'\n", uuid_to_string(router, true),
+                uuid_to_string(to, true));
+}
+
+int test_router_load_rt()
+{
+    router_t router;
+    patch_t a, b;
+    endpt_t up_a, down_a;
+    endpt_t up_b, down_b;
+    uuid_t attach_a, attach_b;
+    pckt_t packet;
+
+    _init_router_test(&router, 
+        &a, &b,
+        &up_a, &down_a,
+        &up_b, &down_b,
+        &attach_a, &attach_b);
+    char *message = _test_router_send_base(
+        &router, 
+        &a, &b,
+        up_a, down_a,
+        up_b, down_b,
+        attach_a, attach_b,
+        &packet);
+    printf("Pulled something down: '%s'\n", message);
+
+    // Embed the table data
+    pckt_embed_rt(&packet);
+    // Destroy the table and count data
+    free_table(&packet.route);
+    packet.route_c = 0;
+    // Recreate the table
+    create_table(&packet.route);
+    // Load from packet manifest
+    pckt_load_rt(&packet);
+
+    // Read route table and get size
+    size_t route_s;
+    uuid_t *route = pckt_get(&packet, "route", &route_s);
+    
+    // Iterate through all rows in table
+    table_it(&packet.route, (table_it_fun)_load_rt_it_fun);
 
     // Free packet, patches, and router
     free_pckt(&packet);
