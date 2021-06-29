@@ -143,7 +143,7 @@ uuid_t _quick_str_hash(char *data)
 
 void hash_put(table_t *table, const char *key, void *a, void *b)
 {
-    unsigned int hash = _quick_str_hash(key) % HASH_TABLE_SIZE;
+    unsigned int hash = _quick_str_hash((char *)key) % HASH_TABLE_SIZE;
     // Allocate new node
     struct assoc_t *created = (struct assoc_t *)malloc(sizeof(struct assoc_t));
     // Grab hash chain

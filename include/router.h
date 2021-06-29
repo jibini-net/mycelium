@@ -11,7 +11,9 @@
 #define REFRESH_WAIT_NANO 500000
 #endif
 
+#ifndef ROUTER_BUFFER_SIZE
 #define ROUTER_BUFFER_SIZE 128
+#endif
 
 /**
  * An active process which accepts packets and routes them to attached
