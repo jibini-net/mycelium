@@ -154,10 +154,11 @@ void free_router(router_t *router)
 
     printf("Awaiting routing thread termination . . .\n");
     thrd_join(router->thread, NULL);
+
     // Free copies of attachment endpoints
     printf("Freeing state table data for route and attachments . . .\n");
     table_it(&router->attachments, (table_it_fun)_free_router_assoc_table);
-
+    // Free state table memory
     free_table(&router->route_table);
     free_table(&router->attachments);
 
