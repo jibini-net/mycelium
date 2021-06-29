@@ -79,6 +79,8 @@ void free_patch(patch_t *patch)
 {
     free_tube(&patch->tube_a);
     free_tube(&patch->tube_b);
+
+    printf("Duplex patch primitive has been freed.\n");
 }
 
 endpt_t patch_endpt(patch_t *patch, up_down_t up_down)

@@ -150,12 +150,18 @@ void free_router(router_t *router)
 {
     // Wait for the routing thread to finish
     router->alive = false;
+    printf("Router '%s' received shutdown signal.\n", uuid_to_string(router->uuid, true));
+
+    printf("Awaiting routing thread termination . . .\n");
     thrd_join(router->thread, NULL);
     // Free copies of attachment endpoints
+    printf("Freeing state table data for route and attachments . . .\n");
     table_it(&router->attachments, (table_it_fun)_free_router_assoc_table);
 
     free_table(&router->route_table);
     free_table(&router->attachments);
+
+    printf("Router has shut down.\n");
 }
 
 uuid_t router_attach(router_t *router, endpt_t endpoint)
@@ -167,7 +173,7 @@ uuid_t router_attach(router_t *router, endpt_t endpoint)
     memcpy(copy, &endpoint, sizeof(endpt_t));
     table_put(&router->attachments, uuid, (uuid_t)((long)copy));
 
-    printf("Router '%s' has attached at '%s'.\n", uuid_to_string(router->uuid, true),
+    printf("Router '%s' has attachment '%s'.\n", uuid_to_string(router->uuid, true),
         uuid_to_string(uuid, true));
 
     return uuid;
