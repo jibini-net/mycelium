@@ -128,13 +128,16 @@ void create_router(router_t *router)
 {
     router->uuid = random_uuid();
     router->alive = true;
+
+    printf("Creating state tables for router '%s' . . .\n", uuid_to_string(router->uuid, true));
     create_table(&router->route_table);
     create_table(&router->attachments);
-
+    printf("Starting routing cycle thread . . .\n");
     // Spawn a thread to route this router's traffic
     thrd_create(&router->thread, (thrd_start_t)_router_thrd, (void *)router);
     thrd_detach(router->thread);
     
+    printf("Default router has no assigned upstream parent.\n");
     router->upstream = 0;
 }
 
@@ -163,6 +166,9 @@ uuid_t router_attach(router_t *router, endpt_t endpoint)
     endpt_t *copy = (endpt_t *)malloc(sizeof(endpt_t));
     memcpy(copy, &endpoint, sizeof(endpt_t));
     table_put(&router->attachments, uuid, (uuid_t)((long)copy));
+
+    printf("Router '%s' has attached at '%s'.\n", uuid_to_string(router->uuid, true),
+        uuid_to_string(uuid, true));
 
     return uuid;
 }

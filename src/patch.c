@@ -71,6 +71,8 @@ void create_patch(patch_t *patch, size_t buffer_size)
 {
     create_tube(&patch->tube_a, buffer_size);
     create_tube(&patch->tube_b, buffer_size);
+    
+    printf("Duplex patch primitive created with a %d-element buffer.\n", buffer_size);
 }
 
 void free_patch(patch_t *patch)
